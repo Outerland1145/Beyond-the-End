@@ -1,4 +1,4 @@
-package org.starrepublic.beyond_the_end.Items;
+package org.starrepublic.beyond_the_end.Blocks.Blockitems;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;

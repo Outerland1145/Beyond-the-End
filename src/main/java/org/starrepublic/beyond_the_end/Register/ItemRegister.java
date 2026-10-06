@@ -4,7 +4,7 @@ import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
-import org.starrepublic.beyond_the_end.Items.DecorativeEndGatewayItem;
+import org.starrepublic.beyond_the_end.Blocks.Blockitems.DecorativeEndGatewayItem;
 
 import java.util.function.Supplier;
 

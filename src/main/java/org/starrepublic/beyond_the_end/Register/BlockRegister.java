@@ -1,6 +1,5 @@
 package org.starrepublic.beyond_the_end.Register;
 
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
@@ -8,9 +7,6 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Blocks.DecorativeEndGatewayBlock;
-import org.starrepublic.beyond_the_end.Items.DecorativeEndGatewayItem;
-
-import java.util.function.Supplier;
 
 public class BlockRegister {
     private BlockRegister() {}

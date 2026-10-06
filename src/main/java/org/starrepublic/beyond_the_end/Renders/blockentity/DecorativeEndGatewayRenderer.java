@@ -1,4 +1,4 @@
-package org.starrepublic.beyond_the_end.Renders;
+package org.starrepublic.beyond_the_end.Renders.blockentity;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.TheEndPortalRenderer;
