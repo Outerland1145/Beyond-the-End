@@ -1,0 +1,59 @@
+package org.starrepublic.beyond_the_end.CreativeTabs;
+
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import org.starrepublic.beyond_the_end.Beyond_the_end;
+import org.starrepublic.beyond_the_end.Register.ItemRegister;
+
+import java.util.function.Supplier;
+
+public class Blocks {
+    private Blocks() {}
+
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
+            DeferredRegister.create(
+                    Registries.CREATIVE_MODE_TAB,
+                    Beyond_the_end.MODID
+            );
+
+    public static final Supplier<CreativeModeTab> FADING_END_TAB =
+            CREATIVE_TABS.register(
+                    "beyond_the_end",
+                    () -> CreativeModeTab.builder()
+
+                            // 分頁名稱
+                            .title(
+                                    Component.translatable(
+                                            "itemGroup.beyond_the_end.beyond_the_end_block"
+                                    )
+                            )
+
+                            // 分頁圖示
+                            .icon(
+                                    () -> new ItemStack(
+                                            ItemRegister.DECORATIVE_END_GATEWAY.get()
+                                    )
+                            )
+
+                            // 分頁中的所有物品
+                            .displayItems((parameters, output) -> {
+                                output.accept( ItemRegister.DECORATIVE_END_GATEWAY.get());
+                                output.accept(ItemRegister.Cracked_END_STONE.get());
+                                output.accept(ItemRegister.DENSE_END_STONE.get());
+                                output.accept(ItemRegister.Fractured_END_STONE.get());
+                                output.accept(ItemRegister.Weathered_END_STONE.get());
+                                output.accept(ItemRegister.Cracked_END_STONE.get());
+
+                            })
+
+                            .build()
+            );
+
+    public static void register(IEventBus eventBus) {
+        CREATIVE_TABS.register(eventBus);
+    }
+}

@@ -1,6 +1,7 @@
 package org.starrepublic.beyond_the_end.Register;
 
 import net.neoforged.bus.api.IEventBus;
+import org.starrepublic.beyond_the_end.CreativeTabs.Blocks;
 
 public final class TotalRegistries {
     private TotalRegistries() {}
@@ -20,5 +21,7 @@ public final class TotalRegistries {
         BlockRegister.register(eventBus);
         BlockEntityRegister.register(eventBus);
         ItemRegister.register(eventBus);
+        /*以下為創造模式面板*/
+        Blocks.register(eventBus);
     }
 }

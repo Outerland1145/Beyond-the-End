@@ -40,8 +40,6 @@ public class Beyond_the_end {
     public static final String MODID = "beyond_the_end";
 
         public Beyond_the_end(IEventBus modEventBus) {
-
             TotalRegistries.register(modEventBus);
-
         }
 }

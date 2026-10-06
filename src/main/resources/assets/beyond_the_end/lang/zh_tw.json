@@ -1,0 +1,20 @@
+{
+  "itemGroup.beyond_the_end.beyond_the_end_block": "終界之後 方塊",
+  "itemGroup.beyond_the_end.beyond_the_end_item": "終界之後 物品",
+  "itemGroup.beyond_the_end.beyond_the_end_tool": "終界之後 工具",
+  "block.beyond_the_end.decorative_end_gateway": "星空方塊",
+  "block.beyond_the_end.weathered_end_stone": "風化終界石",
+  "block.beyond_the_end.cracked_end_stone": "裂紋終界石",
+  "block.beyond_the_end.dense_end_stone": "緻密終界石",
+  "block.beyond_the_end.chorus_soil": "紫頌土",
+  "block.beyond_the_end.chorus_moss": "紫頌苔石",
+  "block.beyond_the_end.chorus_log": "紫頌木",
+  "block.beyond_the_end.chorus_leaves": "紫頌葉",
+  "block.beyond_the_end.chorus_sprout": "紫頌幼芽",
+  "block.beyond_the_end.chorus_bloom": "紫頌花簇",
+  "block.beyond_the_end.void_grass": "虛空草",
+  "block.beyond_the_end.fractured_end_stone": "破碎終界石",
+  "block.beyond_the_end.void_crystal": "虛空晶簇",
+  "block.beyond_the_end.end_dust": "終界塵土",
+  "block.beyond_the_end.ancient_end_bricks": "遠古終界磚"
+}
