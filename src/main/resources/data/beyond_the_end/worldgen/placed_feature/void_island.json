@@ -1,0 +1,12 @@
+{
+  "feature": "beyond_the_end:void_island",
+  "placement": [
+    {
+      "type": "minecraft:rarity_filter",
+      "chance": 45
+    },
+    {
+      "type": "minecraft:in_square"
+    }
+  ]
+}

@@ -8,7 +8,9 @@
       "End_Podium_Mixin",
       "DragonFightManagerMixin",
       "CrystalItemMixin",
-      "accessor.EndSpawnAccessor"
+      "accessor.EndSpawnAccessor",
+      "EndIslandDensityFunctionMixin",
+      "EndIslandFeatureMixin"
 
   ],
   "client": [

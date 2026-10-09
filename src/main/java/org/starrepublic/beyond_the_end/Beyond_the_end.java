@@ -35,6 +35,7 @@ import org.starrepublic.beyond_the_end.Events.EndBarrierEvents;
 import org.starrepublic.beyond_the_end.Events.EndBarrierProgressEvents;
 import org.starrepublic.beyond_the_end.Events.ServerConfigEvents;
 import org.starrepublic.beyond_the_end.Register.CommandRegistry;
+import org.starrepublic.beyond_the_end.Register.FeatureRegister;
 import org.starrepublic.beyond_the_end.Register.PayloadRegistry;
 import org.starrepublic.beyond_the_end.Register.TotalRegistries;
 import org.starrepublic.beyond_the_end.configs.BTEConfigs;
@@ -60,6 +61,7 @@ public class Beyond_the_end {
             NeoForge.EVENT_BUS.register(CommandRegistry.class);
             NeoForge.EVENT_BUS.register(EndBarrierProgressEvents.class);
             modEventBus.register(PayloadRegistry.class);
+            FeatureRegister.register( modEventBus );
 
         }
 

@@ -1,10 +1,13 @@
 package org.starrepublic.beyond_the_end.Register;
 
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.starrepublic.beyond_the_end.Renders.blockentity.DecorativeEndGatewayRenderer;
 import org.starrepublic.beyond_the_end.Renders.blocks.blockitems.DecorativeEndGatewayItemExtensions;
+import org.starrepublic.beyond_the_end.Renders.sky.BeyondEndDimensionEffects;
 
 public class RenderRegistry {
     private RenderRegistry() {}
@@ -15,6 +18,9 @@ public class RenderRegistry {
         );
         eventBus.addListener(
                 RenderRegistry::registerItemRenderers
+        );
+        eventBus.addListener(
+                RenderRegistry::registerDimensionEffects
         );
     }
 
@@ -41,6 +47,14 @@ public class RenderRegistry {
         event.registerItem(
                 new DecorativeEndGatewayItemExtensions(),
                 ItemRegister.END_PORTAL_ITEM.get()
+        );
+    }
+    public static void registerDimensionEffects(
+            RegisterDimensionSpecialEffectsEvent event
+    ) {
+        event.register(
+                BuiltinDimensionTypes.END_EFFECTS,
+                new BeyondEndDimensionEffects()
         );
     }
 }
