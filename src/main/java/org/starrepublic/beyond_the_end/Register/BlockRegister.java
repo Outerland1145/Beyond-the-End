@@ -25,42 +25,14 @@ public class BlockRegister {
                             .sound(SoundType.GLASS)
                             .lightLevel(state -> 15)
             );
-    public static final DeferredBlock<Block> DENSE_END_STONE =
+    public static final DeferredBlock<Block> AltarStone =
             BLOCKS.registerSimpleBlock(
-                    "dense_end_stone",
+                    "altar_stone",
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.COLOR_PURPLE)
-                            .strength(3.0F, 9.0F)
+                            .strength(-1.0f, 9.0F)
                             .requiresCorrectToolForDrops()
             );
-    public static final DeferredBlock<Block> Cracked_END_STONE =
-            BLOCKS.registerSimpleBlock(
-                    "cracked_end_stone",
-                    BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.COLOR_PURPLE)
-                            .strength(3.0F, 9.0F)
-                            .requiresCorrectToolForDrops()
-            );
-    public static final DeferredBlock<Block> Weathered_END_STONE =
-            BLOCKS.registerSimpleBlock(
-                    "weathered_end_stone",
-                    BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.COLOR_PURPLE)
-                            .strength(3.0F, 9.0F)
-                            .requiresCorrectToolForDrops()
-            );
-    public static final DeferredBlock<Block> Fractured_END_STONE =
-            BLOCKS.registerSimpleBlock(
-                    "fractured_end_stone",
-                    BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.COLOR_PURPLE)
-                            .strength(3.0F, 9.0F)
-                            .requiresCorrectToolForDrops()
-            );
-
-
-
-
     public static void register(IEventBus eventBus) {
         BLOCKS.register(eventBus);
     }

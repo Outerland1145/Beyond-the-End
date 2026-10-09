@@ -34,5 +34,13 @@ public class RenderRegistry {
                 new DecorativeEndGatewayItemExtensions(),
                 ItemRegister.DECORATIVE_END_GATEWAY.get()
         );
+        event.registerItem(
+                new DecorativeEndGatewayItemExtensions(),
+                ItemRegister.END_GATEWAY_ITEM.get()
+        );
+        event.registerItem(
+                new DecorativeEndGatewayItemExtensions(),
+                ItemRegister.END_PORTAL_ITEM.get()
+        );
     }
 }

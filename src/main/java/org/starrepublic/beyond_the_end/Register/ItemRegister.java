@@ -1,6 +1,10 @@
 package org.starrepublic.beyond_the_end.Register;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -22,38 +26,34 @@ public class ItemRegister {
                             new Item.Properties()
                     )
             );
+    public static final DeferredItem<BlockItem> END_PORTAL_ITEM =
+            ITEMS.register(
+                    "end_portal",
+                    registryName -> new BlockItem(
+                            Blocks.END_PORTAL,
+                            new Item.Properties()
+                    )
+            );
+
+    public static final DeferredItem<BlockItem> END_GATEWAY_ITEM =
+            ITEMS.register(
+                    "end_gateway",
+                    registryName -> new BlockItem(
+                            Blocks.END_GATEWAY,
+                            new Item.Properties()
+                    )
+            );
     public static final DeferredItem<Item>
-            DENSE_END_STONE = ITEMS.register(
-            "dense_end_stone",
+            AltarStone = ITEMS.register(
+            "altar_stone",
             () -> new DecorativeEndGatewayItem(
-                    BlockRegister.DENSE_END_STONE.get(),
+                    BlockRegister.AltarStone.get(),
                     new Item.Properties()
+
             )
     );
-    public static final DeferredItem<Item>
-            Cracked_END_STONE = ITEMS.register(
-            "cracked_end_stone",
-            () -> new DecorativeEndGatewayItem(
-                    BlockRegister.Cracked_END_STONE.get(),
-                    new Item.Properties()
-            )
-    );
-    public static final DeferredItem<Item>
-            Weathered_END_STONE = ITEMS.register(
-            "weathered_end_stone",
-            () -> new DecorativeEndGatewayItem(
-                    BlockRegister.Weathered_END_STONE.get(),
-                    new Item.Properties()
-            )
-    );
-    public static final DeferredItem<Item>
-            Fractured_END_STONE = ITEMS.register(
-            "fractured_end_stone",
-            () -> new DecorativeEndGatewayItem(
-                    BlockRegister.Fractured_END_STONE.get(),
-                    new Item.Properties()
-            )
-    );
+
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

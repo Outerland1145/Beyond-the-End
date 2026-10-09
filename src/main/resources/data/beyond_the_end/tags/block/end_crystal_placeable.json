@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "beyond_the_end:altar_stone",
+    "minecraft:bedrock",
+    "minecraft:obsidian"
+  ]
+}

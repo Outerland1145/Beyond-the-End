@@ -31,6 +31,9 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
+import org.starrepublic.beyond_the_end.Events.EndBarrierEvents;
+import org.starrepublic.beyond_the_end.Register.CommandRegistry;
+import org.starrepublic.beyond_the_end.Register.PayloadRegistry;
 import org.starrepublic.beyond_the_end.Register.TotalRegistries;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
@@ -41,5 +44,9 @@ public class Beyond_the_end {
 
         public Beyond_the_end(IEventBus modEventBus) {
             TotalRegistries.register(modEventBus);
+            NeoForge.EVENT_BUS.register(EndBarrierEvents.class);
+            NeoForge.EVENT_BUS.register(CommandRegistry.class);
+            modEventBus.register(PayloadRegistry.class);
         }
+
 }

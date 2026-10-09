@@ -1,9 +1,15 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "org.starrepublic.beyond_the_end.mixin",
+  "package": "org.starrepublic.beyond_the_end.Mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+      "End_Gateway_Mixin",
+      "End_Podium_Mixin",
+      "DragonFightManagerMixin",
+      "CrystalItemMixin",
+      "End_Spawn_Mixin",
+      "EndBarrierRendererMixin"
   ],
   "client": [
   ],

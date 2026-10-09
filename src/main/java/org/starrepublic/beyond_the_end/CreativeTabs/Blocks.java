@@ -42,11 +42,9 @@ public class Blocks {
                             // 分頁中的所有物品
                             .displayItems((parameters, output) -> {
                                 output.accept( ItemRegister.DECORATIVE_END_GATEWAY.get());
-                                output.accept(ItemRegister.Cracked_END_STONE.get());
-                                output.accept(ItemRegister.DENSE_END_STONE.get());
-                                output.accept(ItemRegister.Fractured_END_STONE.get());
-                                output.accept(ItemRegister.Weathered_END_STONE.get());
-                                output.accept(ItemRegister.Cracked_END_STONE.get());
+                                output.accept( ItemRegister.AltarStone.get());
+                                output.accept( ItemRegister.END_PORTAL_ITEM.get());
+                                output.accept( ItemRegister.END_GATEWAY_ITEM.get());
 
                             })
 
