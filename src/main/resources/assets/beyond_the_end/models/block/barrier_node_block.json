@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "beyond_the_end:block/barrier_node_block_south_side",
+    "east": "beyond_the_end:block/barrier_node_block_east_side",
+    "north": "beyond_the_end:block/barrier_node_block_top",
+    "south": "beyond_the_end:block/barrier_node_block_top",
+    "up": "beyond_the_end:block/barrier_node_block_north_side",
+    "west": "beyond_the_end:block/barrier_node_block_west_side",
+    "particle": "beyond_the_end:block/barrier_node_block_top"
+  }
+}

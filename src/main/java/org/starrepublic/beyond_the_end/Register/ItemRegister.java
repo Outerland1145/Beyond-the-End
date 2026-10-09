@@ -46,8 +46,17 @@ public class ItemRegister {
     public static final DeferredItem<Item>
             AltarStone = ITEMS.register(
             "altar_stone",
-            () -> new DecorativeEndGatewayItem(
+            () -> new BlockItem(
                     BlockRegister.AltarStone.get(),
+                    new Item.Properties()
+
+            )
+    );
+    public static final DeferredItem<Item>
+            BarrierNodeBlock = ITEMS.register(
+            "barrier_node_block",
+            () -> new BlockItem(
+                    BlockRegister.BarrierNodeBlock.get(),
                     new Item.Properties()
 
             )

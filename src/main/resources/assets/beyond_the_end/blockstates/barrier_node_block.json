@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "direction=north": {
+      "model": "beyond_the_end:block/barrier_node_block"
+    },
+    "direction=east": {
+      "model": "beyond_the_end:block/barrier_node_block",
+      "y": 90
+    },
+    "direction=south": {
+      "model": "beyond_the_end:block/barrier_node_block",
+      "y": 180
+    },
+    "direction=west": {
+      "model": "beyond_the_end:block/barrier_node_block",
+      "y": 270
+    }
+  }
+}

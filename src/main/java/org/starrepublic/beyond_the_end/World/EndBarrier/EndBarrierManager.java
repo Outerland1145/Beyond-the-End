@@ -1,22 +1,21 @@
 package org.starrepublic.beyond_the_end.World.EndBarrier;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.starrepublic.beyond_the_end.World.BeyondEndSavedData;
+import org.starrepublic.beyond_the_end.Data.BeyondEndSavedData;
+import org.starrepublic.beyond_the_end.configs.BTEConfigs;
 
 public final class EndBarrierManager {
 
     private EndBarrierManager() {
     }
-
-    public static final double BARRIER_RADIUS = 250.0D;
+    public static final double BARRIER_RADIUS = BTEConfigs.SERVER.barrierRadius.get();
 
     /**
      * 開始產生視覺扭曲的距離。
      */
-    public static final double DISTORTION_START_RADIUS = 600.0D;
+    public static final double DISTORTION_START_RADIUS = BARRIER_RADIUS*2;
 
     private static final double BARRIER_RADIUS_SQR =
             BARRIER_RADIUS * BARRIER_RADIUS;

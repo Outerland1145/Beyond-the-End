@@ -9,16 +9,19 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.starrepublic.beyond_the_end.World.EndBarrier.EndBarrierManager;
 import org.starrepublic.beyond_the_end.World.EndBarrier.EndBarrierRejectionManager;
+import org.starrepublic.beyond_the_end.configs.BTEConfigs;
 
 public final class EndBarrierEvents {
+    private static boolean EndBarrier_Active = BTEConfigs.SERVER.enableEndBarrier.get();
     private EndBarrierEvents() {
     }
-
     @SubscribeEvent
     public static void onPlayerTick(
             PlayerTickEvent.Post event
     ) {
-
+        if (!EndBarrier_Active) {
+            return;
+        }
         if (!(event.getEntity()
                 instanceof ServerPlayer player)) {
             return;

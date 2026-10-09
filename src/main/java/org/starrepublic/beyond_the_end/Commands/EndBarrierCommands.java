@@ -5,7 +5,9 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import org.starrepublic.beyond_the_end.Data.BeyondEndSavedData;
 import org.starrepublic.beyond_the_end.World.EndBarrier.EndBarrierManager;
+import org.starrepublic.beyond_the_end.World.progression.BarrierNodeDirection;
 
 public final class EndBarrierCommands {
 
@@ -106,7 +108,96 @@ public final class EndBarrierCommands {
                                                             return 1;
                                                         })
                                         )
+                                        .then(
+                                                Commands.literal("progress")
+                                                        .executes(context -> {
+
+                                                            ServerLevel level =
+                                                                    context
+                                                                            .getSource()
+                                                                            .getLevel();
+
+                                                            BeyondEndSavedData data =
+                                                                    BeyondEndSavedData
+                                                                            .get(level);
+
+                                                            context
+                                                                    .getSource()
+                                                                    .sendSuccess(
+                                                                            () -> Component.literal(
+                                                                                    "主島結界進度：\n"
+                                                                                            + "鞘翅: "
+                                                                                            + yesNo(
+                                                                                            data.hasObtainedElytra()
+                                                                                    )
+                                                                                            + "\n北方節點: "
+                                                                                            + yesNo(
+                                                                                            data.isNodeDestroyed(
+                                                                                                    BarrierNodeDirection.NORTH
+                                                                                            )
+                                                                                    )
+                                                                                            + "\n南方節點: "
+                                                                                            + yesNo(
+                                                                                            data.isNodeDestroyed(
+                                                                                                    BarrierNodeDirection.SOUTH
+                                                                                            )
+                                                                                    )
+                                                                                            + "\n東方節點: "
+                                                                                            + yesNo(
+                                                                                            data.isNodeDestroyed(
+                                                                                                    BarrierNodeDirection.EAST
+                                                                                            )
+                                                                                    )
+                                                                                            + "\n西方節點: "
+                                                                                            + yesNo(
+                                                                                            data.isNodeDestroyed(
+                                                                                                    BarrierNodeDirection.WEST
+                                                                                            )
+                                                                                    )
+                                                                            ),
+                                                                            false
+                                                                    );
+
+                                                            return 1;
+                                                        })
+                                        )
+                                        .then(
+                                                Commands.literal("resetprogress")
+                                                        .executes(context -> {
+
+                                                            ServerLevel level =
+                                                                    context
+                                                                            .getSource()
+                                                                            .getLevel();
+
+                                                            BeyondEndSavedData
+                                                                    .get(level)
+                                                                    .resetBarrierProgress();
+
+                                                            EndBarrierManager
+                                                                    .lockBarrier(level);
+
+                                                            context
+                                                                    .getSource()
+                                                                    .sendSuccess(
+                                                                            () -> Component.literal(
+                                                                                    "主島結界進度已完全重置"
+                                                                            ),
+                                                                            true
+                                                                    );
+
+                                                            return 1;
+                                                        })
+                                        )
                         )
         );
+    }
+    private static String yesNo(
+            boolean value
+    ) {
+
+        return value
+                ? "完成"
+                : "未完成";
     }
 }

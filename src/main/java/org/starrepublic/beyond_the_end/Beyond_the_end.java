@@ -32,21 +32,35 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.starrepublic.beyond_the_end.Events.EndBarrierEvents;
+import org.starrepublic.beyond_the_end.Events.EndBarrierProgressEvents;
+import org.starrepublic.beyond_the_end.Events.ServerConfigEvents;
 import org.starrepublic.beyond_the_end.Register.CommandRegistry;
 import org.starrepublic.beyond_the_end.Register.PayloadRegistry;
 import org.starrepublic.beyond_the_end.Register.TotalRegistries;
+import org.starrepublic.beyond_the_end.configs.BTEConfigs;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Beyond_the_end.MODID)
 public class Beyond_the_end {
     // Define mod id in a common place for everything to reference
     public static final String MODID = "beyond_the_end";
+        public Beyond_the_end(IEventBus modEventBus,ModContainer modContainer) {
+            modContainer.registerConfig(
+                    ModConfig.Type.CLIENT,
+                    BTEConfigs.CLIENT_SPEC
+            );
 
-        public Beyond_the_end(IEventBus modEventBus) {
+            modContainer.registerConfig(
+                    ModConfig.Type.SERVER,
+                    BTEConfigs.SERVER_SPEC
+            );
             TotalRegistries.register(modEventBus);
+            NeoForge.EVENT_BUS.register(ServerConfigEvents.class);
             NeoForge.EVENT_BUS.register(EndBarrierEvents.class);
             NeoForge.EVENT_BUS.register(CommandRegistry.class);
+            NeoForge.EVENT_BUS.register(EndBarrierProgressEvents.class);
             modEventBus.register(PayloadRegistry.class);
+
         }
 
 }

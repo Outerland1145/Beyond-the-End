@@ -8,10 +8,11 @@
       "End_Podium_Mixin",
       "DragonFightManagerMixin",
       "CrystalItemMixin",
-      "End_Spawn_Mixin",
-      "EndBarrierRendererMixin"
+      "accessor.EndSpawnAccessor"
+
   ],
   "client": [
+    "EndBarrierRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
