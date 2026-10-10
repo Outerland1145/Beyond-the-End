@@ -2,5 +2,7 @@
   "itemGroup.beyond_the_end.beyond_the_end_block": "終界之後 方塊",
   "itemGroup.beyond_the_end.beyond_the_end_item": "終界之後 物品",
   "itemGroup.beyond_the_end.beyond_the_end_tool": "終界之後 工具",
-  "block.beyond_the_end.decorative_end_gateway": "星空方塊"
+  "block.beyond_the_end.decorative_end_gateway": "星空方塊",
+  "block.beyond_the_end.barrier_node_block": "結界節點",
+  "block.beyond_the_end.altar_stone": "祭壇石"
 }

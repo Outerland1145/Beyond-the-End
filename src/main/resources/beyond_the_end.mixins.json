@@ -11,7 +11,8 @@
       "accessor.EndSpawnAccessor",
       "EndIslandDensityFunctionMixin",
       "EndIslandFeatureMixin",
-      "TheEndBiomeSourceMixin"
+      "TheEndBiomeSourceMixin",
+      "EndPortalBlockMixin"
 
   ],
   "client": [

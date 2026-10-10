@@ -6,6 +6,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.starrepublic.beyond_the_end.Renders.blockentity.DecorativeEndGatewayRenderer;
+import org.starrepublic.beyond_the_end.Renders.blockentity.EndNetherPortalRenderer;
 import org.starrepublic.beyond_the_end.Renders.blocks.blockitems.DecorativeEndGatewayItemExtensions;
 import org.starrepublic.beyond_the_end.Renders.sky.BeyondEndDimensionEffects;
 
@@ -31,6 +32,10 @@ public class RenderRegistry {
                 BlockEntityRegister.DECORATIVE_END_GATEWAY.get(),
                 DecorativeEndGatewayRenderer::new
         );
+        event.registerBlockEntityRenderer(
+                BlockEntityRegister.END_NETHER_PORTAL.get(),
+                EndNetherPortalRenderer::new
+        );
     }
     private static void registerItemRenderers(
             RegisterClientExtensionsEvent event
@@ -48,6 +53,7 @@ public class RenderRegistry {
                 new DecorativeEndGatewayItemExtensions(),
                 ItemRegister.END_PORTAL_ITEM.get()
         );
+
     }
     public static void registerDimensionEffects(
             RegisterDimensionSpecialEffectsEvent event

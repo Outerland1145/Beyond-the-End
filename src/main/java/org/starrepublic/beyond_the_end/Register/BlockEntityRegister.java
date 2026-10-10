@@ -3,9 +3,11 @@ package org.starrepublic.beyond_the_end.Register;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Entitys.DecorativeEndGatewayBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.EndNetherPortalBlockEntity;
 
 import java.util.function.Supplier;
 
@@ -28,7 +30,15 @@ public class BlockEntityRegister {
                             BlockRegister.DECORATIVE_END_GATEWAY.get()
                     ).build(null)
             );
-
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EndNetherPortalBlockEntity>>
+            END_NETHER_PORTAL =
+            BLOCK_ENTITIES.register(
+                    "end_nether_portal",
+                    () -> BlockEntityType.Builder.of(
+                            EndNetherPortalBlockEntity::new,
+                            BlockRegister.END_NETHER_PORTAL.get()
+                    ).build(null)
+            );
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }

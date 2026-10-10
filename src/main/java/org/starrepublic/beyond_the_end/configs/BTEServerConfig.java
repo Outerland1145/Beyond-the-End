@@ -21,6 +21,9 @@ public class BTEServerConfig {
     public final ModConfigSpec.IntValue EndSpawnPointY;
     public final ModConfigSpec.IntValue EndSpawnPointZ;
 
+    public final ModConfigSpec.IntValue EndExitPointX;
+    public final ModConfigSpec.IntValue EndExitPointZ;
+
 
 
     public BTEServerConfig(ModConfigSpec.Builder builder) {
@@ -89,6 +92,28 @@ public class BTEServerConfig {
                 )
                 .defineInRange(
                         "End Spawn Point Coordinate Z",
+                        0,
+                        -30000000,
+                        30000000
+                );
+        builder.pop();
+        builder.push("End Exit Point");
+        EndExitPointX = builder
+                .comment(
+                        "Setting the End Exit Point Coordinate X in Overworld"
+                )
+                .defineInRange(
+                        "End Exit Point Coordinate X",
+                        1000,
+                        -30000000,
+                        30000000
+                );
+        EndExitPointZ = builder
+                .comment(
+                        "Setting the End Exit Point Coordinate Z in Overworld"
+                )
+                .defineInRange(
+                        "End Exit Point Coordinate Z",
                         0,
                         -30000000,
                         30000000
