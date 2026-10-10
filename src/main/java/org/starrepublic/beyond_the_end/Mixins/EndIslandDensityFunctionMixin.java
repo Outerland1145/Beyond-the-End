@@ -152,55 +152,69 @@ public abstract class EndIslandDensityFunctionMixin {
             CallbackInfoReturnable<Double> cir
     ) {
 
+        /*
+         * ========================================================
+         * Config Compatibility Switch
+         * ========================================================
+         *
+         * 關閉時：
+         *
+         * 完全保留原版 compute() 的 return value。
+         */
+
+        if (
+                !EndTerrainController
+                        .isCustomTerrainEnabled()
+        ) {
+
+            return;
+        }
+
         int x =
                 context.blockX();
 
         int z =
                 context.blockZ();
 
-        long distanceSq =
-                (long) x * x
-                        +
-                        (long) z * z;
+        double distance =
+                EndTerrainController
+                        .distanceFromCenter(
+                                x,
+                                z
+                        );
 
         /*
-         * ========================================
-         * 0 ~ 10000
-         *
-         * 完全原版。
-         * ========================================
+         * ========================================================
+         * Normal Region
+         * ========================================================
          */
 
         if (
-                distanceSq
+                distance
                         <=
-                        EndTerrainController.NORMAL_RADIUS_SQR
+                        EndTerrainController
+                                .getNormalRadius()
         ) {
 
             return;
         }
 
-        double distance =
-                Math.sqrt(
-                        (double) distanceSq
-                );
-
         /*
-         * ========================================
-         * 20000+
-         *
-         * 完全虛空。
-         * ========================================
+         * ========================================================
+         * Void Region
+         * ========================================================
          */
 
         if (
                 distance
                         >=
-                        EndTerrainController.VOID_RADIUS
+                        EndTerrainController
+                                .getVoidRadius()
         ) {
 
             cir.setReturnValue(
-                    EndTerrainController.VOID_DENSITY
+                    EndTerrainController
+                            .VOID_DENSITY
             );
 
             return;
@@ -210,8 +224,11 @@ public abstract class EndIslandDensityFunctionMixin {
                 cir.getReturnValue();
 
         /*
-         * 產生真正獨立的碎島。
+         * ========================================================
+         * Custom Fractured Islands
+         * ========================================================
          */
+
         double fracturedDensity =
                 beyondTheEnd$generateCellularIslands(
                         x,
@@ -220,18 +237,16 @@ public abstract class EndIslandDensityFunctionMixin {
                 );
 
         /*
-         * ========================================
-         * 10000 ~ 13000
-         *
-         * 原版逐步退出。
-         * ========================================
+         * ========================================================
+         * Normal → Fractured Transition
+         * ========================================================
          */
 
         if (
                 distance
                         <
                         EndTerrainController
-                                .FULL_FRACTURED_RADIUS
+                                .getFullFracturedRadius()
         ) {
 
             double blend =
@@ -252,11 +267,9 @@ public abstract class EndIslandDensityFunctionMixin {
         }
 
         /*
-         * ========================================
-         * 13000+
-         *
-         * 完全禁止使用 vanillaDensity。
-         * ========================================
+         * ========================================================
+         * Full Fractured Region
+         * ========================================================
          */
 
         cir.setReturnValue(
@@ -422,7 +435,8 @@ public abstract class EndIslandDensityFunctionMixin {
         if (
                 distance
                         >
-                        19_000.0D
+                        EndTerrainController
+                                .getVoidTransitionRadius()
         ) {
 
             double fade =
@@ -435,7 +449,8 @@ public abstract class EndIslandDensityFunctionMixin {
                     EndTerrainController.lerp(
                             fade,
                             bestDensity,
-                            EndTerrainController.VOID_DENSITY
+                            EndTerrainController
+                                    .VOID_DENSITY
                     );
         }
 

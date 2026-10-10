@@ -28,7 +28,13 @@ public class VoidIslandFeature
     public boolean place(
             FeaturePlaceContext<NoneFeatureConfiguration> context
     ) {
+        if (
+                !EndTerrainController
+                        .isCustomTerrainEnabled()
+        ) {
 
+            return false;
+        }
         BlockPos origin =
                 context.origin();
 
