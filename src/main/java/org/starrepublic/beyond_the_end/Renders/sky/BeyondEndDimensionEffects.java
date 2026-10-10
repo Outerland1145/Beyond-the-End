@@ -16,10 +16,11 @@ import net.minecraft.world.phys.Vec3;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.starrepublic.beyond_the_end.network.EndSkySeedState;
 
 import java.util.Random;
 
-public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
+public class BeyondEndDimensionEffects extends DimensionSpecialEffects {
 
     /*
      * =========================================================
@@ -34,7 +35,7 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
      *
      * 1500~2500 通常已經非常密集。
      */
-    private static final int STAR_COUNT = 1800;
+    private static final int STAR_COUNT = 2000;
 
     /*
      * 銀河星塵。
@@ -52,18 +53,80 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
     private static final int GALAXY_CORE_CLOUD_COUNT = 340;
 
     /*
-     * 固定 seed
+     * =========================================================
+     * 世界種子衍生的天空參數
+     * =========================================================
+     *
+     * 不直接讓所有系統共用同一個 Random。
+     * 每一種天空元素都從 EndSkySeed 派生自己的 seed，
+     * 因此修改星星生成演算法不會連帶改變銀河與背景。
      */
-    private static final long STAR_SEED = 0x42B7E123L;
-    private static final long GALAXY_SEED = 0x7A91C5E4L;
+    private static final long UNSET_SKY_SEED = Long.MIN_VALUE;
+
+    private static final long FALLBACK_SKY_SEED =
+            0x42B7E1237A91C5E4L;
+
+    private static long currentSkySeed =
+            FALLBACK_SKY_SEED;
+
+    private static final long STAR_SALT = 0x17A42C93D128EAF1L;
+    private static final long GALAXY_SALT = 0x4B2F891AE735C641L;
+    private static final long GALAXY_CLOUD_SALT = 0x77C519AFE243BD29L;
+    private static final long GALAXY_CORE_SALT = 0x2AF41BCD9173ECA5L;
+    private static final long BACKGROUND_SALT = 0x61E04A7CD359B28FL;
+    private static final long LAYOUT_SALT = 0x69C3137FE21B47A1L;
+    private static final long STAR_COLOR_SALT = 0x3D5A7BC912E864F1L;
+    private static long starSeed =
+            mixSeed(
+                    FALLBACK_SKY_SEED,
+                    STAR_SALT
+            );
+
+    private static long galaxySeed =
+            mixSeed(
+                    FALLBACK_SKY_SEED,
+                    GALAXY_SALT
+            );
+
+    private static long galaxyCloudSeed =
+            mixSeed(
+                    FALLBACK_SKY_SEED,
+                    GALAXY_CLOUD_SALT
+            );
+
+    private static long galaxyCoreSeed =
+            mixSeed(
+                    FALLBACK_SKY_SEED,
+                    GALAXY_CORE_SALT
+            );
+
+    private static long backgroundSeed =
+            mixSeed(
+                    FALLBACK_SKY_SEED,
+                    BACKGROUND_SALT
+            );
+
+    // 每個世界都不同的銀河姿態與銀心位置。
+    private static float galaxyRotationX;
+    private static float galaxyRotationZ;
+    private static double galaxyCoreLongitude;
+
+    // 每個世界都有略微不同的恆星色彩比例。
+    private static float starWhiteThreshold = 0.65F;
+    private static float starBlueThreshold = 0.82F;
+    private static float starWarmThreshold = 0.92F;
+
+    // 每個世界不同的深空背景。
+    private static int zenithColor = argb(255, 3, 8, 24);
+    private static int upperColor = argb(255, 4, 10, 30);
+    private static int horizonColor = argb(255, 7, 16, 42);
+    private static int nadirColor = argb(255, 4, 8, 22);
 
     /*
      * =========================================================
      * GPU Buffer
      * =========================================================
      */
-
-    private static final double GALAXY_CORE_LONGITUDE = Math.toRadians(18.0D);
 
     /*
      * GPU Buffer
@@ -97,7 +160,21 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
                 true            // constant ambient light
         );
     }
+    public static void resetSky() {
 
+        currentSkySeed =
+                UNSET_SKY_SEED;
+
+        starSeed = 0L;
+        galaxySeed = 0L;
+        galaxyCloudSeed = 0L;
+        galaxyCoreSeed = 0L;
+        backgroundSeed = 0L;
+
+        destroyBuffers();
+
+        initialized = false;
+    }
 
     /*
      * =========================================================
@@ -146,19 +223,42 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
             boolean isFoggy,
             Runnable setupFog
     ) {
+        long syncedSeed =
+                EndSkySeedState.getSkySeed();
 
+        /*
+         * 如果已經收到真正世界的天空 seed，
+         * 就切換到該世界的天空。
+         */
+        if (
+                syncedSeed != EndSkySeedState.UNSET
+                        &&
+                        syncedSeed != currentSkySeed
+        ) {
+
+            setSkySeed(
+                    syncedSeed
+            );
+        }
+
+        /*
+         * 如果網路 seed 還沒有抵達，
+         * 先使用 fallback 天空。
+         *
+         * 這樣不會因為封鎖 Vanilla sky
+         * 而導致整片天空消失。
+         */
+        if (currentSkySeed == UNSET_SKY_SEED) {
+
+            setSkySeed(
+                    FALLBACK_SKY_SEED
+            );
+        }
         initializeBuffers();
 
         /*
-         * 不寫入深度。
-         *
-         * 天空永遠位於所有世界物件後方。
+         * 不寫入深度。天空永遠位於所有世界物件後方。
          */
-        RenderSystem.depthMask(false);
-
-        RenderSystem.disableDepthTest();
-        RenderSystem.disableCull();
-
         RenderSystem.depthMask(false);
         RenderSystem.disableDepthTest();
         RenderSystem.disableCull();
@@ -227,9 +327,36 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
      * =========================================================
      */
 
+    /**
+     * 由客戶端網路處理器呼叫。
+     * 傳入的建議值是伺服器以世界 seed 派生出的 EndSkySeed，
+     * 而不是直接把世界 seed 暴露給客戶端。
+     */
+    public static void setSkySeed(long skySeed) {
+
+        if (currentSkySeed == skySeed) {
+            return;
+        }
+
+        currentSkySeed = skySeed;
+
+        starSeed = mixSeed(skySeed, STAR_SALT);
+        galaxySeed = mixSeed(skySeed, GALAXY_SALT);
+        galaxyCloudSeed = mixSeed(skySeed, GALAXY_CLOUD_SALT);
+        galaxyCoreSeed = mixSeed(skySeed, GALAXY_CORE_SALT);
+        backgroundSeed = mixSeed(skySeed, BACKGROUND_SALT);
+
+        createWorldLayout(mixSeed(skySeed, LAYOUT_SALT));
+        createStarColorProfile(mixSeed(skySeed, STAR_COLOR_SALT));
+        createBackgroundPalette(backgroundSeed);
+
+        destroyBuffers();
+        initialized = false;
+    }
+
     private static void initializeBuffers() {
 
-        if (initialized) {
+        if (initialized || currentSkySeed == UNSET_SKY_SEED) {
             return;
         }
 
@@ -259,15 +386,6 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
         );
 
         float r = SKY_RADIUS;
-
-        /*
-         * 從原本接近黑紫，
-         * 改成更接近深空藍。
-         */
-        int zenithColor = argb(255, 3, 8, 24);     // 頭頂
-        int upperColor  = argb(255, 4, 10, 30);    // 上半部
-        int horizonColor = argb(255, 7, 16, 42);   // 地平線附近
-        int nadirColor  = argb(255, 4, 8, 22);     // 下方
 
         /*
          * 上
@@ -368,7 +486,7 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
 
     private static void createStars() {
 
-        Random random = new Random(STAR_SEED);
+        Random random = new Random(starSeed);
 
         BufferBuilder builder =
                 Tesselator.getInstance().begin(
@@ -443,7 +561,7 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
 
     private static void createGalaxy() {
 
-        Random random = new Random(GALAXY_SEED);
+        Random random = new Random(galaxySeed);
 
         BufferBuilder builder = Tesselator.getInstance().begin(
                 VertexFormat.Mode.QUADS,
@@ -457,7 +575,7 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
             /*
              * 與銀心的角距離
              */
-            double coreDistance = angularDistance(longitude, GALAXY_CORE_LONGITUDE);
+            double coreDistance = angularDistance(longitude, galaxyCoreLongitude);
 
             /*
              * 越接近銀心，值越高
@@ -478,8 +596,8 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
             /*
              * 銀河傾斜角
              */
-            direction.rotateX((float) Math.toRadians(28.0D));
-            direction.rotateZ((float) Math.toRadians(-17.0D));
+            direction.rotateX(galaxyRotationX);
+            direction.rotateZ(galaxyRotationZ);
 
             /*
              * 距離銀河盤面越遠越暗
@@ -556,7 +674,7 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
 
     private static void createGalaxyClouds() {
 
-        Random random = new Random(GALAXY_SEED ^ 0x6F27A391L);
+        Random random = new Random(galaxyCloudSeed);
 
         BufferBuilder builder = Tesselator.getInstance().begin(
                 VertexFormat.Mode.QUADS,
@@ -566,7 +684,7 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
         for (int i = 0; i < GALAXY_CLOUD_COUNT; i++) {
 
             double longitude = random.nextDouble() * Math.PI * 2.0D;
-            double coreDistance = angularDistance(longitude, GALAXY_CORE_LONGITUDE);
+            double coreDistance = angularDistance(longitude, galaxyCoreLongitude);
 
             float coreFactor = (float) Math.exp(
                     -(coreDistance * coreDistance) / (2.0D * 0.42D * 0.42D)
@@ -579,8 +697,8 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
 
             Vector3f direction = sphericalDirection(longitude, latitude);
 
-            direction.rotateX((float) Math.toRadians(28.0D));
-            direction.rotateZ((float) Math.toRadians(-17.0D));
+            direction.rotateX(galaxyRotationX);
+            direction.rotateZ(galaxyRotationZ);
 
             /*
              * 靠近銀心時雲團更大
@@ -628,7 +746,7 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
     }
     private static void createGalaxyCore() {
 
-        Random random = new Random(GALAXY_SEED ^ 0x2AF41BCDL);
+        Random random = new Random(galaxyCoreSeed);
 
         BufferBuilder builder = Tesselator.getInstance().begin(
                 VertexFormat.Mode.QUADS,
@@ -640,13 +758,13 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
             /*
              * 只在銀心附近生成
              */
-            double longitude = GALAXY_CORE_LONGITUDE + random.nextGaussian() * 0.18D;
+            double longitude = galaxyCoreLongitude + random.nextGaussian() * 0.18D;
             double latitude = random.nextGaussian() * 0.10D;
 
             Vector3f direction = sphericalDirection(longitude, latitude);
 
-            direction.rotateX((float) Math.toRadians(28.0D));
-            direction.rotateZ((float) Math.toRadians(-17.0D));
+            direction.rotateX(galaxyRotationX);
+            direction.rotateZ(galaxyRotationZ);
 
             /*
              * 大型柔光團
@@ -680,6 +798,159 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
         galaxyCoreBuffer.upload(builder.buildOrThrow());
         VertexBuffer.unbind();
     }
+    /**
+     * 建立這個世界專屬的銀河構圖。
+     *
+     * galaxyRotationX：決定銀河斜切天空的角度。
+     * galaxyRotationZ：給不同世界額外的平面旋轉。
+     * galaxyCoreLongitude：不是任意取值，而是挑選一個旋轉後
+     * Y 足夠高的位置，確保銀心出現在天空而不是玩家腳下的虛空。
+     */
+    private static void createWorldLayout(long layoutSeed) {
+
+        Random random = new Random(layoutSeed);
+
+        galaxyRotationX = (float) Math.toRadians(
+                38.0D + random.nextDouble() * 27.0D
+        );
+
+        galaxyRotationZ = (float) Math.toRadians(
+                -18.0D + random.nextDouble() * 36.0D
+        );
+
+        galaxyCoreLongitude = chooseSkyCoreLongitude(random);
+    }
+
+    /**
+     * 嘗試找出一個旋轉後位於上方天空的銀心位置。
+     * y >= 0.48 代表銀心至少明顯高於地平線。
+     */
+    private static double chooseSkyCoreLongitude(Random random) {
+
+        double bestLongitude = -Math.PI / 2.0D;
+        float bestY = -1.0F;
+
+        for (int i = 0; i < 48; i++) {
+            double longitude = random.nextDouble() * Math.PI * 2.0D;
+
+            Vector3f direction = sphericalDirection(longitude, 0.0D);
+            direction.rotateX(galaxyRotationX);
+            direction.rotateZ(galaxyRotationZ);
+
+            if (direction.y > bestY) {
+                bestY = direction.y;
+                bestLongitude = longitude;
+            }
+
+            if (direction.y >= 0.48F) {
+                return longitude;
+            }
+        }
+
+        return bestLongitude;
+    }
+
+    /**
+     * 不同世界的恆星光譜比例不同，但差異控制在合理範圍，
+     * 避免某些世界幾乎只剩單一顏色。
+     */
+    private static void createStarColorProfile(long colorSeed) {
+
+        Random random = new Random(colorSeed);
+
+        float whiteWeight = 0.54F + random.nextFloat() * 0.16F;
+        float blueWeight = 0.13F + random.nextFloat() * 0.09F;
+        float warmWeight = 0.08F + random.nextFloat() * 0.07F;
+
+        starWhiteThreshold = whiteWeight;
+        starBlueThreshold = Math.min(0.90F, starWhiteThreshold + blueWeight);
+        starWarmThreshold = Math.min(0.97F, starBlueThreshold + warmWeight);
+    }
+
+    /**
+     * 產生世界專屬的深藍背景。
+     * 所有結果仍維持「深藍宇宙」主題，只在藍度、青度與地平線亮度上變化。
+     */
+    private static void createBackgroundPalette(long seed) {
+
+        Random random = new Random(seed);
+
+        int blueShift = random.nextInt(9);
+        int greenShift = random.nextInt(5);
+        int redShift = random.nextInt(3);
+        int horizonBoost = 8 + random.nextInt(11);
+
+        zenithColor = argb(
+                255,
+                2 + redShift,
+                7 + greenShift,
+                22 + blueShift
+        );
+
+        upperColor = argb(
+                255,
+                3 + redShift,
+                9 + greenShift,
+                28 + blueShift
+        );
+
+        horizonColor = argb(
+                255,
+                5 + redShift,
+                13 + greenShift,
+                34 + blueShift + horizonBoost
+        );
+
+        nadirColor = argb(
+                255,
+                2 + redShift,
+                6 + greenShift,
+                18 + blueShift
+        );
+    }
+
+    /**
+     * SplitMix64 finalizer。相近的 world seed 也會得到完全不同的天空 seed。
+     */
+    public static long mixSeed(long seed, long salt) {
+
+        long z = seed + salt;
+        z = (z ^ (z >>> 30)) * 0xBF58476D1CE4E5B9L;
+        z = (z ^ (z >>> 27)) * 0x94D049BB133111EBL;
+        return z ^ (z >>> 31);
+    }
+
+    /**
+     * 世界切換時釋放上一個世界的 GPU buffer。
+     */
+    private static void destroyBuffers() {
+
+        if (backgroundBuffer != null) {
+            backgroundBuffer.close();
+            backgroundBuffer = null;
+        }
+
+        if (starBuffer != null) {
+            starBuffer.close();
+            starBuffer = null;
+        }
+
+        if (galaxyBuffer != null) {
+            galaxyBuffer.close();
+            galaxyBuffer = null;
+        }
+
+        if (galaxyCloudBuffer != null) {
+            galaxyCloudBuffer.close();
+            galaxyCloudBuffer = null;
+        }
+
+        if (galaxyCoreBuffer != null) {
+            galaxyCoreBuffer.close();
+            galaxyCoreBuffer = null;
+        }
+    }
+
     private static double angularDistance(double a, double b) {
 
         double d = Math.abs(a - b) % (Math.PI * 2.0D);
@@ -925,7 +1196,7 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
          * 8% 紫白
          */
 
-        if (selector < 0.65F) {
+        if (selector < starWhiteThreshold) {
 
             return argb(
                     255,
@@ -934,7 +1205,7 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
                     brightness
             );
 
-        } else if (selector < 0.82F) {
+        } else if (selector < starBlueThreshold) {
 
             return argb(
                     255,
@@ -949,7 +1220,7 @@ public class BeyondEndDimensionEffects  extends DimensionSpecialEffects {
                     brightness
             );
 
-        } else if (selector < 0.92F) {
+        } else if (selector < starWarmThreshold) {
 
             return argb(
                     255,

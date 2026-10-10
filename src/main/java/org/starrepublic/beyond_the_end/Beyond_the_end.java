@@ -33,6 +33,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.starrepublic.beyond_the_end.Events.EndBarrierEvents;
 import org.starrepublic.beyond_the_end.Events.EndBarrierProgressEvents;
+import org.starrepublic.beyond_the_end.Events.EndSkySyncEvents;
 import org.starrepublic.beyond_the_end.Events.ServerConfigEvents;
 import org.starrepublic.beyond_the_end.Register.CommandRegistry;
 import org.starrepublic.beyond_the_end.Register.FeatureRegister;
@@ -60,8 +61,13 @@ public class Beyond_the_end {
             NeoForge.EVENT_BUS.register(EndBarrierEvents.class);
             NeoForge.EVENT_BUS.register(CommandRegistry.class);
             NeoForge.EVENT_BUS.register(EndBarrierProgressEvents.class);
-            modEventBus.register(PayloadRegistry.class);
             FeatureRegister.register( modEventBus );
+            modEventBus.addListener(
+                    PayloadRegistry::registerPayloads
+            );
+            NeoForge.EVENT_BUS.addListener(
+                    EndSkySyncEvents::onPlayerLoggedIn
+            );
 
         }
 
