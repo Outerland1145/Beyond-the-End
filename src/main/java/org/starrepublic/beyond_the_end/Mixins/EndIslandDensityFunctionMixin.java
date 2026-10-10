@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.starrepublic.beyond_the_end.World.worldgen.EndTerrainController;
+import org.starrepublic.beyond_the_end.World.worldgen.feature.NestIslandTerrainGenerator;
 
 @Mixin(
         targets =
@@ -212,9 +213,19 @@ public abstract class EndIslandDensityFunctionMixin {
                                 .getVoidRadius()
         ) {
 
+            double nestDensity =
+                    NestIslandTerrainGenerator.sampleDensity(
+                            x,
+                            z,
+                            beyondTheEnd$seed,
+                            EndTerrainController.getVoidRadius()
+                    );
+
             cir.setReturnValue(
-                    EndTerrainController
-                            .VOID_DENSITY
+                    Math.max(
+                            EndTerrainController.VOID_DENSITY,
+                            nestDensity
+                    )
             );
 
             return;
