@@ -31,7 +31,7 @@ public final class NestIslandTerrainGenerator {
      */
     private static final double MIN_RADIUS = 120.0D;
     private static final double MAX_RADIUS = 280.0D;
-    public static final double MIN_CENTER_DISTANCE = 50_000.0D;
+    public static final double MIN_CENTER_DISTANCE = EndTerrainController.getVoidRadius()+30_000D;
     public static final double VOID_MARGIN = 32.0D;
     public static final long IegalRadius = 20_000L;
 
@@ -53,7 +53,11 @@ public final class NestIslandTerrainGenerator {
 
     private NestIslandTerrainGenerator() {
     }
+    public static double getMinCenterDistance() {
 
+        return EndTerrainController.getVoidRadius()
+                + 30_000D;
+    }
 
     /*
      * ============================================================
@@ -76,7 +80,6 @@ public final class NestIslandTerrainGenerator {
             IslandInfo island,
             double voidRadius
     ) {
-
         double centerX =
                 island.centerX();
 
@@ -101,7 +104,7 @@ public final class NestIslandTerrainGenerator {
         if (
                 centerDistance
                         <
-                        MIN_CENTER_DISTANCE
+                        getMinCenterDistance()
         ) {
 
             return false;
