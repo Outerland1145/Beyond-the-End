@@ -23,11 +23,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.starrepublic.beyond_the_end.World.worldgen.EndBiomeController;
 import org.starrepublic.beyond_the_end.World.worldgen.EndTerrainController;
 import org.starrepublic.beyond_the_end.World.worldgen.biome.VoidBiome;
+import org.starrepublic.beyond_the_end.World.worldgen.biomedefinition.EndBiomeDataCache;
 import org.starrepublic.beyond_the_end.configs.BTEConfigs;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Mixin(TheEndBiomeSource.class)
 public abstract class TheEndBiomeSourceMixin {
@@ -37,6 +39,32 @@ public abstract class TheEndBiomeSourceMixin {
      * Biome control
      * ============================================================
      */
+    @Inject(
+            method = "collectPossibleBiomes",
+            at = @At("RETURN"),
+            cancellable = true
+    )
+    private void beyondTheEnd$addDatapackPossibleBiomes(
+            CallbackInfoReturnable<Stream<Holder<Biome>>> cir
+    ) {
+
+        Stream<Holder<Biome>> original =
+                cir.getReturnValue();
+
+        Stream<Holder<Biome>> custom =
+                EndBiomeDataCache.entries()
+                        .stream()
+                        .map(
+                                EndBiomeDataCache.Entry::biome
+                        );
+
+        cir.setReturnValue(
+                Stream.concat(
+                        original,
+                        custom
+                ).distinct()
+        );
+    }
 
     @Inject(
             method = "getNoiseBiome",
@@ -99,6 +127,20 @@ public abstract class TheEndBiomeSourceMixin {
                                 .getNormalRadius()
         ) {
 
+            Holder<Biome> datapackBiome =
+                    beyondTheEnd$pickDatapackBiome(
+                            blockX,
+                            blockZ,
+                            false
+                    );
+
+            if (datapackBiome != null) {
+
+                cir.setReturnValue(
+                        datapackBiome
+                );
+            }
+
             return;
         }
 
@@ -137,6 +179,23 @@ public abstract class TheEndBiomeSourceMixin {
          * ========================================================
          */
 
+        Holder<Biome> datapackBiome =
+                beyondTheEnd$pickDatapackBiome(
+                        blockX,
+                        blockZ,
+                        true
+                );
+
+        if (datapackBiome != null) {
+
+            cir.setReturnValue(
+                    datapackBiome
+            );
+
+            return;
+        }
+
+
         Holder<Biome> originalBiome =
                 cir.getReturnValue();
 
@@ -154,17 +213,9 @@ public abstract class TheEndBiomeSourceMixin {
             return;
         }
 
-        /*
-         * 否則取得配置中的合法 biome。
-         */
         List<Holder<Biome>> allowed =
                 beyondTheEnd$getAllowedBiomes();
 
-        /*
-         * 如果配置全部無效：
-         *
-         * 強制 fallback。
-         */
         if (allowed.isEmpty()) {
 
             Holder<Biome> fallback =
@@ -182,9 +233,7 @@ public abstract class TheEndBiomeSourceMixin {
             return;
         }
 
-        /*
-         * 穩定地根據座標選 biome。
-         */
+
         int index =
                 beyondTheEnd$selectBiome(
                         blockX,
@@ -327,6 +376,139 @@ public abstract class TheEndBiomeSourceMixin {
         return Math.floorMod(
                 hash,
                 count
+        );
+    }
+    @Unique
+    private Holder<Biome> beyondTheEnd$pickDatapackBiome(
+            int x,
+            int z,
+            boolean fractured
+    ) {
+
+        List<EndBiomeDataCache.Entry> entries =
+                EndBiomeDataCache.entries();
+
+        if (entries.isEmpty()) {
+            return null;
+        }
+
+
+        double roll =
+                beyondTheEnd$biomeRoll(
+                        x,
+                        z
+                );
+
+
+        double accumulated =
+                0.0D;
+
+
+        for (
+                EndBiomeDataCache.Entry entry :
+                entries
+        ) {
+
+            /*
+             * Fractured：
+             *
+             * JSON 裡有還不夠，
+             * config whitelist 也必須允許。
+             */
+            if (
+                    fractured
+                            &&
+                            !beyondTheEnd$isWhitelisted(
+                                    entry.biome()
+                            )
+            ) {
+
+                continue;
+            }
+
+
+            accumulated +=
+                    entry.chance();
+
+
+            if (
+                    roll
+                            <
+                            accumulated
+            ) {
+
+                return entry.biome();
+            }
+        }
+
+
+        /*
+         * 沒有任何 datapack biome 命中。
+         *
+         * 回到原本 biome 生成。
+         */
+        return null;
+    }
+    @Unique
+    private static double beyondTheEnd$biomeRoll(
+            int x,
+            int z
+    ) {
+
+        int regionX =
+                Math.floorDiv(
+                        x,
+                        256
+                );
+
+        int regionZ =
+                Math.floorDiv(
+                        z,
+                        256
+                );
+
+
+        long hash =
+                (long) regionX
+                        *
+                        341873128712L;
+
+        hash ^=
+                (long) regionZ
+                        *
+                        132897987541L;
+
+
+        /*
+         * 跟原本 fallback 選擇使用不同 salt，
+         * 避免兩個 random 完全相同。
+         */
+        hash ^=
+                0x6A09E667F3BCC909L;
+
+
+        hash ^= hash >>> 30;
+
+        hash *=
+                0xBF58476D1CE4E5B9L;
+
+        hash ^= hash >>> 27;
+
+        hash *=
+                0x94D049BB133111EBL;
+
+        hash ^= hash >>> 31;
+
+
+        /*
+         * 轉成：
+         *
+         * 0.0 <= result < 1.0
+         */
+        return (
+                (hash >>> 11)
+                        *
+                        0x1.0p-53
         );
     }
 }

@@ -12,7 +12,8 @@
       "EndIslandDensityFunctionMixin",
       "EndIslandFeatureMixin",
       "TheEndBiomeSourceMixin",
-      "EndPortalBlockMixin"
+      "EndPortalBlockMixin",
+      "NoiseBasedChunkGeneratorMixin"
 
   ],
   "client": [

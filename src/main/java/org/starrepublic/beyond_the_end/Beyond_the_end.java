@@ -31,14 +31,10 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
-import org.starrepublic.beyond_the_end.Events.EndBarrierEvents;
-import org.starrepublic.beyond_the_end.Events.EndBarrierProgressEvents;
-import org.starrepublic.beyond_the_end.Events.EndSkySyncEvents;
-import org.starrepublic.beyond_the_end.Events.ServerConfigEvents;
-import org.starrepublic.beyond_the_end.Register.CommandRegistry;
-import org.starrepublic.beyond_the_end.Register.FeatureRegister;
-import org.starrepublic.beyond_the_end.Register.PayloadRegistry;
-import org.starrepublic.beyond_the_end.Register.TotalRegistries;
+import org.starrepublic.beyond_the_end.Events.*;
+import org.starrepublic.beyond_the_end.Register.*;
+import org.starrepublic.beyond_the_end.World.worldgen.biomedefinition.EndBiomeDefinition;
+import org.starrepublic.beyond_the_end.World.worldgen.biomedefinition.EndBiomeDefinitionLoader;
 import org.starrepublic.beyond_the_end.configs.BTEConfigs;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
@@ -59,6 +55,7 @@ public class Beyond_the_end {
             TotalRegistries.register(modEventBus);
             NeoForge.EVENT_BUS.register(ServerConfigEvents.class);
             NeoForge.EVENT_BUS.register(EndBarrierEvents.class);
+            NeoForge.EVENT_BUS.register(BTEDataReloadEvents.class);
             NeoForge.EVENT_BUS.register(CommandRegistry.class);
             NeoForge.EVENT_BUS.register(EndBarrierProgressEvents.class);
             FeatureRegister.register( modEventBus );
