@@ -10,7 +10,8 @@
       "CrystalItemMixin",
       "accessor.EndSpawnAccessor",
       "EndIslandDensityFunctionMixin",
-      "EndIslandFeatureMixin"
+      "EndIslandFeatureMixin",
+      "TheEndBiomeSourceMixin"
 
   ],
   "client": [

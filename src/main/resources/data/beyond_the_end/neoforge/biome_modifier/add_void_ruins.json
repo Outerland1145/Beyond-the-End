@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_features",
-  "biomes": "#c:is_end",
+  "biomes": "beyond_the_end:the_void",
   "features": "beyond_the_end:void_ruin",
   "step": "surface_structures"
 }

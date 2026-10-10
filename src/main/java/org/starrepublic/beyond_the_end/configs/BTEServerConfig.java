@@ -1,6 +1,9 @@
 package org.starrepublic.beyond_the_end.configs;
 
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import java.util.List;
 
 public class BTEServerConfig {
     public final ModConfigSpec.BooleanValue enableEndBarrier;
@@ -11,6 +14,8 @@ public class BTEServerConfig {
     public final ModConfigSpec.IntValue barrierRadius;
 
     public final ModConfigSpec.BooleanValue useoriginalsetting;
+
+    public final ModConfigSpec.ConfigValue<List<? extends String>>fracturedBiomeWhitelist;
 
     public final ModConfigSpec.IntValue EndSpawnPointX;
     public final ModConfigSpec.IntValue EndSpawnPointY;
@@ -147,6 +152,46 @@ public class BTEServerConfig {
                                 10_000,
                                 Integer.MAX_VALUE
                         );
+        fracturedBiomeWhitelist =
+                builder
+                        .comment(
+                                "Biomes allowed to generate inside the fractured End region.",
+                                "",
+                                "Biome IDs must use namespace:path format.",
+                                "",
+                                "Default:",
+                                "- minecraft:end_barrens",
+                                "- minecraft:small_end_islands",
+                                "",
+                                "Modded biomes can also be added, for example:",
+                                "\"some_end_mod:crystal_wastes\"",
+                                "",
+                                "Biomes not listed here will be replaced while inside the fractured region."
+                        )
+                        .worldRestart()
+                        .defineList(
+                                "fractured_biome_whitelist",
+
+                                List.of(
+                                        "minecraft:end_barrens",
+                                        "minecraft:small_end_islands"
+                                ),
+
+                                () ->
+                                        "minecraft:end_barrens",
+
+                                value -> {
+
+                                    if (!(value instanceof String string)) {
+                                        return false;
+                                    }
+
+                                    return ResourceLocation
+                                            .tryParse(string)
+                                            != null;
+                                }
+                        );
+
         builder.pop();
     }
 }
