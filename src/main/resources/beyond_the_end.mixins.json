@@ -14,7 +14,9 @@
       "TheEndBiomeSourceMixin",
       "EndPortalBlockMixin",
       "NoiseBasedChunkGeneratorMixin",
-      "ChunkGeneratorMixin"
+      "ChunkGeneratorMixin",
+      "EndCityStructureMixin",
+      "LocateCommandMixin"
 
   ],
   "client": [

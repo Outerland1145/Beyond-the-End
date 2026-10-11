@@ -8,5 +8,6 @@
   "block.beyond_the_end.end_anchor": "錨點方塊",
   "message.beyond_the_end.anchor_set": "錨定位置已設置",
   "message.beyond_the_end.anchor_lost": "錨定點已遺失",
-  "message.beyond_the_end.anchor_blocked": "錨定點遭到阻擋"
+  "message.beyond_the_end.anchor_blocked": "錨定點遭到阻擋",
+  "commands.beyond_the_end.end_city_disabled":"原版終界城生成已遭到禁用，請通過配置文件重新開啟或使用/locate structure beyond_the_end:new_end_city來尋找"
 }

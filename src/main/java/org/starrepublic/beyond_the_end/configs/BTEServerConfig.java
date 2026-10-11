@@ -8,6 +8,7 @@ import java.util.List;
 public class BTEServerConfig {
     public final ModConfigSpec.BooleanValue enableEndBarrier;
     public final ModConfigSpec.BooleanValue enableCustomEndTerrain;
+    public final ModConfigSpec.BooleanValue enablevanillaendcity;
 
     public final ModConfigSpec.IntValue normalEndRadius;
 
@@ -28,7 +29,7 @@ public class BTEServerConfig {
 
     public BTEServerConfig(ModConfigSpec.Builder builder) {
 
-        builder.push("end_barrier");
+        builder.push("Beyond End Main Island Barrier");
 
         enableEndBarrier = builder
                 .comment(
@@ -120,6 +121,16 @@ public class BTEServerConfig {
                 );
         builder.pop();
         builder.push("Beyond End Terrain Generation");
+        enablevanillaendcity =
+                builder
+                        .comment(
+                                "Enable Vanilla End City generation."
+                        )
+                        .worldRestart()
+                        .define(
+                                "enablevanillaendcity",
+                                false
+                        );
         enableCustomEndTerrain =
                 builder
                         .comment(
