@@ -100,22 +100,57 @@ public abstract class EndPortalBlockMixin {
                     .getBlockState(anchorPos)
                     .is(BlockRegister.END_ANCHOR_BLOCK.get())) {
 
-                /*
-                 * 錨定方塊已經不存在。
-                 *
-                 * 清除玩家的錨定資料。
-                 */
                 player.setData(
                         DataRegister.END_ANCHOR.get(),
                         EndAnchorData.EMPTY
                 );
 
-                /*
-                 * 通知玩家。
-                 */
                 player.displayClientMessage(
                         Component.translatable(
                                 "message.beyond_the_end.anchor_lost"
+                        ),
+                        true
+                );
+
+                /*
+                 * 交還原版：
+                 * -> 黑曜石平台
+                 */
+                return;
+            }
+            BlockPos firstAbove =
+                    anchorPos.above();
+
+            BlockPos secondAbove =
+                    anchorPos.above(2);
+
+            boolean firstBlocked =
+                    !endLevel
+                            .getBlockState(firstAbove)
+                            .isAir();
+
+            boolean secondBlocked =
+                    !endLevel
+                            .getBlockState(secondAbove)
+                            .isAir();
+
+
+            /*
+             * 依照目前的設計：
+             *
+             * 上方兩格「都」被填滿
+             * -> 錨點失效。
+             */
+            if (firstBlocked || secondBlocked) {
+
+                player.setData(
+                        DataRegister.END_ANCHOR.get(),
+                        EndAnchorData.EMPTY
+                );
+
+                player.displayClientMessage(
+                        Component.translatable(
+                                "message.beyond_the_end.anchor_blocked"
                         ),
                         true
                 );

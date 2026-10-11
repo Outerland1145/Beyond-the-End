@@ -28,27 +28,80 @@ public class EndAnchorBlock extends Block {
             Player player
     ) {
 
+        /*
+         * 客戶端不實際處理。
+         */
         if (level.isClientSide) {
             return;
         }
 
+
+        /*
+         * ==============================
+         * 非終界使用
+         * ==============================
+         *
+         * 與床 / 重生錨類似：
+         * 直接爆炸。
+         */
+        if (level.dimension() != Level.END) {
+
+            /*
+             * 先移除錨定方塊。
+             *
+             * 這樣即使未來你把錨定方塊設成
+             * 高爆炸抗性，它也不會在爆炸後留下。
+             */
+            level.removeBlock(
+                    pos,
+                    false
+            );
+
+
+            /*
+             * 使用原版「錯誤重生點爆炸」
+             * DamageSource。
+             */
+            level.explode(
+                    null,
+
+                    level.damageSources()
+                            .badRespawnPointExplosion(
+                                    pos.getCenter()
+                            ),
+
+                    null,
+
+                    pos.getX() + 0.5D,
+                    pos.getY() + 0.5D,
+                    pos.getZ() + 0.5D,
+
+                    /*
+                     * 與床類型爆炸相近的強度。
+                     */
+                    5.0F,
+
+                    /*
+                     * 是否產生火焰。
+                     */
+                    true,
+
+                    Level.ExplosionInteraction.BLOCK
+            );
+
+            return;
+        }
+
+
+        /*
+         * ==============================
+         * 終界正常設定錨點
+         * ==============================
+         */
         if (!(player instanceof ServerPlayer serverPlayer)) {
             return;
         }
 
-        /*
-         * 錨定方塊只允許在終界設定。
-         */
-        if (!level.dimension().equals(Level.END)) {
-            return;
-        }
-
-        /*
-         * 注意：
-         *
-         * 資料是寫進「這個玩家」，
-         * 不是寫進方塊。
-         */
         serverPlayer.setData(
                 DataRegister.END_ANCHOR.get(),
                 EndAnchorData.create(pos)
