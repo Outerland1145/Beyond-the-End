@@ -10,6 +10,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Blocks.BarrierNodeBlock;
 import org.starrepublic.beyond_the_end.Blocks.DecorativeEndGatewayBlock;
+import org.starrepublic.beyond_the_end.Blocks.EndAnchorBlock;
 import org.starrepublic.beyond_the_end.Blocks.EndNetherPortalBlock;
 
 public class BlockRegister {
@@ -43,6 +44,15 @@ public class BlockRegister {
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.COLOR_PURPLE)
                             .strength(-1.0f, 5000.0F)
+                            .requiresCorrectToolForDrops()
+            );
+    public static final DeferredBlock<EndAnchorBlock> END_ANCHOR_BLOCK =
+            BLOCKS.registerBlock(
+                    "end_anchor",
+                    EndAnchorBlock::new,
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_PURPLE)
+                            .strength(10.0f, 1200.0F)
                             .requiresCorrectToolForDrops()
             );
     public static final DeferredBlock<EndNetherPortalBlock> END_NETHER_PORTAL =

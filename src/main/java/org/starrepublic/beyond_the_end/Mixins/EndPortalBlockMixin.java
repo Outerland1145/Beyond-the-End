@@ -1,7 +1,9 @@
 package org.starrepublic.beyond_the_end.Mixins;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -14,6 +16,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.starrepublic.beyond_the_end.Data.EndAnchorData;
+import org.starrepublic.beyond_the_end.Register.BlockRegister;
+import org.starrepublic.beyond_the_end.Register.DataRegister;
 import org.starrepublic.beyond_the_end.configs.BTEConfigs;
 
 import javax.annotation.Nullable;
@@ -41,6 +46,115 @@ public abstract class EndPortalBlockMixin {
          * 其他情況全部交回原版。
          */
         if (currentLevel.dimension() != Level.END) {
+
+            /*
+             * 錨定只對玩家生效。
+             *
+             * 其他實體全部交回原版。
+             */
+            if (!(entity instanceof ServerPlayer player)) {
+                return;
+            }
+
+            /*
+             * 取得終界。
+             */
+            ServerLevel endLevel =
+                    currentLevel.getServer().getLevel(Level.END);
+
+            if (endLevel == null) {
+                return;
+            }
+
+            /*
+             * 取得玩家自己的錨定資料。
+             */
+            EndAnchorData anchorData =
+                    player.getData(
+                            DataRegister.END_ANCHOR.get()
+                    );
+
+            /*
+             * 玩家沒有設定錨定位置。
+             *
+             * 不 setReturnValue，
+             * 直接交給原版。
+             */
+            if (!anchorData.active()) {
+                return;
+            }
+
+            BlockPos anchorPos =
+                    anchorData.getBlockPos();
+
+            /*
+             * 錨點可能位於未載入區塊，
+             * 先載入該 Chunk。
+             */
+            endLevel.getChunkAt(anchorPos);
+
+            /*
+             * 檢查原位置是否仍然是錨定方塊。
+             */
+            if (!endLevel
+                    .getBlockState(anchorPos)
+                    .is(BlockRegister.END_ANCHOR_BLOCK.get())) {
+
+                /*
+                 * 錨定方塊已經不存在。
+                 *
+                 * 清除玩家的錨定資料。
+                 */
+                player.setData(
+                        DataRegister.END_ANCHOR.get(),
+                        EndAnchorData.EMPTY
+                );
+
+                /*
+                 * 通知玩家。
+                 */
+                player.displayClientMessage(
+                        Component.translatable(
+                                "message.beyond_the_end.anchor_lost"
+                        ),
+                        true
+                );
+
+                /*
+                 * 不覆寫 DimensionTransition。
+                 *
+                 * 原版接手：
+                 * -> 黑曜石平台。
+                 */
+                return;
+            }
+
+            /*
+             * 錨定方塊仍然存在。
+             *
+             * 玩家出現在錨定方塊上方一格。
+             */
+            BlockPos targetPos =
+                    anchorPos.above();
+
+            Vec3 target =
+                    Vec3.atBottomCenterOf(targetPos);
+
+            /*
+             * 覆寫原版進入終界的位置。
+             */
+            cir.setReturnValue(
+                    new DimensionTransition(
+                            endLevel,
+                            target,
+                            Vec3.ZERO,
+                            entity.getYRot(),
+                            entity.getXRot(),
+                            false,
+                            DimensionTransition.PLACE_PORTAL_TICKET
+                    )
+            );
+
             return;
         }
 

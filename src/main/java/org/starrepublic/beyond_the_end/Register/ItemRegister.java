@@ -61,6 +61,15 @@ public class ItemRegister {
 
             )
     );
+    public static final DeferredItem<Item>
+            END_ANCHOR_BLOCK = ITEMS.register(
+            "end_anchor",
+            () -> new BlockItem(
+                    BlockRegister.END_ANCHOR_BLOCK.get(),
+                    new Item.Properties()
+
+            )
+    );
 
 
     public static void register(IEventBus eventBus) {

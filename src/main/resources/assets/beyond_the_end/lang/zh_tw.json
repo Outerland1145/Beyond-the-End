@@ -4,5 +4,8 @@
   "itemGroup.beyond_the_end.beyond_the_end_tool": "終界之後 工具",
   "block.beyond_the_end.decorative_end_gateway": "星空方塊",
   "block.beyond_the_end.barrier_node_block": "結界節點",
-  "block.beyond_the_end.altar_stone": "祭壇石"
+  "block.beyond_the_end.altar_stone": "祭壇石",
+  "block.beyond_the_end.end_anchor": "錨點方塊",
+  "message.beyond_the_end.anchor_set": "錨定位置已設置",
+  "message.beyond_the_end.anchor_lost": "錨定點已遺失"
 }

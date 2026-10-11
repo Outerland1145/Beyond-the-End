@@ -46,6 +46,7 @@ public class Blocks {
                                 output.accept( ItemRegister.END_GATEWAY_ITEM.get());
                                 output.accept( ItemRegister.AltarStone.get());
                                 output.accept( ItemRegister.BarrierNodeBlock.get());
+                                output.accept( ItemRegister.END_ANCHOR_BLOCK.get());
 
                             })
 

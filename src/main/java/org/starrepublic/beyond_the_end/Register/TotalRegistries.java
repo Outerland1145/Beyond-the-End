@@ -23,5 +23,6 @@ public final class TotalRegistries {
         ItemRegister.register(eventBus);
         /*以下為創造模式面板*/
         Blocks.register(eventBus);
+        DataRegister.register(eventBus);
     }
 }
