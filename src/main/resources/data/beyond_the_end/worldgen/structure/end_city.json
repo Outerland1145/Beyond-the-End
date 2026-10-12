@@ -20,8 +20,34 @@
     "max_depth": 64,
     "min_pieces": 1,
     "max_pieces": 160,
-    "attempts": 4
+    "attempts": 4,
+    "strict_requirements": false
   },
 
-  "requirements": []
+  "requirements": [
+    {
+      "component": "beyond_the_end:ship",
+      "min_count": 0,
+      "max_count": 1,
+      "min_depth": 0,
+      "max_depth": 64,
+      "priority": 100
+    },
+    {
+      "component": "beyond_the_end:bridge",
+      "min_count": 3,
+      "max_count": 16,
+      "min_depth": 0,
+      "max_depth": 64,
+      "priority": 90
+    },
+    {
+      "component": "beyond_the_end:fat_tower",
+      "min_count": 1,
+      "max_count": 4,
+      "min_depth": 0,
+      "max_depth": 64,
+      "priority": 100
+    }
+  ]
 }

@@ -92,21 +92,8 @@ public final class BTEJigsawAssembler {
         RandomState randomState =
                 level.getLevel().getChunkSource().randomState();
 
-        // Fail fast if a mandatory logical component does not exist anywhere
-        // in the reachable template-pool graph. This prevents dozens of
-        // pointless rerolls when a JSON component id is mistyped.
-        Set<ResourceLocation> reachableComponents = collectReachableComponents(
-                startPool,
-                poolRegistry,
-                templateManager
-        );
-
-        for (BTEJigsawRules.Requirement requirement : requirements) {
-            if (requirement.minCount() > 0
-                    && !reachableComponents.contains(requirement.component())) {
-                return Optional.empty();
-            }
-        }
+        AssemblyAttempt bestAttempt = null;
+        int bestScore = Integer.MIN_VALUE;
 
         for (int attempt = 0; attempt < layout.attempts(); attempt++) {
             RandomSource random = RandomSource.create(
@@ -139,18 +126,35 @@ public final class BTEJigsawAssembler {
 
             AssemblyAttempt result = attemptResult.get();
 
+            // A layout that is too small is not accepted, even in relaxed
+            // requirement mode. This keeps min_pieces meaningful.
             if (result.pieces().size() < layout.minPieces()) {
                 continue;
             }
 
-            if (!result.tracker().allRequirementsSatisfied()) {
-                continue;
+            if (result.tracker().allRequirementsSatisfied()) {
+                return Optional.of(
+                        new AssemblyResult(
+                                result.anchor(),
+                                List.copyOf(result.pieces())
+                        )
+                );
             }
 
+            // Keep the closest valid city instead of deleting the entire
+            // structure just because one logical component quota was missed.
+            int score = result.tracker().requirementScore();
+            if (score > bestScore) {
+                bestScore = score;
+                bestAttempt = result;
+            }
+        }
+
+        if (!layout.strictRequirements() && bestAttempt != null) {
             return Optional.of(
                     new AssemblyResult(
-                            result.anchor(),
-                            List.copyOf(result.pieces())
+                            bestAttempt.anchor(),
+                            List.copyOf(bestAttempt.pieces())
                     )
             );
         }
@@ -798,6 +802,32 @@ public final class BTEJigsawAssembler {
             return requirement == null
                     ? Integer.MIN_VALUE
                     : requirement.priority();
+        }
+
+        /**
+         * Higher is better. Required minimums dominate the score, then extra
+         * legal copies up to max_count add a small bonus. This is used only
+         * when strict_requirements=false and no attempt satisfies everything.
+         */
+        private int requirementScore() {
+            int score = 0;
+
+            for (BTEJigsawRules.Requirement requirement : requirements.values()) {
+                int count = counts.getOrDefault(requirement.component(), 0);
+                int satisfiedRequired = Math.min(count, requirement.minCount());
+                int missingRequired = Math.max(0, requirement.minCount() - count);
+
+                score += satisfiedRequired * 100_000;
+                score -= missingRequired * 100_000;
+
+                if (count >= requirement.minCount()) {
+                    score += Math.min(count, requirement.maxCount()) * 100;
+                }
+
+                score += requirement.priority();
+            }
+
+            return score;
         }
 
         private boolean allRequirementsSatisfied() {

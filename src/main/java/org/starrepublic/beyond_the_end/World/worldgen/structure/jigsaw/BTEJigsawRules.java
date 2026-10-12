@@ -25,7 +25,8 @@ public final class BTEJigsawRules {
             int maxDepth,
             int minPieces,
             int maxPieces,
-            int attempts
+            int attempts,
+            boolean strictRequirements
     ) {
 
         public static final Layout DEFAULT =
@@ -33,7 +34,8 @@ public final class BTEJigsawRules {
                         48,
                         20,
                         96,
-                        8
+                        8,
+                        false
                 );
 
         public static final Codec<Layout> CODEC =
@@ -65,7 +67,14 @@ public final class BTEJigsawRules {
                                         "attempts",
                                         DEFAULT.attempts()
                                 )
-                                .forGetter(Layout::attempts)
+                                .forGetter(Layout::attempts),
+
+                        Codec.BOOL
+                                .optionalFieldOf(
+                                        "strict_requirements",
+                                        DEFAULT.strictRequirements()
+                                )
+                                .forGetter(Layout::strictRequirements)
 
                 ).apply(instance, Layout::new));
 
@@ -83,6 +92,7 @@ public final class BTEJigsawRules {
             tag.putInt("MinPieces", minPieces);
             tag.putInt("MaxPieces", maxPieces);
             tag.putInt("Attempts", attempts);
+            tag.putBoolean("StrictRequirements", strictRequirements);
             return tag;
         }
 
@@ -103,11 +113,16 @@ public final class BTEJigsawRules {
                     ? tag.getInt("Attempts")
                     : DEFAULT.attempts();
 
+            boolean strictRequirements = tag.contains("StrictRequirements")
+                    ? tag.getBoolean("StrictRequirements")
+                    : DEFAULT.strictRequirements();
+
             return new Layout(
                     Math.max(1, maxDepth),
                     Math.max(1, minPieces),
                     Math.max(Math.max(1, minPieces), maxPieces),
-                    Math.max(1, attempts)
+                    Math.max(1, attempts),
+                    strictRequirements
             );
         }
     }

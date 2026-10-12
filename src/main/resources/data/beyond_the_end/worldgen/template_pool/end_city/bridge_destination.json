@@ -4,12 +4,13 @@
     {
       "weight": 1,
       "element": {
-        "element_type": "minecraft:single_pool_element",
+        "element_type": "beyond_the_end:component_single_pool_element",
         "location": "beyond_the_end:end_city/ship_branch",
         "processors": {
           "processors": []
         },
-        "projection": "rigid"
+        "projection": "rigid",
+        "component": "beyond_the_end:ship"
       }
     },
     {
