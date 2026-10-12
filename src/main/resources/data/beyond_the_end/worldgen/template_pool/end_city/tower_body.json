@@ -1,0 +1,51 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 3,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "beyond_the_end:end_city/tower_piece",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "beyond_the_end:component_single_pool_element",
+        "location": "beyond_the_end:end_city/tower_piece_one_to_bridge",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid",
+        "component": "beyond_the_end:bridge"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "beyond_the_end:component_single_pool_element",
+        "location": "beyond_the_end:end_city/tower_piece_two_to_bridge",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid",
+        "component": "beyond_the_end:bridge"
+      }
+    },
+    {
+      "weight": 3,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "beyond_the_end:end_city/tower_top",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      }
+    }
+  ]
+}

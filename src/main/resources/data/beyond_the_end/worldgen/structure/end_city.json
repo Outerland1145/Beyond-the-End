@@ -1,0 +1,27 @@
+{
+  "type": "beyond_the_end:controlled_jigsaw",
+
+  "biomes": "#minecraft:has_structure/end_city",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none",
+
+  "start_pool": "beyond_the_end:end_city/start",
+
+  "start_height": {
+    "absolute": 0
+  },
+
+  "project_start_to_heightmap": "WORLD_SURFACE_WG",
+
+  "max_distance_from_center": 384,
+
+  "layout": {
+    "max_depth": 64,
+    "min_pieces": 1,
+    "max_pieces": 160,
+    "attempts": 4
+  },
+
+  "requirements": []
+}

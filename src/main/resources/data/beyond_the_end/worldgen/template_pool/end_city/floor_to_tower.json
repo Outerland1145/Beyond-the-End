@@ -1,0 +1,28 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "beyond_the_end:end_city/fat_tower_base",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "beyond_the_end:component_single_pool_element",
+        "location": "beyond_the_end:end_city/tower_base",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid",
+        "component": "beyond_the_end:fat_tower"
+      }
+    }
+  ]
+}

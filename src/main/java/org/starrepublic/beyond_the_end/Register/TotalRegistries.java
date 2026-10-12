@@ -7,7 +7,10 @@ public final class TotalRegistries {
     private TotalRegistries() {}
 
     public static void register(IEventBus eventBus) {
-
+        DataRegister.register(eventBus);
+        //BTEStructureType.register(eventBus);
+        //BTEStructureLimiters.bootstrap();
+        JigsawRegister.register(eventBus);
         /*
          * 順序：
          *
@@ -23,6 +26,6 @@ public final class TotalRegistries {
         ItemRegister.register(eventBus);
         /*以下為創造模式面板*/
         Blocks.register(eventBus);
-        DataRegister.register(eventBus);
+
     }
 }
