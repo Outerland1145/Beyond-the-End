@@ -1,0 +1,14 @@
+{
+  "type": "neoforge:add_features",
+
+  "biomes": [
+    "minecraft:end_barrens",
+    "minecraft:end_highlands",
+    "minecraft:end_midlands",
+    "minecraft:small_end_islands"
+  ],
+
+  "features": "beyond_the_end:end_surface_vegetation",
+
+  "step": "local_modifications"
+}
