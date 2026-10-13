@@ -43,33 +43,29 @@ public class ItemRegister {
                             new Item.Properties()
                     )
             );
-    public static final DeferredItem<Item>
-            AltarStone = ITEMS.register(
-            "altar_stone",
-            () -> new BlockItem(
-                    BlockRegister.AltarStone.get(),
-                    new Item.Properties()
+    public static final DeferredItem<BlockItem>
+            AltarStone =  ITEMS.registerSimpleBlockItem(BlockRegister.AltarStone);
+    public static final DeferredItem<BlockItem>
+            BarrierNodeBlock = ITEMS.registerSimpleBlockItem(BlockRegister.BarrierNodeBlock);
+    public static final DeferredItem<BlockItem>
+            END_ANCHOR_BLOCK = ITEMS.registerSimpleBlockItem(BlockRegister.END_ANCHOR_BLOCK);
+    public static final DeferredItem<BlockItem> END_Short_Grass_Block =
+            ITEMS.registerSimpleBlockItem(BlockRegister.END_Short_Grass_Block);
 
-            )
-    );
-    public static final DeferredItem<Item>
-            BarrierNodeBlock = ITEMS.register(
-            "barrier_node_block",
-            () -> new BlockItem(
-                    BlockRegister.BarrierNodeBlock.get(),
-                    new Item.Properties()
+    public static final DeferredItem<BlockItem> END_Tall_Grass_Block =
+            ITEMS.registerSimpleBlockItem(BlockRegister.END_Tall_Grass_Block);
 
-            )
-    );
-    public static final DeferredItem<Item>
-            END_ANCHOR_BLOCK = ITEMS.register(
-            "end_anchor",
-            () -> new BlockItem(
-                    BlockRegister.END_ANCHOR_BLOCK.get(),
-                    new Item.Properties()
+    public static final DeferredItem<BlockItem> END_SAND =
+            ITEMS.registerSimpleBlockItem(BlockRegister.END_SAND);
 
-            )
-    );
+    public static final DeferredItem<BlockItem> END_CRYSTAL =
+            ITEMS.registerSimpleBlockItem(BlockRegister.END_CRYSTAL);
+
+    public static final DeferredItem<BlockItem> END_DRIPSTONE =
+            ITEMS.registerSimpleBlockItem(BlockRegister.END_DRIPSTONE);
+
+    public static final DeferredItem<BlockItem> Void_Block =
+            ITEMS.registerSimpleBlockItem(BlockRegister.Void_Block);
 
 
     public static void register(IEventBus eventBus) {

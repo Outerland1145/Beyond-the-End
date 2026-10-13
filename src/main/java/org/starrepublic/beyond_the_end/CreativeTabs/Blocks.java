@@ -47,6 +47,12 @@ public class Blocks {
                                 output.accept( ItemRegister.AltarStone.get());
                                 output.accept( ItemRegister.BarrierNodeBlock.get());
                                 output.accept( ItemRegister.END_ANCHOR_BLOCK.get());
+                                output.accept( ItemRegister.Void_Block.get());
+                                output.accept( ItemRegister.END_Short_Grass_Block.get());
+                                output.accept( ItemRegister.END_Tall_Grass_Block.get());
+                                output.accept( ItemRegister.END_DRIPSTONE.get());
+                                output.accept( ItemRegister.END_CRYSTAL.get());
+                                output.accept( ItemRegister.END_SAND.get());
 
                             })
 

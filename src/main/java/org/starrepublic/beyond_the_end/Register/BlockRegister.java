@@ -1,17 +1,15 @@
 package org.starrepublic.beyond_the_end.Register;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.util.ColorRGBA;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
-import org.starrepublic.beyond_the_end.Blocks.BarrierNodeBlock;
-import org.starrepublic.beyond_the_end.Blocks.DecorativeEndGatewayBlock;
-import org.starrepublic.beyond_the_end.Blocks.EndAnchorBlock;
-import org.starrepublic.beyond_the_end.Blocks.EndNetherPortalBlock;
+import org.starrepublic.beyond_the_end.Blocks.*;
 
 public class BlockRegister {
     private BlockRegister() {}
@@ -46,6 +44,85 @@ public class BlockRegister {
                             .strength(-1.0f, 5000.0F)
                             .requiresCorrectToolForDrops()
             );
+    public static final DeferredBlock<EndTallGrassBlock> END_Tall_Grass_Block =
+            BLOCKS.registerBlock(
+                    "end_tall_grass",
+                    EndTallGrassBlock::new,
+                    BlockBehaviour.Properties
+                            .ofFullCopy(Blocks.TALL_GRASS)
+                            .mapColor(MapColor.COLOR_PURPLE)
+                            .noCollission()
+                            .noOcclusion()
+            );
+    public static final DeferredBlock<EndShortGrassBlock> END_Short_Grass_Block =
+            BLOCKS.registerBlock(
+                    "end_short_grass",
+                    EndShortGrassBlock::new,
+                    BlockBehaviour.Properties
+                            .ofFullCopy(Blocks.SHORT_GRASS)
+                            .mapColor(MapColor.COLOR_PURPLE)
+                            .noCollission()
+                            .noOcclusion()
+            );
+
+    public static final DeferredBlock<VoidBlock> Void_Block =
+            BLOCKS.register(
+                    "void_block",
+                    () -> new VoidBlock(
+                            BlockBehaviour.Properties.of()
+                                    .mapColor(MapColor.COLOR_BLACK)
+                                    .strength(3.0F, 9.0F)
+                                    .sound(SoundType.DEEPSLATE)
+
+                                    .noCollission()
+                                    .noOcclusion()
+
+                                    .isSuffocating(
+                                            (state, level, pos) -> false
+                                    )
+
+                                    .isViewBlocking(
+                                            (state, level, pos) -> false
+                                    )
+
+                                    .isRedstoneConductor(
+                                            (state, level, pos) -> false
+                                    )
+                    )
+            );
+
+    public static final DeferredBlock<ColoredFallingBlock> END_SAND =
+            BLOCKS.register(
+                    "end_sand",
+                    () -> new ColoredFallingBlock(
+                            new ColorRGBA(0xD8D5A4),
+                            BlockBehaviour.Properties.of()
+                                    .mapColor(MapColor.SAND)
+                                    .strength(0.5F)
+                                    .sound(SoundType.SAND)
+                    )
+            );
+    public static final DeferredBlock<VoidCrystalBlock> END_CRYSTAL =
+            BLOCKS.register(
+                    "void_cluster",
+                    () -> new VoidCrystalBlock(
+                            7.0F,
+                            3.0F,
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(
+                                            Blocks.AMETHYST_CLUSTER
+                                    )
+                    )
+            );
+    public static final DeferredBlock<EndPointedDripstoneBlock> END_DRIPSTONE =
+            BLOCKS.register(
+                    "end_pointed_dripstone",
+                    () -> new EndPointedDripstoneBlock(
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(Blocks.POINTED_DRIPSTONE)
+                    )
+            );
+
     public static final DeferredBlock<EndAnchorBlock> END_ANCHOR_BLOCK =
             BLOCKS.registerBlock(
                     "end_anchor",

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "beyond_the_end:block/void_cluster",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "beyond_the_end:block/void_cluster",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "beyond_the_end:block/void_cluster",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "beyond_the_end:block/void_cluster",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "beyond_the_end:block/void_cluster"
+    },
+    "facing=west": {
+      "model": "beyond_the_end:block/void_cluster",
+      "x": 90,
+      "y": 270
+    }
+  }
+}
