@@ -88,6 +88,7 @@ public class BlockRegister {
                                     .isRedstoneConductor(
                                             (state, level, pos) -> false
                                     )
+                                    .requiresCorrectToolForDrops()
                     )
             );
 
@@ -112,6 +113,7 @@ public class BlockRegister {
                                     .ofFullCopy(
                                             Blocks.AMETHYST_CLUSTER
                                     )
+                                    .requiresCorrectToolForDrops()
                     )
             );
     public static final DeferredBlock<EndPointedDripstoneBlock> END_DRIPSTONE =
@@ -120,6 +122,7 @@ public class BlockRegister {
                     () -> new EndPointedDripstoneBlock(
                             BlockBehaviour.Properties
                                     .ofFullCopy(Blocks.POINTED_DRIPSTONE)
+                                    .requiresCorrectToolForDrops()
                     )
             );
 

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "beyond_the_end:void_block",
+    "beyond_the_end:end_pointed_dripstone",
+    "beyond_the_end:void_cluster"
+  ]
+}
