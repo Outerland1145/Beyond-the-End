@@ -12,9 +12,6 @@ import org.starrepublic.beyond_the_end.Register.RenderRegistry;
 public class Beyond_the_end_Client {
     public Beyond_the_end_Client(IEventBus modEventBus) {
         RenderRegistry.register(modEventBus);
-        modEventBus.addListener(
-                RenderRegistry::registerDimensionEffects
-        );
         NeoForge.EVENT_BUS.register(ClientEndEffectEvents.class);
         NeoForge.EVENT_BUS.addListener(
                 EndSkyClientEvents::onLoggingOut

@@ -58,13 +58,11 @@ public class Beyond_the_end {
             NeoForge.EVENT_BUS.register(BTEDataReloadEvents.class);
             NeoForge.EVENT_BUS.register(CommandRegistry.class);
             NeoForge.EVENT_BUS.register(EndBarrierProgressEvents.class);
+            NeoForge.EVENT_BUS.register(InteractionEvents.class);
             FeatureRegister.register( modEventBus );
-            modEventBus.addListener(
-                    PayloadRegistry::registerPayloads
-            );
-            NeoForge.EVENT_BUS.addListener(
-                    EndSkySyncEvents::onPlayerLoggedIn
-            );
+            modEventBus.addListener(BlockEntityEvents::addValidBlocks);
+            modEventBus.addListener(PayloadRegistry::registerPayloads);
+            NeoForge.EVENT_BUS.addListener(EndSkySyncEvents::onPlayerLoggedIn);
 
         }
 

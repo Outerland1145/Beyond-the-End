@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.blockentity.TheEndPortalRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.joml.Matrix4f;
-import org.starrepublic.beyond_the_end.Entitys.EndNetherPortalBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.EndNetherPortalBlockEntity;
 
 public class EndNetherPortalRenderer
         extends TheEndPortalRenderer<EndNetherPortalBlockEntity> {

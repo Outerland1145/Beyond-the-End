@@ -9,6 +9,7 @@ import org.starrepublic.beyond_the_end.Beyond_the_end;
 public class Tags {
     public static final TagKey<Block> END_CRYSTAL_PLACEABLE = blockTag("end_crystal_placeable");
     public static final TagKey<Block> END_PLANT_PLANTABLE = blockTag("end_plant_plantable");
+    public static final TagKey<Block> END_FIRE_BASE_BLOCKS = blockTag("end_fire_base_blocks");
     public static final TagKey<Block> CHORUS_PLANTABLE = blockTag("chorus_plantable");
 
     private static TagKey<Block> blockTag(String name) {

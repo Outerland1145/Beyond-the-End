@@ -1,0 +1,8 @@
+{
+  "render_type": "minecraft:cutout",
+  "parent": "minecraft:block/template_campfire",
+  "textures": {
+    "fire": "beyond_the_end:block/end_campfire_fire",
+    "lit_log": "beyond_the_end:block/end_campfire_log_lit"
+  }
+}

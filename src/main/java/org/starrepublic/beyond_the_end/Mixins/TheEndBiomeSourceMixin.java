@@ -6,6 +6,7 @@ import net.minecraft.core.QuartPos;
 import net.minecraft.resources.ResourceKey;
 
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.biome.TheEndBiomeSource;
 
@@ -207,24 +208,20 @@ public abstract class TheEndBiomeSourceMixin {
             Climate.Sampler sampler,
             CallbackInfoReturnable<Holder<Biome>> cir
     ) {
-
         /*
-         * 世界生成機制關閉時：
+         * 先保存原版 TheEndBiomeSource 的結果。
          *
-         * 完全不碰原版 biome。
+         * 這非常重要：
+         * 此時 cir.getReturnValue() 還是原版判定的 biome。
          */
-        if (
-                !EndTerrainController
-                        .isCustomTerrainEnabled()
-        ) {
-            return;
-        }
-
+        Holder<Biome> originalBiome =
+                cir.getReturnValue();
         /*
          * getNoiseBiome 收到的是 quart 座標。
          *
          * 1 quart = 4 blocks。
          */
+
         int blockX =
                 QuartPos.toBlock(
                         quartX
@@ -241,7 +238,6 @@ public abstract class TheEndBiomeSourceMixin {
                                 blockX,
                                 blockZ
                         );
-
         /*
          * 從目前世界的 Climate.Sampler 取得一個穩定的
          * seed-derived salt。
@@ -253,6 +249,38 @@ public abstract class TheEndBiomeSourceMixin {
                 beyondTheEnd$getWorldSeedSalt(
                         sampler
                 );
+
+        if (
+                !EndTerrainController
+                        .isCustomTerrainEnabled()
+        ) {
+
+            if (
+                    originalBiome.is(
+                            Biomes.THE_END
+                    )
+            ) {
+
+                return;
+            }
+
+            Holder<Biome> datapackBiome =
+                    beyondTheEnd$pickDatapackBiome(
+                            blockX,
+                            blockZ,
+                            false,
+                            worldSeedSalt
+                    );
+
+            if (datapackBiome != null) {
+
+                cir.setReturnValue(
+                        datapackBiome
+                );
+            }
+
+            return;
+        }
 
 
         /*
@@ -270,6 +298,14 @@ public abstract class TheEndBiomeSourceMixin {
                         EndTerrainController
                                 .getNormalRadius()
         ) {
+            if (
+                    originalBiome.is(
+                            Biomes.THE_END
+                    )
+            ) {
+
+                return;
+            }
 
             Holder<Biome> datapackBiome =
                     beyondTheEnd$pickDatapackBiome(
@@ -349,10 +385,6 @@ public abstract class TheEndBiomeSourceMixin {
 
             return;
         }
-
-
-        Holder<Biome> originalBiome =
-                cir.getReturnValue();
 
         /*
          * 原版計算出的 biome 本身就在白名單：

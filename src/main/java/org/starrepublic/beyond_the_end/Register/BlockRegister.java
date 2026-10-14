@@ -1,5 +1,6 @@
 package org.starrepublic.beyond_the_end.Register;
 
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -22,9 +23,10 @@ public class BlockRegister {
                     "decorative_end_gateway",
                     DecorativeEndGatewayBlock::new,
                     BlockBehaviour.Properties.of()
-                            .strength(3.0F, 1200.0F)
+                            .strength(10.0F, 20.0F)
                             .sound(SoundType.GLASS)
                             .lightLevel(state -> 15)
+                            .requiresCorrectToolForDrops()
             );
     public static final DeferredBlock<BarrierNodeBlock>
             BarrierNodeBlock =
@@ -36,13 +38,107 @@ public class BlockRegister {
                             .sound(SoundType.GLASS)
                             .lightLevel(state -> 15)
             );
+    public static final DeferredBlock<EndFireBlock>
+            EndFireBlock =
+            BLOCKS.registerBlock(
+                    "end_fire",
+                    EndFireBlock::new,
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_PURPLE)
+                            .replaceable()
+                            .noCollission()
+                            .instabreak()
+                            .lightLevel(state -> 15)
+                            .sound(SoundType.WOOL)
+                            .pushReaction(PushReaction.DESTROY)
+            );
+    public static final DeferredBlock<EndCampfireBlock>
+            END_CAMPFIRE =
+
+            BLOCKS.register(
+                    "end_campfire",
+                    () -> new EndCampfireBlock(
+                            true,
+                            1,
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(
+                                            Blocks.CAMPFIRE
+                                    )
+                    )
+            );
+    public static final DeferredBlock<LanternBlock>
+            END_LARTERN =
+            BLOCKS.registerBlock(
+                    "end_lantern",
+                    LanternBlock::new,
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .forceSolidOn()
+                            .requiresCorrectToolForDrops()
+                            .strength(3.5F)
+                            .sound(SoundType.LANTERN)
+                            .lightLevel(p_187433_ -> 15)
+                            .noOcclusion()
+                            .pushReaction(PushReaction.DESTROY)
+            );
+    public static final DeferredBlock<Block> END_TORCH =
+            BLOCKS.register(
+                    "end_torch",
+                    () -> new TorchBlock(
+                            ParticleTypes.DRAGON_BREATH,
+                            BlockBehaviour.Properties.ofFullCopy(Blocks.TORCH)
+                    )
+            );
+
+    public static final DeferredBlock<Block> END_WALL_TORCH =
+            BLOCKS.register(
+                    "end_wall_torch",
+                    () -> new WallTorchBlock(
+                            ParticleTypes.DRAGON_BREATH,
+                            BlockBehaviour.Properties.ofFullCopy(Blocks.WALL_TORCH)
+                    )
+            );
+    public static final DeferredBlock<Block>
+            END_LARTERN_BLOCK =
+            BLOCKS.registerSimpleBlock(
+                    "end_lantern_block",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_PURPLE)
+                            .strength(10.0F, 10.0F)
+                            .sound(SoundType.GLASS)
+                            .lightLevel(state -> 15)
+                            .requiresCorrectToolForDrops()
+            );
+    public static final DeferredBlock<Block> END_STONE_ENCHANTED =
+            BLOCKS.registerSimpleBlock(
+                    "enchanted_end_stone",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_PURPLE)
+                            .strength(3.0f, 9.0F)
+                            .requiresCorrectToolForDrops()
+            );
+    public static final DeferredBlock<Block> END_STONE_INFESTED =
+            BLOCKS.registerSimpleBlock(
+                    "infested_end_stone",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_BROWN)
+                            .strength(3.0f, 9.0F)
+                            .requiresCorrectToolForDrops()
+            );
+    public static final DeferredBlock<Block> END_STONE_BURNED =
+            BLOCKS.registerSimpleBlock(
+                    "burned_end_stone",
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_YELLOW)
+                            .strength(3.0f, 9.0F)
+                            .requiresCorrectToolForDrops()
+            );
     public static final DeferredBlock<Block> AltarStone =
             BLOCKS.registerSimpleBlock(
                     "altar_stone",
                     BlockBehaviour.Properties.of()
                             .mapColor(MapColor.COLOR_PURPLE)
                             .strength(-1.0f, 5000.0F)
-                            .requiresCorrectToolForDrops()
             );
     public static final DeferredBlock<EndTallGrassBlock> END_Tall_Grass_Block =
             BLOCKS.registerBlock(

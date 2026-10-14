@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "beyond_the_end:altar_stone",
+    "beyond_the_end:end_sand",
+    "minecraft:end_stone"
+  ]
+}

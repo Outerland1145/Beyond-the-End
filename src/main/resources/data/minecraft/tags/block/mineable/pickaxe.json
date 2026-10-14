@@ -1,8 +1,14 @@
 {
   "replace": false,
   "values": [
+    "beyond_the_end:enchanted_end_stone",
+    "beyond_the_end:infested_end_stone",
+    "beyond_the_end:burned_end_stone",
     "beyond_the_end:void_block",
     "beyond_the_end:end_pointed_dripstone",
-    "beyond_the_end:void_cluster"
+    "beyond_the_end:void_cluster",
+    "beyond_the_end:end_lantern_block",
+    "beyond_the_end:end_lantern",
+    "beyond_the_end:end_torch"
   ]
 }

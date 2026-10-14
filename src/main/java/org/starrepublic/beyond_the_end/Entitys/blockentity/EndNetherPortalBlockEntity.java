@@ -1,4 +1,4 @@
-package org.starrepublic.beyond_the_end.Entitys;
+package org.starrepublic.beyond_the_end.Entitys.blockentity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "beyond_the_end:block/end_lantern"
+    },
+    "hanging=true": {
+      "model": "beyond_the_end:block/end_lantern_hanging"
+    }
+  }
+}

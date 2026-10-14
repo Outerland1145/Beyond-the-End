@@ -6,8 +6,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
-import org.starrepublic.beyond_the_end.Entitys.DecorativeEndGatewayBlockEntity;
-import org.starrepublic.beyond_the_end.Entitys.EndNetherPortalBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.DecorativeEndGatewayBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.EndCampfireBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.EndNetherPortalBlockEntity;
 
 import java.util.function.Supplier;
 
@@ -39,6 +40,19 @@ public class BlockEntityRegister {
                             BlockRegister.END_NETHER_PORTAL.get()
                     ).build(null)
             );
+    public static final DeferredHolder<
+            BlockEntityType<?>,
+            BlockEntityType<EndCampfireBlockEntity>
+            > END_CAMPFIRE =
+
+            BLOCK_ENTITIES.register(
+                    "end_campfire",
+                    () -> BlockEntityType.Builder.of(
+                            EndCampfireBlockEntity::new,
+                            BlockRegister.END_CAMPFIRE.get()
+                    ).build(null)
+            );
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }

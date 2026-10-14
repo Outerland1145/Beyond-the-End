@@ -23,6 +23,7 @@ public final class TotalRegistries {
 
         BlockRegister.register(eventBus);
         BlockEntityRegister.register(eventBus);
+        BlockItemRegistry.register(eventBus);
         ItemRegister.register(eventBus);
         /*以下為創造模式面板*/
         Blocks.register(eventBus);

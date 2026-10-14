@@ -7,6 +7,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
+import org.starrepublic.beyond_the_end.Register.BlockItemRegistry;
 import org.starrepublic.beyond_the_end.Register.ItemRegister;
 
 import java.util.function.Supplier;
@@ -35,24 +36,31 @@ public class Blocks {
                             // 分頁圖示
                             .icon(
                                     () -> new ItemStack(
-                                            ItemRegister.DECORATIVE_END_GATEWAY.get()
+                                            BlockItemRegistry.DECORATIVE_END_GATEWAY.get()
                                     )
                             )
 
                             // 分頁中的所有物品
                             .displayItems((parameters, output) -> {
-                                output.accept( ItemRegister.DECORATIVE_END_GATEWAY.get());
-                                output.accept( ItemRegister.END_PORTAL_ITEM.get());
-                                output.accept( ItemRegister.END_GATEWAY_ITEM.get());
-                                output.accept( ItemRegister.AltarStone.get());
-                                output.accept( ItemRegister.BarrierNodeBlock.get());
-                                output.accept( ItemRegister.END_ANCHOR_BLOCK.get());
-                                output.accept( ItemRegister.Void_Block.get());
-                                output.accept( ItemRegister.END_Short_Grass_Block.get());
-                                output.accept( ItemRegister.END_Tall_Grass_Block.get());
-                                output.accept( ItemRegister.END_DRIPSTONE.get());
-                                output.accept( ItemRegister.END_CRYSTAL.get());
-                                output.accept( ItemRegister.END_SAND.get());
+                                output.accept( BlockItemRegistry.DECORATIVE_END_GATEWAY.get());
+                                output.accept( BlockItemRegistry.END_PORTAL_ITEM.get());
+                                output.accept( BlockItemRegistry.END_GATEWAY_ITEM.get());
+                                output.accept( BlockItemRegistry.AltarStone.get());
+                                output.accept( BlockItemRegistry.BarrierNodeBlock.get());
+                                output.accept( BlockItemRegistry.END_ANCHOR_BLOCK.get());
+                                output.accept( BlockItemRegistry.Void_Block.get());
+                                output.accept( BlockItemRegistry.END_Short_Grass_Block.get());
+                                output.accept( BlockItemRegistry.END_Tall_Grass_Block.get());
+                                output.accept( BlockItemRegistry.END_STONE_ENCHANTED.get());
+                                output.accept( BlockItemRegistry.END_STONE_INFESTED.get());
+                                output.accept( BlockItemRegistry.END_STONE_BURNED.get());
+                                output.accept( BlockItemRegistry.END_DRIPSTONE.get());
+                                output.accept( BlockItemRegistry.END_CRYSTAL.get());
+                                output.accept( BlockItemRegistry.END_SAND.get());
+                                output.accept( BlockItemRegistry.END_TORCH.get());
+                                output.accept( BlockItemRegistry.END_CAMPFIRE.get());
+                                output.accept( BlockItemRegistry.END_LARTERN.get());
+                                output.accept( BlockItemRegistry.END_LARTERN_BLOCK.get());
 
                             })
 

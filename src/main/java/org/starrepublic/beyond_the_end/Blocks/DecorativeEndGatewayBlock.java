@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.starrepublic.beyond_the_end.Entitys.DecorativeEndGatewayBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.DecorativeEndGatewayBlockEntity;
 
 import javax.annotation.Nullable;
 

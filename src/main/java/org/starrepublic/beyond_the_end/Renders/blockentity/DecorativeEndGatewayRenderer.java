@@ -2,7 +2,7 @@ package org.starrepublic.beyond_the_end.Renders.blockentity;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.TheEndPortalRenderer;
-import org.starrepublic.beyond_the_end.Entitys.DecorativeEndGatewayBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.DecorativeEndGatewayBlockEntity;
 
 public class DecorativeEndGatewayRenderer extends TheEndPortalRenderer<DecorativeEndGatewayBlockEntity> {
 

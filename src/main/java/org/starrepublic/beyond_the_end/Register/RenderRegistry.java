@@ -6,6 +6,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.starrepublic.beyond_the_end.Renders.blockentity.DecorativeEndGatewayRenderer;
+import org.starrepublic.beyond_the_end.Renders.blockentity.EndCampfireRenderer;
 import org.starrepublic.beyond_the_end.Renders.blockentity.EndNetherPortalRenderer;
 import org.starrepublic.beyond_the_end.Renders.blocks.blockitems.DecorativeEndGatewayItemExtensions;
 import org.starrepublic.beyond_the_end.Renders.sky.BeyondEndDimensionEffects;
@@ -36,6 +37,10 @@ public class RenderRegistry {
                 BlockEntityRegister.END_NETHER_PORTAL.get(),
                 EndNetherPortalRenderer::new
         );
+        event.registerBlockEntityRenderer(
+                BlockEntityRegister.END_CAMPFIRE.get(),
+                EndCampfireRenderer::new
+        );
     }
     private static void registerItemRenderers(
             RegisterClientExtensionsEvent event
@@ -43,15 +48,15 @@ public class RenderRegistry {
 
         event.registerItem(
                 new DecorativeEndGatewayItemExtensions(),
-                ItemRegister.DECORATIVE_END_GATEWAY.get()
+                BlockItemRegistry.DECORATIVE_END_GATEWAY.get()
         );
         event.registerItem(
                 new DecorativeEndGatewayItemExtensions(),
-                ItemRegister.END_GATEWAY_ITEM.get()
+                BlockItemRegistry.END_GATEWAY_ITEM.get()
         );
         event.registerItem(
                 new DecorativeEndGatewayItemExtensions(),
-                ItemRegister.END_PORTAL_ITEM.get()
+                BlockItemRegistry.END_PORTAL_ITEM.get()
         );
 
     }

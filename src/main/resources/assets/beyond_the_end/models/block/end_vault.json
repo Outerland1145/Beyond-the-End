@@ -1,0 +1,10 @@
+{
+  "render_type": "minecraft:cutout",
+  "parent": "minecraft:block/template_vault",
+  "textures": {
+    "bottom": "beyond_the_end:block/end_vault_bottom",
+    "front": "beyond_the_end:block/end_vault_front_off",
+    "side": "beyond_the_end:block/end_vault_side_off",
+    "top": "beyond_the_end:block/end_vault_top"
+  }
+}

@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.starrepublic.beyond_the_end.Entitys.DecorativeEndGatewayBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.DecorativeEndGatewayBlockEntity;
 import org.starrepublic.beyond_the_end.Register.BlockRegister;
 
 public class DecorativeEndGatewayItemRenderer

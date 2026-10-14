@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "minecraft:block/end_stone",
+    "east": "beyond_the_end:block/burned_end_stone_side",
+    "north": "beyond_the_end:block/burned_end_stone_side",
+    "south": "beyond_the_end:block/burned_end_stone_side",
+    "up": "beyond_the_end:block/burned_end_stone_top",
+    "west": "beyond_the_end:block/burned_end_stone_side",
+    "particle": "beyond_the_end:block/burned_end_stone_side"
+  }
+}
