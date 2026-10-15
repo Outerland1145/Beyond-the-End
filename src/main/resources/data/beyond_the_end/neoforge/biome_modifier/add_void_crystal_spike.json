@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "beyond_the_end:enchanted_lands",
+  "features": "beyond_the_end:void_crystal_spike",
+  "step": "local_modifications"
+}

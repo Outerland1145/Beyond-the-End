@@ -114,6 +114,18 @@ public class FeatureRegister {
                                     NoneFeatureConfiguration.CODEC
                             )
             );
+    public static final DeferredHolder<
+            Feature<?>,
+            VoidCrystalSpikeFeature
+            >
+            VOID_CRYSTAL_SPIKE =
+            FEATURES.register(
+                    "void_crystal_spike",
+
+                    () -> new VoidCrystalSpikeFeature(
+                            NoneFeatureConfiguration.CODEC
+                    )
+            );
 
 
 
