@@ -11,6 +11,7 @@ public final class TotalRegistries {
         //BTEStructureType.register(eventBus);
         //BTEStructureLimiters.bootstrap();
         JigsawRegister.register(eventBus);
+
         /*
          * 順序：
          *
@@ -20,11 +21,12 @@ public final class TotalRegistries {
          * ↓
          * BlockEntity
          */
-
+        FluidRegister.register(eventBus);
         BlockRegister.register(eventBus);
         BlockEntityRegister.register(eventBus);
         BlockItemRegistry.register(eventBus);
         ItemRegister.register(eventBus);
+        CauldronRegister.register(eventBus);
         /*以下為創造模式面板*/
         Blocks.register(eventBus);
 

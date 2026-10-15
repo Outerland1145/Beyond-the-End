@@ -61,6 +61,8 @@ public class Blocks {
                                 output.accept( BlockItemRegistry.END_CAMPFIRE.get());
                                 output.accept( BlockItemRegistry.END_LARTERN.get());
                                 output.accept( BlockItemRegistry.END_LARTERN_BLOCK.get());
+                                output.accept( ItemRegister.ENDER_GOO_BUCKET);
+
 
                             })
 

@@ -11,6 +11,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Blocks.*;
+import org.starrepublic.beyond_the_end.Fluid.EnderGoo.EnderGooFluidBlock;
 
 public class BlockRegister {
     private BlockRegister() {}
@@ -241,6 +242,26 @@ public class BlockRegister {
                                     .strength(-1.0F)
                                     .lightLevel(state -> 11)
                                     .noLootTable()
+                    )
+            );
+    public static final DeferredBlock<EnderGooFluidBlock> ENDER_GOO =
+            BLOCKS.register(
+                    "ender_goo",
+                    () -> new EnderGooFluidBlock(
+                            FluidRegister.ENDER_GOO.get(),
+
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(Blocks.WATER)
+                                    .lightLevel(state -> 12)
+                    )
+            );
+    public static final DeferredBlock<EnderGooCauldronBlock> ENDER_GOO_CAULDRON =
+            BLOCKS.register(
+                    "ender_goo_cauldron",
+                    () -> new EnderGooCauldronBlock(
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(Blocks.CAULDRON)
+                                    .lightLevel(state -> 12)
                     )
             );
     public static void register(IEventBus eventBus) {

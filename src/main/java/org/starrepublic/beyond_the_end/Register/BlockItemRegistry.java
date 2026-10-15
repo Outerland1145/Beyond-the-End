@@ -84,7 +84,6 @@ public class BlockItemRegistry {
 
     public static final DeferredItem<BlockItem> END_DRIPSTONE =
             ITEMS.registerSimpleBlockItem(BlockRegister.END_DRIPSTONE);
-
     public static final DeferredItem<BlockItem> Void_Block =
             ITEMS.registerSimpleBlockItem(BlockRegister.Void_Block);
 
