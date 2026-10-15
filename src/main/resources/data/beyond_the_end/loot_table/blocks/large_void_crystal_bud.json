@@ -10,7 +10,7 @@
           "children": [
             {
               "type": "minecraft:item",
-              "name": "beyond_the_end:void_cluster",
+              "name": "beyond_the_end:large_void_crystal_bud",
               "conditions": [
                 {
                   "condition": "minecraft:match_tool",
@@ -28,15 +28,11 @@
                   }
                 }
               ]
-            },
-            {
-              "type": "minecraft:item",
-              "name": "beyond_the_end:end_sand"
             }
           ]
         }
       ]
     }
   ],
-  "random_sequence": "beyond_the_end:blocks/void_cluster"
+  "random_sequence": "beyond_the_end:blocks/large_void_crystal_bud"
 }

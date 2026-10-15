@@ -79,13 +79,28 @@ public class BlockItemRegistry {
     public static final DeferredItem<BlockItem> END_SAND =
             ITEMS.registerSimpleBlockItem(BlockRegister.END_SAND);
 
-    public static final DeferredItem<BlockItem> END_CRYSTAL =
-            ITEMS.registerSimpleBlockItem(BlockRegister.END_CRYSTAL);
-
+    public static final DeferredItem<BlockItem> SMALL_VOID_CRYSTAL_BUD =
+            ITEMS.registerSimpleBlockItem(BlockRegister.SMALL_VOID_CRYSTAL_BUD);
+    public static final DeferredItem<BlockItem> MEDIUM_VOID_CRYSTAL_BUD =
+            ITEMS.registerSimpleBlockItem(BlockRegister.MEDIUM_VOID_CRYSTAL_BUD);
+    public static final DeferredItem<BlockItem> LARGE_VOID_CRYSTAL_BUD =
+            ITEMS.registerSimpleBlockItem(BlockRegister.LARGE_VOID_CRYSTAL_BUD);
+    public static final DeferredItem<BlockItem> VOID_CRYSTAL_CLUSTER =
+            ITEMS.registerSimpleBlockItem(BlockRegister.VOID_CRYSTAL_CLUSTER);
+    public static final DeferredItem<BlockItem> VOID_CRYSTAL_BLOCK =
+            ITEMS.registerSimpleBlockItem(BlockRegister.VOID_CRYSTAL_BLOCK);
+    public static final DeferredItem<BlockItem> VOID_CRYSTAL_BLOCK_BUDDING =
+            ITEMS.registerSimpleBlockItem(BlockRegister.VOID_CRYSTAL_BLOCK_BUDDING);
     public static final DeferredItem<BlockItem> END_DRIPSTONE =
             ITEMS.registerSimpleBlockItem(BlockRegister.END_DRIPSTONE);
     public static final DeferredItem<BlockItem> Void_Block =
             ITEMS.registerSimpleBlockItem(BlockRegister.Void_Block);
+    public static final DeferredItem<BlockItem> Enchanted_Short_Grass_Block =
+            ITEMS.registerSimpleBlockItem(BlockRegister.Enchanted_Short_Grass_Block);
+    public static final DeferredItem<BlockItem> Enchanted_Tall_Grass_Block =
+            ITEMS.registerSimpleBlockItem(BlockRegister.Enchanted_Tall_Grass_Block);
+    public static final DeferredItem<BlockItem> MAGIC_FLOWER =
+            ITEMS.registerSimpleBlockItem(BlockRegister.MAGIC_FLOWER);
 
 
     public static void register(IEventBus eventBus) {

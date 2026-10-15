@@ -29,6 +29,8 @@ public class ItemRegister {
                                     .craftRemainder(Items.BUCKET)
                     )
             );
+    public static final DeferredItem<Item> VOID_CRYSTAL_SHARD =
+            ITEMS.registerSimpleItem("void_crystal_shard");
 
 
     public static void register(IEventBus eventBus) {

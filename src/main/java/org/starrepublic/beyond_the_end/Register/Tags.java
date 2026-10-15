@@ -15,10 +15,12 @@ import static org.starrepublic.beyond_the_end.Register.FluidRegister.FLUIDS;
 public class Tags {
     public static final TagKey<Block> END_CRYSTAL_PLACEABLE = blockTag("end_crystal_placeable");
     public static final TagKey<Block> END_PLANT_PLANTABLE = blockTag("end_plant_plantable");
+    public static final TagKey<Block> ENCHANTED_PLANT_PLANTABLE = blockTag("enchanted_plant_plantable");
     public static final TagKey<Block> END_FIRE_BASE_BLOCKS = blockTag("end_fire_base_blocks");
     public static final TagKey<Block> CHORUS_PLANTABLE = blockTag("chorus_plantable");
     public static final TagKey<Block> ENDER_GOO_INFECTABLE = blockTag("ender_goo_infectable");
     public static final TagKey<Fluid> ENDER_GOO = FLUIDS.createTagKey("ender_goo");
+    public static final TagKey<Block> ENCHANTED_FEATURE_GROUND = blockTag("enchanted_feature_ground");
     public static final TagKey<EntityType<?>> ENDER_GOO_IMMUNE =
             TagKey.create(
                     Registries.ENTITY_TYPE,

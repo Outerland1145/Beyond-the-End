@@ -12,7 +12,15 @@
   "block.beyond_the_end.end_short_grass": "終界矮草",
   "block.beyond_the_end.end_tall_grass": "終界高草",
   "block.beyond_the_end.void_block": "虛空方塊",
-  "block.beyond_the_end.void_cluster": "虛空水晶",
+
+  "block.beyond_the_end.small_void_crystal_bud": "小虛空水晶芽",
+  "block.beyond_the_end.medium_void_crystal_bud": "中虛空水晶芽",
+  "block.beyond_the_end.large_void_crystal_bud": "大虛空水晶芽",
+  "block.beyond_the_end.void_crystal_cluster": "虛空水晶簇",
+  "block.beyond_the_end.void_crystal_block": "虛空水晶塊",
+  "block.beyond_the_end.void_crystal_budding_block": "虛空水晶母岩",
+
+
   "block.beyond_the_end.end_pointed_dripstone": "終界鐘乳石",
   "block.beyond_the_end.end_lantern_block": "虛空燈",
   "block.beyond_the_end.end_lantern": "虛空燈籠",
@@ -23,7 +31,11 @@
   "block.beyond_the_end.enchanted_end_stone": "附魔終界石",
   "block.beyond_the_end.infested_end_stone": "腐化終界石",
   "block.beyond_the_end.burned_end_stone": "灼燒終界石",
+  "block.beyond_the_end.enchanted_tall_grass": "魔力矮草",
+  "block.beyond_the_end.enchanted_short_grass": "魔力草",
+  "block.beyond_the_end.enchanted_flower": "魔力花",
   "item.beyond_the_end.ender_goo_bucket": "終界黏漿桶",
+  "item.beyond_the_end.void_crystal_shard": "虛空水晶碎片",
   "message.beyond_the_end.anchor_set": "錨定位置已設置",
   "message.beyond_the_end.anchor_lost": "錨定點已遺失",
   "message.beyond_the_end.anchor_blocked": "錨定點遭到阻擋",

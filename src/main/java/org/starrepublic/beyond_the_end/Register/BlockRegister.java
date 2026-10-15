@@ -12,6 +12,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Blocks.*;
 import org.starrepublic.beyond_the_end.Fluid.EnderGoo.EnderGooFluidBlock;
+import org.starrepublic.beyond_the_end.World.worldgen.feature.ConfiguredFeatureKeys;
 
 public class BlockRegister {
     private BlockRegister() {}
@@ -110,13 +111,21 @@ public class BlockRegister {
                             .lightLevel(state -> 15)
                             .requiresCorrectToolForDrops()
             );
-    public static final DeferredBlock<Block> END_STONE_ENCHANTED =
-            BLOCKS.registerSimpleBlock(
+    public static final DeferredBlock<EndSurfaceCoverBlock>
+            END_STONE_ENCHANTED =
+            BLOCKS.register(
                     "enchanted_end_stone",
-                    BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.COLOR_PURPLE)
-                            .strength(3.0f, 9.0F)
-                            .requiresCorrectToolForDrops()
+
+                    () -> new EndSurfaceCoverBlock(
+
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(
+                                            Blocks.END_STONE
+                                    )
+                                    .randomTicks(),
+                            () -> Blocks.END_STONE,
+                            ConfiguredFeatureKeys.ENCHANTED_LANDS_BONEMEAL
+                    )
             );
     public static final DeferredBlock<Block> END_STONE_INFESTED =
             BLOCKS.registerSimpleBlock(
@@ -161,6 +170,60 @@ public class BlockRegister {
                             .noCollission()
                             .noOcclusion()
             );
+    public static final DeferredBlock<EnchantedPlants> Enchanted_Short_Grass_Block =
+            BLOCKS.registerBlock(
+                    "enchanted_short_grass",
+                    EnchantedPlants::new,
+                    BlockBehaviour.Properties
+                            .ofFullCopy(Blocks.SHORT_GRASS)
+                            .mapColor(MapColor.COLOR_PURPLE)
+                            .noCollission()
+                            .noOcclusion()
+            );
+    public static final DeferredBlock<EnchantedPlants> Enchanted_Tall_Grass_Block =
+            BLOCKS.registerBlock(
+                    "enchanted_tall_grass",
+                    EnchantedPlants::new,
+                    BlockBehaviour.Properties
+                            .ofFullCopy(Blocks.SHORT_GRASS)
+                            .mapColor(MapColor.COLOR_PURPLE)
+                            .noCollission()
+                            .noOcclusion()
+            );
+    public static final DeferredBlock<EnchantedFlowerBlock> MAGIC_FLOWER =
+            BLOCKS.register(
+                    "enchanted_flower",
+
+                    () -> new EnchantedFlowerBlock(
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(Blocks.POPPY)
+
+                                    /*
+                                     * 魔力花發出 10 級方塊光。
+                                     */
+                                    .lightLevel(
+                                            state -> 10
+                                    )
+                    )
+            );
+    public static final DeferredBlock<FlowerPotBlock> POTTED_MAGIC_FLOWER =
+            BLOCKS.register(
+                    "potted_magic_flower",
+
+                    () -> new FlowerPotBlock(
+                            () -> (FlowerPotBlock) Blocks.FLOWER_POT,
+
+                            MAGIC_FLOWER,
+
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(
+                                            Blocks.POTTED_POPPY
+                                    )
+                                    .lightLevel(
+                                            state -> 10
+                                    )
+                    )
+            );
 
     public static final DeferredBlock<VoidBlock> Void_Block =
             BLOCKS.register(
@@ -200,9 +263,65 @@ public class BlockRegister {
                                     .sound(SoundType.SAND)
                     )
             );
-    public static final DeferredBlock<VoidCrystalBlock> END_CRYSTAL =
+    public static final DeferredBlock<VoidCrystalBlock> SMALL_VOID_CRYSTAL_BUD =
             BLOCKS.register(
-                    "void_cluster",
+                    "small_void_crystal_bud",
+                    () -> new VoidCrystalBlock(
+                            7.0F,
+                            3.0F,
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(
+                                            Blocks.AMETHYST_CLUSTER
+                                    )
+                                    .requiresCorrectToolForDrops()
+                    )
+            );
+    public static final DeferredBlock<VoidCrystalBlock> MEDIUM_VOID_CRYSTAL_BUD =
+            BLOCKS.register(
+                    "medium_void_crystal_bud",
+                    () -> new VoidCrystalBlock(
+                            7.0F,
+                            3.0F,
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(
+                                            Blocks.AMETHYST_CLUSTER
+                                    )
+                                    .requiresCorrectToolForDrops()
+                    )
+            );
+    public static final DeferredBlock<VoidCrystalBlock> LARGE_VOID_CRYSTAL_BUD =
+            BLOCKS.register(
+                    "large_void_crystal_bud",
+                    () -> new VoidCrystalBlock(
+                            7.0F,
+                            3.0F,
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(
+                                            Blocks.AMETHYST_CLUSTER
+                                    )
+                                    .requiresCorrectToolForDrops()
+                    )
+            );
+    public static final DeferredBlock<Block> VOID_CRYSTAL_BLOCK =
+            BLOCKS.registerSimpleBlock(
+                    "void_crystal_block",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK)
+                    .requiresCorrectToolForDrops()
+            );
+    public static final DeferredBlock<VoidCrystalBuddingBlock> VOID_CRYSTAL_BLOCK_BUDDING =
+            BLOCKS.register(
+                    "void_crystal_budding_block",
+                    () -> new VoidCrystalBuddingBlock(
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(
+                                            Blocks.BUDDING_AMETHYST
+                                    )
+                                    .requiresCorrectToolForDrops()
+                    )
+            );
+    public static final DeferredBlock<VoidCrystalBlock> VOID_CRYSTAL_CLUSTER =
+            BLOCKS.register(
+                    "void_crystal_cluster",
                     () -> new VoidCrystalBlock(
                             7.0F,
                             3.0F,
@@ -262,6 +381,7 @@ public class BlockRegister {
                             BlockBehaviour.Properties
                                     .ofFullCopy(Blocks.CAULDRON)
                                     .lightLevel(state -> 12)
+                                    .requiresCorrectToolForDrops()
                     )
             );
     public static void register(IEventBus eventBus) {

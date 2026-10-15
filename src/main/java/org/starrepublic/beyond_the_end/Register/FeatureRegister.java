@@ -7,10 +7,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
-import org.starrepublic.beyond_the_end.World.worldgen.feature.EndBarrensSandFieldFeature;
-import org.starrepublic.beyond_the_end.World.worldgen.feature.EndSurfaceVegetationFeature;
-import org.starrepublic.beyond_the_end.World.worldgen.feature.VoidIslandFeature;
-import org.starrepublic.beyond_the_end.World.worldgen.feature.VoidRuinFeature;
+import org.starrepublic.beyond_the_end.World.worldgen.feature.*;
 
 public class FeatureRegister {
     private FeatureRegister() {}
@@ -74,6 +71,50 @@ public class FeatureRegister {
                                     .NoneFeatureConfiguration.CODEC
                     )
             );
+    public static final DeferredHolder<
+            Feature<?>,
+            EnderGooLakeFeature
+            >
+            TERRACED_ENDER_GOO_LAKE =
+            FEATURES.register(
+                    "ender_goo_lake",
+
+                    () ->
+                            new EnderGooLakeFeature(
+                                    NoneFeatureConfiguration.CODEC
+                            )
+            );
+
+
+    public static final DeferredHolder<
+            Feature<?>,
+            EnchantedGrassMeadowFeature
+            >
+            ENCHANTED_GRASS_MEADOW =
+            FEATURES.register(
+                    "enchanted_grass_meadow",
+
+                    () ->
+                            new EnchantedGrassMeadowFeature(
+                                    NoneFeatureConfiguration.CODEC
+                            )
+            );
+
+
+    public static final DeferredHolder<
+            Feature<?>,
+            ObsidianSpikeClusterFeature
+            >
+            OBSIDIAN_SPIKE_CLUSTER =
+            FEATURES.register(
+                    "obsidian_spike_cluster",
+
+                    () ->
+                            new ObsidianSpikeClusterFeature(
+                                    NoneFeatureConfiguration.CODEC
+                            )
+            );
+
 
 
     public static void register(

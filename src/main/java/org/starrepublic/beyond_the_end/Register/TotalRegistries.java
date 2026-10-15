@@ -26,7 +26,7 @@ public final class TotalRegistries {
         BlockEntityRegister.register(eventBus);
         BlockItemRegistry.register(eventBus);
         ItemRegister.register(eventBus);
-        CauldronRegister.register(eventBus);
+        CommonSetupRegistry.register(eventBus);
         /*以下為創造模式面板*/
         Blocks.register(eventBus);
 

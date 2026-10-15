@@ -21,7 +21,7 @@ public class Blocks {
                     Beyond_the_end.MODID
             );
 
-    public static final Supplier<CreativeModeTab> FADING_END_TAB =
+    public static final Supplier<CreativeModeTab> BTE_END_BLOCK_TAB =
             CREATIVE_TABS.register(
                     "beyond_the_end",
                     () -> CreativeModeTab.builder()
@@ -55,13 +55,22 @@ public class Blocks {
                                 output.accept( BlockItemRegistry.END_STONE_INFESTED.get());
                                 output.accept( BlockItemRegistry.END_STONE_BURNED.get());
                                 output.accept( BlockItemRegistry.END_DRIPSTONE.get());
-                                output.accept( BlockItemRegistry.END_CRYSTAL.get());
+                                output.accept( BlockItemRegistry.VOID_CRYSTAL_BLOCK.get());
+                                output.accept( BlockItemRegistry.VOID_CRYSTAL_BLOCK_BUDDING.get());
+                                output.accept( BlockItemRegistry.SMALL_VOID_CRYSTAL_BUD.get());
+                                output.accept( BlockItemRegistry.MEDIUM_VOID_CRYSTAL_BUD.get());
+                                output.accept( BlockItemRegistry.LARGE_VOID_CRYSTAL_BUD.get());
+                                output.accept( BlockItemRegistry.VOID_CRYSTAL_CLUSTER.get());
                                 output.accept( BlockItemRegistry.END_SAND.get());
                                 output.accept( BlockItemRegistry.END_TORCH.get());
                                 output.accept( BlockItemRegistry.END_CAMPFIRE.get());
                                 output.accept( BlockItemRegistry.END_LARTERN.get());
                                 output.accept( BlockItemRegistry.END_LARTERN_BLOCK.get());
+                                output.accept( BlockItemRegistry.Enchanted_Short_Grass_Block.get());
+                                output.accept( BlockItemRegistry.Enchanted_Tall_Grass_Block.get());
+                                output.accept( BlockItemRegistry.MAGIC_FLOWER.get());
                                 output.accept( ItemRegister.ENDER_GOO_BUCKET);
+                                output.accept( ItemRegister.VOID_CRYSTAL_SHARD);
 
 
                             })

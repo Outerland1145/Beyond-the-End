@@ -5,6 +5,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FlowerPotBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -17,44 +19,6 @@ public final class CauldronRegister {
     private CauldronRegister() {
     }
 
-    /*
-     * ==========================================
-     * 統一註冊入口
-     * ==========================================
-     *
-     * 主 Mod 類只需要呼叫這一個。
-     */
-    public static void register(IEventBus modEventBus) {
-
-        modEventBus.addListener(
-                CauldronRegister::onCommonSetup
-        );
-
-        modEventBus.addListener(
-                CauldronRegister::onRegisterCauldronFluidContent
-        );
-    }
-
-
-    /*
-     * ==========================================
-     * Common Setup
-     * ==========================================
-     */
-
-    private static void onCommonSetup(
-            FMLCommonSetupEvent event
-    ) {
-
-        /*
-         * CauldronInteraction 的 Map
-         * 不要在 static 初始化期間直接修改。
-         */
-        event.enqueueWork(
-                CauldronRegister::registerInteractions
-        );
-    }
-
 
     /*
      * ==========================================
@@ -62,7 +26,7 @@ public final class CauldronRegister {
      * ==========================================
      */
 
-    private static void registerInteractions() {
+    public static void registerInteractions() {
 
         /*
          * ------------------------------------------

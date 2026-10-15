@@ -25,6 +25,8 @@ public class BTEServerConfig {
     public final ModConfigSpec.IntValue EndExitPointX;
     public final ModConfigSpec.IntValue EndExitPointZ;
 
+    public final ModConfigSpec.IntValue VoidCrystalGrowthHeight;
+
 
 
     public BTEServerConfig(ModConfigSpec.Builder builder) {
@@ -227,6 +229,19 @@ public class BTEServerConfig {
                                             != null;
                                 }
                         );
+        VoidCrystalGrowthHeight =
+                builder
+                        .comment(
+                                "Maximum distance above the dimension minimum build height " +
+                                        "where Void Crystal Bedrock can grow crystals.",
+                                "Default: 20"
+                        )
+                .defineInRange(
+                        "VoidCrystalGrowthHeight",
+                        20,
+                        1,
+                        512
+                );
 
         builder.pop();
     }
