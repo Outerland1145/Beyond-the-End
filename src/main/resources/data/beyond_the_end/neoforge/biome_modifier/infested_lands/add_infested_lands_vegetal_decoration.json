@@ -3,6 +3,7 @@
   "biomes": "beyond_the_end:infested_lands",
   "features": [
     "beyond_the_end:spooky_tree",
+    "beyond_the_end:small_spooky_tree",
     "beyond_the_end:infested_fern_patch",
     "beyond_the_end:infested_grass_patch"
   ],

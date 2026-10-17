@@ -1,7 +1,7 @@
 {
   "biome": "beyond_the_end:infested_lands",
 
-  "generation_chance": 0.01,
+  "generation_chance": 0.05,
 
   "surface_rule": {
     "type": "minecraft:sequence",

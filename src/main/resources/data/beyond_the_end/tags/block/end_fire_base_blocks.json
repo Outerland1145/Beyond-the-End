@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
+    "beyond_the_end:enchanted_end_stone",
+    "beyond_the_end:infested_end_stone",
+    "beyond_the_end:burned_end_stone",
     "beyond_the_end:altar_stone",
     "beyond_the_end:end_sand",
     "minecraft:end_stone"
