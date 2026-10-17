@@ -45,7 +45,6 @@ public class SpookyTreeFeature extends Feature<SpookyTreeConfiguration> {
      * 6. 樹冠不是球型
      * 7. 樹冠下有大量垂落植物
      */
-
     public SpookyTreeFeature(Codec<SpookyTreeConfiguration> codec) {
         super(codec);
     }
@@ -352,23 +351,51 @@ public class SpookyTreeFeature extends Feature<SpookyTreeConfiguration> {
 
         /*
          * =========================================================
-         * 9. 放置原木
+         * 9. 放置原木 / 木塊
          * =========================================================
+         *
+         * 如果一格原木沿自身 AXIS 的任一端面會暴露，
+         * 就改用 wood_provider。
+         *
+         * 例如：
+         *
+         * Y 軸原木 -> 檢查 UP / DOWN
+         * X 軸原木 -> 檢查 EAST / WEST
+         * Z 軸原木 -> 檢查 NORTH / SOUTH
+         *
+         * 相鄰位置如果是這棵樹自己的其他木質方塊，
+         * 該端面就已被遮住。
+         *
+         * 如果不是本樹木材，但世界中原本存在完整實心方塊
+         * 遮住該端面（例如樹根下方的地面），也不算暴露。
          */
+
+        Set<BlockPos> logPositions = logs.keySet();
 
         for (Map.Entry<BlockPos, Direction.Axis> entry
                 : logs.entrySet()) {
 
             BlockPos pos = entry.getKey();
+            Direction.Axis axis = entry.getValue();
+
+            boolean exposedEnd =
+                    hasExposedLogEnd(
+                            level,
+                            pos,
+                            axis,
+                            logPositions
+                    );
 
             BlockState state =
-                    config.trunkProvider()
+                    (exposedEnd
+                            ? config.woodProvider()
+                            : config.trunkProvider())
                             .getState(random, pos);
 
             state =
                     setLogAxis(
                             state,
-                            entry.getValue()
+                            axis
                     );
 
             level.setBlock(
@@ -1353,6 +1380,87 @@ public class SpookyTreeFeature extends Feature<SpookyTreeConfiguration> {
      * =============================================================
      */
 
+    /**
+     * 判斷一格原木沿自身 AXIS 的兩個年輪端面中，
+     * 是否至少有一面會暴露。
+     */
+    private boolean hasExposedLogEnd(
+            WorldGenLevel level,
+            BlockPos pos,
+            Direction.Axis axis,
+            Set<BlockPos> logPositions
+    ) {
+
+        Direction first;
+        Direction second;
+
+        switch (axis) {
+            case X -> {
+                first = Direction.WEST;
+                second = Direction.EAST;
+            }
+
+            case Y -> {
+                first = Direction.DOWN;
+                second = Direction.UP;
+            }
+
+            case Z -> {
+                first = Direction.NORTH;
+                second = Direction.SOUTH;
+            }
+
+            default -> {
+                return false;
+            }
+        }
+
+        return isLogEndExposed(
+                level,
+                pos.relative(first),
+                first,
+                logPositions
+        ) || isLogEndExposed(
+                level,
+                pos.relative(second),
+                second,
+                logPositions
+        );
+    }
+
+    /**
+     * 判斷某一個年輪端面是否真的可見。
+     *
+     * 1. 如果端面方向緊接著這棵樹自己的另一格木材，
+     *    年輪已被遮住。
+     *
+     * 2. 如果不是本樹木材，但該位置原本存在能完整支撐
+     *    朝向目前原木的實心面，也視為被遮住。
+     *
+     * 3. 空氣、樹葉、藤蔓、可替換植物等不會完整遮住
+     *    年輪面的方塊，都視為暴露。
+     */
+    private boolean isLogEndExposed(
+            WorldGenLevel level,
+            BlockPos neighbourPos,
+            Direction directionFromLog,
+            Set<BlockPos> logPositions
+    ) {
+
+        if (logPositions.contains(neighbourPos)) {
+            return false;
+        }
+
+        BlockState neighbourState =
+                level.getBlockState(neighbourPos);
+
+        return !neighbourState.isFaceSturdy(
+                level,
+                neighbourPos,
+                directionFromLog.getOpposite()
+        );
+    }
+
     private void addLog(
             Map<BlockPos, Direction.Axis> logs,
             BlockPos pos,
@@ -1423,3 +1531,4 @@ public class SpookyTreeFeature extends Feature<SpookyTreeConfiguration> {
         return Direction.Axis.Z;
     }
 }
+

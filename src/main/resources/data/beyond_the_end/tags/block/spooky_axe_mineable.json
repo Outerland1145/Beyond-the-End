@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "#beyond_the_end:spooky_logs",
+    "beyond_the_end:spooky_planks",
+    "beyond_the_end:spooky_stairs",
+    "beyond_the_end:spooky_slab",
+    "beyond_the_end:spooky_fence",
+    "beyond_the_end:spooky_fence_gate",
+    "beyond_the_end:spooky_door",
+    "beyond_the_end:spooky_trapdoor",
+    "beyond_the_end:spooky_pressure_plate"
+  ]
+}

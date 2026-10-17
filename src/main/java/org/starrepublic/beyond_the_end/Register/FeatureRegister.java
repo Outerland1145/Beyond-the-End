@@ -136,7 +136,14 @@ public class FeatureRegister {
                             SpookyTreeConfiguration.CODEC
                     )
             );
-
+    public static final Supplier<Feature<SpookyTreeConfiguration>>
+            HEE_SPOOKY_TREE =
+            FEATURES.register(
+                    "small_spooky_tree",
+                    () -> new SmallSpookyTreeFeature(
+                            SpookyTreeConfiguration.CODEC
+                    )
+            );
 
 
     public static void register(

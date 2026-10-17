@@ -39,6 +39,7 @@
   "block.beyond_the_end.enchanted_flower": "魔力花",
 
   "item.beyond_the_end.ender_goo_bucket": "終界黏漿桶",
+  "item.beyond_the_end.crystal_remover": "水晶拆除器",
 
   "block.beyond_the_end.spooky_log": "幽靈原木",
   "block.beyond_the_end.spooky_wood": "幽靈木塊",
@@ -55,6 +56,7 @@
   "block.beyond_the_end.spooky_button": "幽靈木按鈕",
   "block.beyond_the_end.spooky_leaves": "幽靈木樹葉",
   "block.beyond_the_end.spooky_sapling": "幽靈木樹苗",
+
 
 
   "message.beyond_the_end.anchor_set": "錨定位置已設置",

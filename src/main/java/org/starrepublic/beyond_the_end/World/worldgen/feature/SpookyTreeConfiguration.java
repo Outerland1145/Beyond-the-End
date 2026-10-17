@@ -7,6 +7,7 @@ import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvi
 
 public record SpookyTreeConfiguration(
         BlockStateProvider trunkProvider,
+        BlockStateProvider woodProvider,
         BlockStateProvider leavesProvider,
         BlockStateProvider hangingProvider
 ) implements FeatureConfiguration {
@@ -17,6 +18,10 @@ public record SpookyTreeConfiguration(
                     BlockStateProvider.CODEC
                             .fieldOf("trunk_provider")
                             .forGetter(SpookyTreeConfiguration::trunkProvider),
+
+                    BlockStateProvider.CODEC
+                            .fieldOf("wood_provider")
+                            .forGetter(SpookyTreeConfiguration::woodProvider),
 
                     BlockStateProvider.CODEC
                             .fieldOf("leaves_provider")
