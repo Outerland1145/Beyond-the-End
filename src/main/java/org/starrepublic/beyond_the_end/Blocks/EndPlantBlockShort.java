@@ -114,7 +114,7 @@ public class EndPlantBlockShort extends TallGrassBlock {
                 Registries.BLOCK,
                 ResourceLocation.fromNamespaceAndPath(
                         Beyond_the_end.MODID,
-                        "sapling/can_short" + name + "_plantable"
+                        "plant/can_" + name + "_plantable"
                 )
         );
     }

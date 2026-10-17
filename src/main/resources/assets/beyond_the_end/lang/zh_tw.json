@@ -1,5 +1,6 @@
 {
-  "itemGroup.beyond_the_end.beyond_the_end_block": "終界之後 方塊",
+  "itemGroup.beyond_the_end.beyond_the_end_building_tab": "終界之後 建材",
+  "itemGroup.beyond_the_end.beyond_the_end_nature_tab": "終界之後 自然",
   "itemGroup.beyond_the_end.beyond_the_end_item": "終界之後 物品",
   "itemGroup.beyond_the_end.beyond_the_end_tool": "終界之後 工具",
   "fluid.beyond_the_end.ender_goo": "終界黏漿",
@@ -56,6 +57,11 @@
   "block.beyond_the_end.spooky_button": "幽靈木按鈕",
   "block.beyond_the_end.spooky_leaves": "幽靈木樹葉",
   "block.beyond_the_end.spooky_sapling": "幽靈木樹苗",
+
+  "block.beyond_the_end.tall_infested_fern": "高侵蝕蕨",
+  "block.beyond_the_end.short_infested_fern": "侵蝕蕨",
+  "block.beyond_the_end.infested_grass": "侵蝕草",
+  "block.beyond_the_end.infested_root": "侵蝕菌",
 
 
 

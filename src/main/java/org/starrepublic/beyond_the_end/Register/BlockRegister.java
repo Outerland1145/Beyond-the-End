@@ -1,14 +1,11 @@
 package org.starrepublic.beyond_the_end.Register;
 
-import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -16,10 +13,7 @@ import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Blocks.*;
 import org.starrepublic.beyond_the_end.Blocks.Blockitems.DecorativeEndGatewayItem;
 import org.starrepublic.beyond_the_end.Fluid.EnderGoo.EnderGooFluidBlock;
-import org.starrepublic.beyond_the_end.Register.helper.BlockRegisterHelper;
-import org.starrepublic.beyond_the_end.Register.helper.CrystalRegisterHelper;
-import org.starrepublic.beyond_the_end.Register.helper.FireRegisterHelper;
-import org.starrepublic.beyond_the_end.Register.helper.WoodRegisterHelper;
+import org.starrepublic.beyond_the_end.Register.helper.*;
 import org.starrepublic.beyond_the_end.World.worldgen.feature.ConfiguredFeatureKeys;
 
 public class BlockRegister {
@@ -30,8 +24,63 @@ public class BlockRegister {
     public static final CrystalRegisterHelper VOID_CRYSTAL = CrystalRegisterHelper.CrystalRegisterSet("void_crystal");
     public static final FireRegisterHelper END_FIRE = FireRegisterHelper.FireRegisterSet("end");
     public static final WoodRegisterHelper SPOOKY = WoodRegisterHelper.WoodRegisterSet("spooky");
+    public static final PlantRegisterHelper INFESTED_FERN = PlantRegisterHelper.PlantRegisterWithTallSet("infested_fern");
 
+    public static final PlantRegisterHelper INFESTED_GRASS = PlantRegisterHelper.PlantRegisterWithoutTallSet("infested_grass");
+    public static final PlantRegisterHelper INFESTED_ROOT = PlantRegisterHelper.PlantRegisterWithoutTallSet("infested_root");
 
+    //public static final PlantRegisterHelper END_GRASS = PlantRegisterHelper.PlantRegisterWithTallSet("end_grass");
+    //public static final PlantRegisterHelper ENCHANTED_GRASS = PlantRegisterHelper.PlantRegisterWithTallSet("enchanted_grass");
+
+    public static final DeferredBlock<EnchantedPlants> Enchanted_Short_Grass_Block =
+            BlockRegisterHelper.RegisterNewBlock(
+                    "enchanted_short_grass",
+                    () -> new EnchantedPlants(
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(Blocks.SHORT_GRASS)
+                                    .mapColor(MapColor.COLOR_PURPLE)
+                                    .noCollission()
+                                    .noOcclusion()
+                    ),
+                    true
+            );
+    public static final DeferredBlock<EnchantedPlants> Enchanted_Tall_Grass_Block =
+            BlockRegisterHelper.RegisterNewBlock(
+                    "enchanted_tall_grass",
+                    () -> new EnchantedPlants(
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(Blocks.SHORT_GRASS)
+                                    .mapColor(MapColor.COLOR_PURPLE)
+                                    .noCollission()
+                                    .noOcclusion()
+                    ),
+                    true
+            );
+
+    public static final DeferredBlock<EndTallGrassBlock> END_Tall_Grass_Block =
+            BlockRegisterHelper.RegisterNewBlock(
+                    "end_tall_grass",
+                    () -> new EndTallGrassBlock(
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(Blocks.TALL_GRASS)
+                                    .mapColor(MapColor.COLOR_PURPLE)
+                                    .noCollission()
+                                    .noOcclusion()
+                    ),
+                    true
+            );
+    public static final DeferredBlock<EndShortGrassBlock> END_Short_Grass_Block =
+            BlockRegisterHelper.RegisterNewBlock(
+                    "end_short_grass",
+                    () -> new EndShortGrassBlock(
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(Blocks.SHORT_GRASS)
+                                    .mapColor(MapColor.COLOR_PURPLE)
+                                    .noCollission()
+                                    .noOcclusion()
+                    ),
+                    true
+            );
     public static final DeferredBlock<DecorativeEndGatewayBlock> DECORATIVE_END_GATEWAY =
             BlockRegisterHelper.RegisterNewBlockWithSpecialItem(
                     "decorative_end_gateway",
@@ -93,12 +142,15 @@ public class BlockRegister {
     public static final DeferredBlock<Block> END_STONE_INFESTED =
             BlockRegisterHelper.RegisterNewBlock(
                     "infested_end_stone",
-                    () -> new Block(
+                    () -> new EndSurfaceCoverBlock(
 
-                            BlockBehaviour.Properties.of()
-                                    .mapColor(MapColor.COLOR_BROWN)
-                                    .strength(3.0f, 9.0F)
-                                    .requiresCorrectToolForDrops()
+                            BlockBehaviour.Properties
+                                    .ofFullCopy(
+                                            Blocks.END_STONE
+                                    )
+                                    .randomTicks(),
+                            () -> Blocks.END_STONE,
+                            ConfiguredFeatureKeys.INFESTED_LANDS_BONEMEAL
                     ),
                     true
             );
@@ -125,54 +177,8 @@ public class BlockRegister {
                     ),
                     true
             );
-    public static final DeferredBlock<EndTallGrassBlock> END_Tall_Grass_Block =
-            BlockRegisterHelper.RegisterNewBlock(
-                    "end_tall_grass",
-                    () -> new EndTallGrassBlock(
-                            BlockBehaviour.Properties
-                                    .ofFullCopy(Blocks.TALL_GRASS)
-                                    .mapColor(MapColor.COLOR_PURPLE)
-                                    .noCollission()
-                                    .noOcclusion()
-                    ),
-                    true
-            );
-    public static final DeferredBlock<EndShortGrassBlock> END_Short_Grass_Block =
-            BlockRegisterHelper.RegisterNewBlock(
-                    "end_short_grass",
-                    () -> new EndShortGrassBlock(
-                            BlockBehaviour.Properties
-                                    .ofFullCopy(Blocks.SHORT_GRASS)
-                                    .mapColor(MapColor.COLOR_PURPLE)
-                                    .noCollission()
-                                    .noOcclusion()
-                    ),
-                    true
-            );
-    public static final DeferredBlock<EnchantedPlants> Enchanted_Short_Grass_Block =
-            BlockRegisterHelper.RegisterNewBlock(
-                    "enchanted_short_grass",
-                    () -> new EnchantedPlants(
-                            BlockBehaviour.Properties
-                                    .ofFullCopy(Blocks.SHORT_GRASS)
-                                    .mapColor(MapColor.COLOR_PURPLE)
-                                    .noCollission()
-                                    .noOcclusion()
-                    ),
-                    true
-            );
-    public static final DeferredBlock<EnchantedPlants> Enchanted_Tall_Grass_Block =
-            BlockRegisterHelper.RegisterNewBlock(
-                    "enchanted_tall_grass",
-                    () -> new EnchantedPlants(
-                            BlockBehaviour.Properties
-                                    .ofFullCopy(Blocks.SHORT_GRASS)
-                                    .mapColor(MapColor.COLOR_PURPLE)
-                                    .noCollission()
-                                    .noOcclusion()
-                    ),
-                    true
-            );
+
+
     public static final DeferredBlock<EnchantedFlowerBlock> MAGIC_FLOWER =
             BlockRegisterHelper.RegisterNewBlock(
                     "enchanted_flower",

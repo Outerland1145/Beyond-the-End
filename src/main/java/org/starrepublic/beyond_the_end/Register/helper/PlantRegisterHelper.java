@@ -24,45 +24,46 @@ public class PlantRegisterHelper {
         this.shortgrass = shortgrass;
         this.tallgrass = tallgrass;
     }
-    public static PlantRegisterHelper PlantRegisterSet(
-            String name,
-            boolean needtallgrass
+    public static PlantRegisterHelper PlantRegisterWithTallSet(
+            String name
     )
     {
-        DeferredBlock<? extends Block> shortgrass = null;
-        DeferredBlock<EndPlantTall> tallgrass;
-        if (needtallgrass) {
-
-            tallgrass = BlockRegisterHelper.RegisterNewBlock(
-                "tall_" + name + "grass",
-                () -> new EndPlantTall(name,BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_TILES)),
+        DeferredBlock<EndPlantTall> tallgrass = BlockRegisterHelper.RegisterNewBlock(
+                "tall_" + name,
+                () -> new EndPlantTall(name,BlockBehaviour.Properties.ofFullCopy(Blocks.GRASS_BLOCK)),
                 true
-            );
-            shortgrass = BlockRegisterHelper.RegisterNewBlock(
-                    "short_" + name + "grass",
-                    () -> new EndPlantBlockShort(
-                            name,
-                            tallgrass.get(),
-                            BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_TILES)
-                    ),
-                    true
-            );
-        }
-        else
-        {
-            tallgrass = null;
-            shortgrass = BlockRegisterHelper.RegisterNewBlock(
-                    "short_" + name + "grass",
-                    () -> new EndPlantBlockShortWithoutTall(
-                            name,
-                            BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_TILES)
-                    ),
-                    true
-            );
-        }
+        );
+        DeferredBlock<? extends Block> shortgrass = BlockRegisterHelper.RegisterNewBlock(
+                "short_" + name,
+                () -> new EndPlantBlockShort(
+                        name,
+                        tallgrass.get(),
+                        BlockBehaviour.Properties.ofFullCopy(Blocks.GRASS_BLOCK)
+                ),
+                true
+        );
+
         return new PlantRegisterHelper(
                 shortgrass,
                 tallgrass
+        );
+    }
+    public static PlantRegisterHelper PlantRegisterWithoutTallSet(
+            String name
+    )
+    {
+        DeferredBlock<? extends Block> grass = BlockRegisterHelper.RegisterNewBlock(
+                name,
+                () -> new EndPlantBlockShortWithoutTall(
+                        name,
+                        BlockBehaviour.Properties.ofFullCopy(Blocks.GRASS_BLOCK)
+                ),
+                true
+        );
+
+        return new PlantRegisterHelper(
+                grass,
+                null
         );
     }
 }

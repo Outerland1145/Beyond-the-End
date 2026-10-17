@@ -68,7 +68,7 @@ public class EndPlantTall extends DoublePlantBlock {
                 Registries.BLOCK,
                 ResourceLocation.fromNamespaceAndPath(
                         Beyond_the_end.MODID,
-                        "plant/can_tall_" + name + "_plantable"
+                        "plant/can_" + name + "_plantable"
                 )
         );
     }

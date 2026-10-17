@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_features",
   "biomes": "beyond_the_end:enchanted_lands",
-  "features": "beyond_the_end:enchanted_lands_end_gateway",
+  "features": "beyond_the_end:end_gateway",
   "step": "surface_structures"
 }

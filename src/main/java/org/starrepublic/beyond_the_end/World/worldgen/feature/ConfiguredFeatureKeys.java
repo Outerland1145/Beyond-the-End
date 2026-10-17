@@ -8,7 +8,11 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 
 public final class ConfiguredFeatureKeys {
-
+    public static final ResourceKey<ConfiguredFeature<?, ?>>
+            INFESTED_LANDS_BONEMEAL =
+            create(
+                    "infested_grass_patch"
+            );
     public static final ResourceKey<ConfiguredFeature<?, ?>>
             ENCHANTED_LANDS_BONEMEAL =
             create(

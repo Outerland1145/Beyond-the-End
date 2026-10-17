@@ -22,15 +22,15 @@ public class Blocks {
                     Beyond_the_end.MODID
             );
 
-    public static final Supplier<CreativeModeTab> BTE_END_BLOCK_TAB =
+    public static final Supplier<CreativeModeTab> BTE_END_Building_TAB =
             CREATIVE_TABS.register(
-                    "beyond_the_end",
+                    "beyond_the_end_building_tab",
                     () -> CreativeModeTab.builder()
 
                             // 分頁名稱
                             .title(
                                     Component.translatable(
-                                            "itemGroup.beyond_the_end.beyond_the_end_block"
+                                            "itemGroup.beyond_the_end.beyond_the_end_building_tab"
                                     )
                             )
 
@@ -47,30 +47,13 @@ public class Blocks {
                                 output.accept( BlockItemRegistry.END_PORTAL_ITEM.get());
                                 output.accept( BlockItemRegistry.END_GATEWAY_ITEM.get());
                                 output.accept( BlockRegister.END_FIRE.torchitem.get());
-                                output.accept( BlockRegister.VOID_CRYSTAL.smallcrystalbud.get());
-                                output.accept( BlockRegister.VOID_CRYSTAL.mediumcrystalbud.get());
-                                output.accept( BlockRegister.VOID_CRYSTAL.largecrystalbud.get());
-                                output.accept( BlockRegister.VOID_CRYSTAL.crystalcluster.get());
-                                output.accept( BlockRegister.VOID_CRYSTAL.crystalblock.get());
-                                output.accept( BlockRegister.VOID_CRYSTAL.crystalbuddingblock.get());
                                 output.accept( BlockRegister.BarrierNodeBlock.get());
                                 output.accept( BlockRegister.AltarStone.get());
                                 output.accept( BlockRegister.END_ANCHOR_BLOCK.get());
                                 output.accept( BlockRegister.Void_Block.get());
-                                output.accept( BlockRegister.END_Short_Grass_Block.get());
-                                output.accept( BlockRegister.END_Tall_Grass_Block.get());
-                                output.accept( BlockRegister.END_STONE_ENCHANTED.get());
-                                output.accept( BlockRegister.END_STONE_INFESTED.get());
-                                output.accept( BlockRegister.END_STONE_BURNED.get());
-                                output.accept( BlockRegister.END_DRIPSTONE.get());
-                                output.accept( BlockRegister.END_SAND.get());
                                 output.accept( BlockRegister.END_FIRE.campfire.get());
                                 output.accept( BlockRegister.END_FIRE.lantern.get());
                                 output.accept( BlockRegister.END_LARTERN_BLOCK.get());
-                                output.accept( BlockRegister.Enchanted_Short_Grass_Block.get());
-                                output.accept( BlockRegister.Enchanted_Tall_Grass_Block.get());
-                                output.accept( BlockRegister.MAGIC_FLOWER.get());
-
                                 output.accept( BlockRegister.SPOOKY.log.get());
                                 output.accept( BlockRegister.SPOOKY.wood.get());
                                 output.accept( BlockRegister.SPOOKY.strippedlog.get());
@@ -85,8 +68,7 @@ public class Blocks {
                                 output.accept( BlockRegister.SPOOKY.pressureplate.get());
                                 output.accept( BlockRegister.SPOOKY.button.get());
 
-                                output.accept( BlockRegister.SPOOKY.sapling.get());
-                                output.accept( BlockRegister.SPOOKY.leaves.get());
+
                                 output.accept( ItemRegister.ENDER_GOO_BUCKET);
                                 output.accept( ItemRegister.VOID_CRYSTAL_SHARD);
 
@@ -94,6 +76,52 @@ public class Blocks {
                             })
 
                             .build()
+    );
+    public static final Supplier<CreativeModeTab> BTE_END_Nature_TAB =
+            CREATIVE_TABS.register(
+                    "beyond_the_end_nature_tab",
+                    () -> CreativeModeTab.builder()
+
+                            // 分頁名稱
+                            .title(
+                                    Component.translatable(
+                                            "itemGroup.beyond_the_end.beyond_the_end_nature_tab"
+                                    )
+                            )
+
+                            // 分頁圖示
+                            .icon(
+                                    () -> new ItemStack(
+                                            BlockRegister.END_STONE_ENCHANTED.get()
+                                    )
+                            )
+
+                            // 分頁中的所有物品
+                            .displayItems((parameters, output) -> {
+                                        output.accept( BlockRegister.END_STONE_ENCHANTED.get());
+                                        output.accept( BlockRegister.END_STONE_INFESTED.get());
+                                        output.accept( BlockRegister.END_STONE_BURNED.get());
+                                        output.accept( BlockRegister.END_DRIPSTONE.get());
+                                        output.accept( BlockRegister.END_SAND.get());
+                                        output.accept( BlockRegister.VOID_CRYSTAL.smallcrystalbud.get());
+                                        output.accept( BlockRegister.VOID_CRYSTAL.mediumcrystalbud.get());
+                                        output.accept( BlockRegister.VOID_CRYSTAL.largecrystalbud.get());
+                                        output.accept( BlockRegister.VOID_CRYSTAL.crystalcluster.get());
+                                        output.accept( BlockRegister.VOID_CRYSTAL.crystalblock.get());
+                                        output.accept( BlockRegister.VOID_CRYSTAL.crystalbuddingblock.get());
+                                        output.accept( BlockRegister.END_Short_Grass_Block.get());
+                                        output.accept( BlockRegister.END_Tall_Grass_Block.get());
+                                        output.accept( BlockRegister.Enchanted_Short_Grass_Block.get());
+                                        output.accept( BlockRegister.Enchanted_Tall_Grass_Block.get());
+                                        output.accept( BlockRegister.MAGIC_FLOWER.get());
+                                        output.accept( BlockRegister.SPOOKY.sapling.get());
+                                        output.accept( BlockRegister.SPOOKY.leaves.get());
+                                        output.accept( BlockRegister.INFESTED_FERN.shortgrass );
+                                        output.accept( BlockRegister.INFESTED_FERN.tallgrass );
+                                        output.accept( BlockRegister.INFESTED_GRASS.shortgrass );
+                                        output.accept( BlockRegister.INFESTED_ROOT.shortgrass );
+                            }
+                            ).build()
             );
 
     public static void register(IEventBus eventBus) {

@@ -1,0 +1,28 @@
+{
+  "type": "beyond_the_end:ground_plant_patch",
+  "config": {
+    "plants": [
+      {
+        "provider": {
+          "type": "minecraft:simple_state_provider",
+          "state": {
+            "Name": "beyond_the_end:infested_grass"
+          }
+        },
+        "weight": 3
+      },
+      {
+        "provider": {
+          "type": "minecraft:simple_state_provider",
+          "state": {
+            "Name": "beyond_the_end:infested_root"
+          }
+        },
+        "weight": 2
+      }
+    ],
+    "tries": 30,
+    "xz_spread": 6,
+    "y_search": 3
+  }
+}

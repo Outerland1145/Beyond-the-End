@@ -1,0 +1,31 @@
+{
+  "type": "beyond_the_end:ground_plant_patch",
+  "config": {
+    "plants": [
+      {
+        "provider": {
+          "type": "minecraft:simple_state_provider",
+          "state": {
+            "Name": "beyond_the_end:short_infested_fern"
+          }
+        },
+        "weight": 4
+      },
+      {
+        "provider": {
+          "type": "minecraft:simple_state_provider",
+          "state": {
+            "Name": "beyond_the_end:tall_infested_fern",
+            "Properties": {
+              "half": "lower"
+            }
+          }
+        },
+        "weight": 1
+      }
+    ],
+    "tries": 24,
+    "xz_spread": 5,
+    "y_search": 3
+  }
+}

@@ -129,7 +129,7 @@ public class FeatureRegister {
                     )
             );
     public static final Supplier<Feature<SpookyTreeConfiguration>>
-            GHOST_TREE =
+            SPOOKY_TREE =
             FEATURES.register(
                     "spooky_tree",
                     () -> new SpookyTreeFeature(
@@ -137,11 +137,19 @@ public class FeatureRegister {
                     )
             );
     public static final Supplier<Feature<SpookyTreeConfiguration>>
-            HEE_SPOOKY_TREE =
+            SMALL_SPOOKY_TREE =
             FEATURES.register(
                     "small_spooky_tree",
                     () -> new SmallSpookyTreeFeature(
                             SpookyTreeConfiguration.CODEC
+                    )
+            );
+    public static final Supplier<Feature<GroundPlantPatchFeature.Configuration>>
+            GROUND_PLANT_PATCH =
+            FEATURES.register(
+                    "ground_plant_patch",
+                    () -> new GroundPlantPatchFeature(
+                            GroundPlantPatchFeature.Configuration.CODEC
                     )
             );
 

@@ -1,6 +1,10 @@
 {
   "type": "neoforge:add_features",
   "biomes": "beyond_the_end:enchanted_lands",
-  "features": "beyond_the_end:enchanted_flower_patch",
+  "features": [
+
+    "beyond_the_end:enchanted_grass_meadow",
+    "beyond_the_end:enchanted_flower_patch"
+  ],
   "step": "vegetal_decoration"
 }
