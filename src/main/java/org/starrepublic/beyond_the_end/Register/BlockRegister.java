@@ -30,6 +30,8 @@ public class BlockRegister {
     public static final CrystalRegisterHelper VOID_CRYSTAL = CrystalRegisterHelper.CrystalRegisterSet("void_crystal");
     public static final FireRegisterHelper END_FIRE = FireRegisterHelper.FireRegisterSet("end");
     public static final WoodRegisterHelper SPOOKY = WoodRegisterHelper.WoodRegisterSet("spooky");
+
+
     public static final DeferredBlock<DecorativeEndGatewayBlock> DECORATIVE_END_GATEWAY =
             BlockRegisterHelper.RegisterNewBlockWithSpecialItem(
                     "decorative_end_gateway",

@@ -85,7 +85,7 @@ public class WoodSaplingBlock extends SaplingBlock {
                 Registries.BLOCK,
                 ResourceLocation.fromNamespaceAndPath(
                         Beyond_the_end.MODID,
-                        "can_" + name + "_plantable"
+                        "sapling/can_" + name + "_plantable"
                 )
         );
     }
