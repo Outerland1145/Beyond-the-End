@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/leaves",
+  "textures": {
+    "all": "beyond_the_end:block/spooky_leaves"
+  }
+}

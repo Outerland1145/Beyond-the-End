@@ -11,7 +11,7 @@ public final class BlockEntityEvents {
 
         event.modify(
                 BlockEntityType.CAMPFIRE,
-                BlockRegister.END_CAMPFIRE.get()
+                BlockRegister.END_FIRE.campfire.get()
         );
     }
 }

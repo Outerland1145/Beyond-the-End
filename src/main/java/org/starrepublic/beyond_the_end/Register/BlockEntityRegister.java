@@ -49,7 +49,7 @@ public class BlockEntityRegister {
                     "end_campfire",
                     () -> BlockEntityType.Builder.of(
                             EndCampfireBlockEntity::new,
-                            BlockRegister.END_CAMPFIRE.get()
+                            BlockRegister.END_FIRE.campfire.get()
                     ).build(null)
             );
 

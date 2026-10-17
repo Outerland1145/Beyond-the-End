@@ -9,6 +9,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.World.worldgen.feature.*;
 
+import java.util.function.Supplier;
+
 public class FeatureRegister {
     private FeatureRegister() {}
 
@@ -124,6 +126,14 @@ public class FeatureRegister {
 
                     () -> new VoidCrystalSpikeFeature(
                             NoneFeatureConfiguration.CODEC
+                    )
+            );
+    public static final Supplier<Feature<SpookyTreeConfiguration>>
+            GHOST_TREE =
+            FEATURES.register(
+                    "spooky_tree",
+                    () -> new SpookyTreeFeature(
+                            SpookyTreeConfiguration.CODEC
                     )
             );
 

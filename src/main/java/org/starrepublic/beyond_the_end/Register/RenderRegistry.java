@@ -48,7 +48,7 @@ public class RenderRegistry {
 
         event.registerItem(
                 new DecorativeEndGatewayItemExtensions(),
-                BlockItemRegistry.DECORATIVE_END_GATEWAY.get()
+                BlockRegister.DECORATIVE_END_GATEWAY.get().asItem()
         );
         event.registerItem(
                 new DecorativeEndGatewayItemExtensions(),

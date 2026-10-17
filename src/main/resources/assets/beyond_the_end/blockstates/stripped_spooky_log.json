@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "beyond_the_end:block/stripped_spooky_log_x"
+    },
+    "axis=y": {
+      "model": "beyond_the_end:block/stripped_spooky_log_y"
+    },
+    "axis=z": {
+      "model": "beyond_the_end:block/stripped_spooky_log_z"
+    }
+  }
+}

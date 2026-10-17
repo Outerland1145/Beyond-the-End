@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/button",
+  "textures": {
+    "texture": "beyond_the_end:block/spooky_planks"
+  }
+}

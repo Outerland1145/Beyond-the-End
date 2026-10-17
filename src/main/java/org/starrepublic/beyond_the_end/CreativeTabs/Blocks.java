@@ -8,6 +8,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Register.BlockItemRegistry;
+import org.starrepublic.beyond_the_end.Register.BlockRegister;
 import org.starrepublic.beyond_the_end.Register.ItemRegister;
 
 import java.util.function.Supplier;
@@ -36,39 +37,56 @@ public class Blocks {
                             // 分頁圖示
                             .icon(
                                     () -> new ItemStack(
-                                            BlockItemRegistry.DECORATIVE_END_GATEWAY.get()
+                                            BlockRegister.DECORATIVE_END_GATEWAY.get()
                                     )
                             )
 
                             // 分頁中的所有物品
                             .displayItems((parameters, output) -> {
-                                output.accept( BlockItemRegistry.DECORATIVE_END_GATEWAY.get());
+                                output.accept( BlockRegister.DECORATIVE_END_GATEWAY.get());
                                 output.accept( BlockItemRegistry.END_PORTAL_ITEM.get());
                                 output.accept( BlockItemRegistry.END_GATEWAY_ITEM.get());
-                                output.accept( BlockItemRegistry.AltarStone.get());
-                                output.accept( BlockItemRegistry.BarrierNodeBlock.get());
-                                output.accept( BlockItemRegistry.END_ANCHOR_BLOCK.get());
-                                output.accept( BlockItemRegistry.Void_Block.get());
-                                output.accept( BlockItemRegistry.END_Short_Grass_Block.get());
-                                output.accept( BlockItemRegistry.END_Tall_Grass_Block.get());
-                                output.accept( BlockItemRegistry.END_STONE_ENCHANTED.get());
-                                output.accept( BlockItemRegistry.END_STONE_INFESTED.get());
-                                output.accept( BlockItemRegistry.END_STONE_BURNED.get());
-                                output.accept( BlockItemRegistry.END_DRIPSTONE.get());
-                                output.accept( BlockItemRegistry.VOID_CRYSTAL_BLOCK.get());
-                                output.accept( BlockItemRegistry.VOID_CRYSTAL_BLOCK_BUDDING.get());
-                                output.accept( BlockItemRegistry.SMALL_VOID_CRYSTAL_BUD.get());
-                                output.accept( BlockItemRegistry.MEDIUM_VOID_CRYSTAL_BUD.get());
-                                output.accept( BlockItemRegistry.LARGE_VOID_CRYSTAL_BUD.get());
-                                output.accept( BlockItemRegistry.VOID_CRYSTAL_CLUSTER.get());
-                                output.accept( BlockItemRegistry.END_SAND.get());
-                                output.accept( BlockItemRegistry.END_TORCH.get());
-                                output.accept( BlockItemRegistry.END_CAMPFIRE.get());
-                                output.accept( BlockItemRegistry.END_LARTERN.get());
-                                output.accept( BlockItemRegistry.END_LARTERN_BLOCK.get());
-                                output.accept( BlockItemRegistry.Enchanted_Short_Grass_Block.get());
-                                output.accept( BlockItemRegistry.Enchanted_Tall_Grass_Block.get());
-                                output.accept( BlockItemRegistry.MAGIC_FLOWER.get());
+                                output.accept( BlockRegister.END_FIRE.torchitem.get());
+                                output.accept( BlockRegister.VOID_CRYSTAL.smallcrystalbud.get());
+                                output.accept( BlockRegister.VOID_CRYSTAL.mediumcrystalbud.get());
+                                output.accept( BlockRegister.VOID_CRYSTAL.largecrystalbud.get());
+                                output.accept( BlockRegister.VOID_CRYSTAL.crystalcluster.get());
+                                output.accept( BlockRegister.VOID_CRYSTAL.crystalblock.get());
+                                output.accept( BlockRegister.VOID_CRYSTAL.crystalbuddingblock.get());
+                                output.accept( BlockRegister.BarrierNodeBlock.get());
+                                output.accept( BlockRegister.AltarStone.get());
+                                output.accept( BlockRegister.END_ANCHOR_BLOCK.get());
+                                output.accept( BlockRegister.Void_Block.get());
+                                output.accept( BlockRegister.END_Short_Grass_Block.get());
+                                output.accept( BlockRegister.END_Tall_Grass_Block.get());
+                                output.accept( BlockRegister.END_STONE_ENCHANTED.get());
+                                output.accept( BlockRegister.END_STONE_INFESTED.get());
+                                output.accept( BlockRegister.END_STONE_BURNED.get());
+                                output.accept( BlockRegister.END_DRIPSTONE.get());
+                                output.accept( BlockRegister.END_SAND.get());
+                                output.accept( BlockRegister.END_FIRE.campfire.get());
+                                output.accept( BlockRegister.END_FIRE.lantern.get());
+                                output.accept( BlockRegister.END_LARTERN_BLOCK.get());
+                                output.accept( BlockRegister.Enchanted_Short_Grass_Block.get());
+                                output.accept( BlockRegister.Enchanted_Tall_Grass_Block.get());
+                                output.accept( BlockRegister.MAGIC_FLOWER.get());
+
+                                output.accept( BlockRegister.SPOOKY.log.get());
+                                output.accept( BlockRegister.SPOOKY.wood.get());
+                                output.accept( BlockRegister.SPOOKY.strippedlog.get());
+                                output.accept( BlockRegister.SPOOKY.strippedwood.get());
+                                output.accept( BlockRegister.SPOOKY.planks.get());
+                                output.accept( BlockRegister.SPOOKY.stairs.get());
+                                output.accept( BlockRegister.SPOOKY.slab.get());
+                                output.accept( BlockRegister.SPOOKY.fence.get());
+                                output.accept( BlockRegister.SPOOKY.fencegate.get());
+                                output.accept( BlockRegister.SPOOKY.door.get());
+                                output.accept( BlockRegister.SPOOKY.trapdoor.get());
+                                output.accept( BlockRegister.SPOOKY.pressureplate.get());
+                                output.accept( BlockRegister.SPOOKY.button.get());
+
+                                output.accept( BlockRegister.SPOOKY.sapling.get());
+                                output.accept( BlockRegister.SPOOKY.leaves.get());
                                 output.accept( ItemRegister.ENDER_GOO_BUCKET);
                                 output.accept( ItemRegister.VOID_CRYSTAL_SHARD);
 

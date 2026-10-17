@@ -541,7 +541,7 @@ public class VoidCrystalSpikeFeature
                         level.setBlock(
                                 placePos,
                                 BlockRegister
-                                        .VOID_CRYSTAL_BLOCK
+                                        .VOID_CRYSTAL.crystalblock
                                         .get()
                                         .defaultBlockState(),
                                 Block.UPDATE_CLIENTS
@@ -692,7 +692,7 @@ public class VoidCrystalSpikeFeature
                                 && !existing.is(Blocks.CRYING_OBSIDIAN)
                                 && !existing.is(
                                 BlockRegister
-                                        .VOID_CRYSTAL_BLOCK
+                                        .VOID_CRYSTAL.crystalblock
                                         .get()
                         )
                 ) {
@@ -702,7 +702,7 @@ public class VoidCrystalSpikeFeature
                 level.setBlock(
                         placePos,
                         BlockRegister
-                                .VOID_CRYSTAL_BLOCK
+                                .VOID_CRYSTAL.crystalblock
                                 .get()
                                 .defaultBlockState(),
                         Block.UPDATE_CLIENTS
@@ -816,7 +816,7 @@ public class VoidCrystalSpikeFeature
             level.setBlock(
                     pos,
                     BlockRegister
-                            .VOID_CRYSTAL_BLOCK_BUDDING
+                            .VOID_CRYSTAL.crystalbuddingblock
                             .get()
                             .defaultBlockState(),
                     Block.UPDATE_CLIENTS

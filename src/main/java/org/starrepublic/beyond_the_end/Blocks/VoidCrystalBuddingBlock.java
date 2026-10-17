@@ -83,7 +83,7 @@ public class VoidCrystalBuddingBlock extends Block {
 
             BlockState newState =
                     createCrystalState(
-                            BlockRegister.SMALL_VOID_CRYSTAL_BUD
+                            BlockRegister.VOID_CRYSTAL.smallcrystalbud
                                     .get()
                                     .defaultBlockState(),
 
@@ -110,7 +110,7 @@ public class VoidCrystalBuddingBlock extends Block {
 
         if (
                 targetState.is(
-                        BlockRegister.SMALL_VOID_CRYSTAL_BUD.get()
+                        BlockRegister.VOID_CRYSTAL.smallcrystalbud.get()
                 )
                         && isFacing(
                         targetState,
@@ -123,7 +123,7 @@ public class VoidCrystalBuddingBlock extends Block {
                     targetPos,
                     targetState,
 
-                    BlockRegister.MEDIUM_VOID_CRYSTAL_BUD
+                    BlockRegister.VOID_CRYSTAL.mediumcrystalbud
                             .get()
                             .defaultBlockState(),
 
@@ -142,7 +142,7 @@ public class VoidCrystalBuddingBlock extends Block {
 
         if (
                 targetState.is(
-                        BlockRegister.MEDIUM_VOID_CRYSTAL_BUD.get()
+                        BlockRegister.VOID_CRYSTAL.mediumcrystalbud.get()
                 )
                         && isFacing(
                         targetState,
@@ -155,7 +155,7 @@ public class VoidCrystalBuddingBlock extends Block {
                     targetPos,
                     targetState,
 
-                    BlockRegister.LARGE_VOID_CRYSTAL_BUD
+                    BlockRegister.VOID_CRYSTAL.largecrystalbud
                             .get()
                             .defaultBlockState(),
 
@@ -174,7 +174,7 @@ public class VoidCrystalBuddingBlock extends Block {
 
         if (
                 targetState.is(
-                        BlockRegister.LARGE_VOID_CRYSTAL_BUD.get()
+                        BlockRegister.VOID_CRYSTAL.largecrystalbud.get()
                 )
                         && isFacing(
                         targetState,
@@ -187,7 +187,7 @@ public class VoidCrystalBuddingBlock extends Block {
                     targetPos,
                     targetState,
 
-                    BlockRegister.VOID_CRYSTAL_CLUSTER
+                    BlockRegister.VOID_CRYSTAL.crystalcluster
                             .get()
                             .defaultBlockState(),
 

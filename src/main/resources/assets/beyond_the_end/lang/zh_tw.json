@@ -19,23 +19,44 @@
   "block.beyond_the_end.void_crystal_cluster": "虛空水晶簇",
   "block.beyond_the_end.void_crystal_block": "虛空水晶塊",
   "block.beyond_the_end.void_crystal_budding_block": "虛空水晶母岩",
-
+  "item.beyond_the_end.void_crystal_shard": "虛空水晶碎片",
 
   "block.beyond_the_end.end_pointed_dripstone": "終界鐘乳石",
   "block.beyond_the_end.end_lantern_block": "虛空燈",
+
   "block.beyond_the_end.end_lantern": "虛空燈籠",
   "block.beyond_the_end.end_fire": "虛無火",
   "block.beyond_the_end.end_torch": "虛無火把",
   "block.beyond_the_end.end_wall_torch": "虛無火把",
   "block.beyond_the_end.end_campfire": "虛無營火",
+
   "block.beyond_the_end.enchanted_end_stone": "附魔終界石",
   "block.beyond_the_end.infested_end_stone": "腐化終界石",
   "block.beyond_the_end.burned_end_stone": "灼燒終界石",
+
   "block.beyond_the_end.enchanted_tall_grass": "魔力矮草",
   "block.beyond_the_end.enchanted_short_grass": "魔力草",
   "block.beyond_the_end.enchanted_flower": "魔力花",
+
   "item.beyond_the_end.ender_goo_bucket": "終界黏漿桶",
-  "item.beyond_the_end.void_crystal_shard": "虛空水晶碎片",
+
+  "block.beyond_the_end.spooky_log": "幽靈原木",
+  "block.beyond_the_end.spooky_wood": "幽靈木塊",
+  "block.beyond_the_end.stripped_spooky_log": "剝皮幽靈原木",
+  "block.beyond_the_end.stripped_spooky_wood": "剝皮幽靈木塊",
+  "block.beyond_the_end.spooky_planks": "幽靈木材",
+  "block.beyond_the_end.spooky_stairs": "幽靈木階梯",
+  "block.beyond_the_end.spooky_slab": "幽靈木半磚",
+  "block.beyond_the_end.spooky_fence": "幽靈木柵欄",
+  "block.beyond_the_end.spooky_fence_gate": "幽靈木柵欄門",
+  "block.beyond_the_end.spooky_door": "幽靈木門",
+  "block.beyond_the_end.spooky_trapdoor": "幽靈木地板門",
+  "block.beyond_the_end.spooky_pressure_plate": "幽靈木壓力板",
+  "block.beyond_the_end.spooky_button": "幽靈木按鈕",
+  "block.beyond_the_end.spooky_leaves": "幽靈木樹葉",
+  "block.beyond_the_end.spooky_sapling": "幽靈木樹苗",
+
+
   "message.beyond_the_end.anchor_set": "錨定位置已設置",
   "message.beyond_the_end.anchor_lost": "錨定點已遺失",
   "message.beyond_the_end.anchor_blocked": "錨定點遭到阻擋",

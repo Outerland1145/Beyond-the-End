@@ -87,7 +87,7 @@ public class InteractionEvents {
          * 就把這行換成你的方法。
          */
         BlockState fireState =
-                BlockRegister.EndFireBlock
+                BlockRegister.END_FIRE.fireblock
                         .get()
                         .defaultBlockState();
 

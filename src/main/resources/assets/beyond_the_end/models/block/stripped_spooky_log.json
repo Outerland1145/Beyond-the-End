@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "beyond_the_end:block/stripped_spooky_log_top",
+    "side": "beyond_the_end:block/stripped_spooky_log"
+  }
+}
