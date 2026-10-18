@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "beyond_the_end:block/end_tall_grass_top"
+    "layer0": "beyond_the_end:block/tall_end_grass_top"
   }
 }

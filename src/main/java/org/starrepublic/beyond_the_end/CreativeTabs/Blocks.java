@@ -109,17 +109,17 @@ public class Blocks {
                                         output.accept( BlockRegister.VOID_CRYSTAL.crystalcluster.get());
                                         output.accept( BlockRegister.VOID_CRYSTAL.crystalblock.get());
                                         output.accept( BlockRegister.VOID_CRYSTAL.crystalbuddingblock.get());
-                                        output.accept( BlockRegister.END_Short_Grass_Block.get());
-                                        output.accept( BlockRegister.END_Tall_Grass_Block.get());
-                                        output.accept( BlockRegister.Enchanted_Short_Grass_Block.get());
-                                        output.accept( BlockRegister.Enchanted_Tall_Grass_Block.get());
+                                        output.accept( BlockRegister.END_GRASS.shortgrass.get());
+                                        output.accept( BlockRegister.END_GRASS.tallgrass.get());
+                                        output.accept( BlockRegister.Enchanted_Short_Grass_Block.shortgrass.get());
+                                        output.accept( BlockRegister.Enchanted_Tall_Grass_Block.shortgrass.get());
                                         output.accept( BlockRegister.MAGIC_FLOWER.get());
                                         output.accept( BlockRegister.SPOOKY.sapling.get());
                                         output.accept( BlockRegister.SPOOKY.leaves.get());
-                                        output.accept( BlockRegister.INFESTED_FERN.shortgrass );
-                                        output.accept( BlockRegister.INFESTED_FERN.tallgrass );
-                                        output.accept( BlockRegister.INFESTED_GRASS.shortgrass );
-                                        output.accept( BlockRegister.INFESTED_ROOT.shortgrass );
+                                        output.accept( BlockRegister.INFESTED_FERN.shortgrass.get() );
+                                        output.accept( BlockRegister.INFESTED_FERN.tallgrass.get() );
+                                        output.accept( BlockRegister.INFESTED_GRASS.shortgrass.get() );
+                                        output.accept( BlockRegister.INFESTED_ROOT.shortgrass.get() );
                             }
                             ).build()
             );

@@ -2,15 +2,20 @@ package org.starrepublic.beyond_the_end.Blocks;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Register.Tags;
 
 public class EnchantedFlowerBlock extends FlowerBlock {
-
+    private final TagKey<Block> plantableOn;
     public static final MapCodec<EnchantedFlowerBlock> CODEC =
             simpleCodec(EnchantedFlowerBlock::new);
 
@@ -30,6 +35,7 @@ public class EnchantedFlowerBlock extends FlowerBlock {
                 5.0F,
                 properties
         );
+        this.plantableOn = createPlantableTag();
     }
 
 
@@ -51,11 +57,25 @@ public class EnchantedFlowerBlock extends FlowerBlock {
     ) {
 
         return floor.is(
-                Tags.ENCHANTED_PLANT_PLANTABLE
+                plantableOn
         ) || super.mayPlaceOn(
                 floor,
                 level,
                 pos
+        );
+    }
+    public TagKey<Block> getPlantableOnTag() {
+        return plantableOn;
+    }
+
+    private static TagKey<Block> createPlantableTag()
+    {
+        return TagKey.create(
+                Registries.BLOCK,
+                ResourceLocation.fromNamespaceAndPath(
+                        Beyond_the_end.MODID,
+                        "plant/can_enchanted_flower_plantable"
+                )
         );
     }
 }

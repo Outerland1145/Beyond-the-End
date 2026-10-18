@@ -17,7 +17,7 @@
                   }
                 }
               ],
-              "name": "beyond_the_end:end_short_grass"
+              "name": "beyond_the_end:short_end_grass"
             },
             {
               "type": "minecraft:item",
@@ -48,5 +48,5 @@
       "rolls": 1.0
     }
   ],
-  "random_sequence": "beyond_the_end:blocks/end_short_grass"
+  "random_sequence": "beyond_the_end:blocks/short_end_grass"
 }

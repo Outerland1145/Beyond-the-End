@@ -5,7 +5,7 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "block": "beyond_the_end:end_tall_grass",
+          "block": "beyond_the_end:tall_end_grass",
           "condition": "minecraft:block_state_property",
           "properties": {
             "half": "lower"
@@ -16,7 +16,7 @@
           "offsetY": 1,
           "predicate": {
             "block": {
-              "blocks": "beyond_the_end:end_tall_grass",
+              "blocks": "beyond_the_end:tall_end_grass",
               "state": {
                 "half": "upper"
               }
@@ -45,7 +45,7 @@
                   "function": "minecraft:set_count"
                 }
               ],
-              "name": "beyond_the_end:end_tall_grass"
+              "name": "beyond_the_end:tall_end_grass"
             },
             {
               "type": "minecraft:item",
@@ -80,7 +80,7 @@
           "offsetY": -1,
           "predicate": {
             "block": {
-              "blocks": "beyond_the_end:end_tall_grass",
+              "blocks": "beyond_the_end:tall_end_grass",
               "state": {
                 "half": "lower"
               }
@@ -109,7 +109,7 @@
                   "function": "minecraft:set_count"
                 }
               ],
-              "name": "beyond_the_end:end_tall_grass"
+              "name": "beyond_the_end:tall_end_grass"
             },
             {
               "type": "minecraft:item",
@@ -130,5 +130,5 @@
       "rolls": 1.0
     }
   ],
-  "random_sequence": "beyond_the_end:blocks/end_tall_grass"
+  "random_sequence": "beyond_the_end:blocks/tall_end_grass"
 }

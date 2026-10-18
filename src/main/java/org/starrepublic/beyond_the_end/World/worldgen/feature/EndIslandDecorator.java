@@ -220,7 +220,7 @@ public final class EndIslandDecorator {
             if (level.getBlockState(upperPos).isAir()) {
 
                 BlockState tallGrass =
-                        BlockRegister.END_Tall_Grass_Block
+                        BlockRegister.END_GRASS.tallgrass
                                 .get()
                                 .defaultBlockState();
 
@@ -250,7 +250,7 @@ public final class EndIslandDecorator {
          */
 
         BlockState shortGrass =
-                BlockRegister.END_Short_Grass_Block
+                BlockRegister.END_GRASS.shortgrass
                         .get()
                         .defaultBlockState();
 

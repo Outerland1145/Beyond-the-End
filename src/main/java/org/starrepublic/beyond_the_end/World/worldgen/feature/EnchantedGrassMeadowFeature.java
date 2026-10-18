@@ -227,7 +227,7 @@ public class EnchantedGrassMeadowFeature
                      */
                     BlockState shortState =
                             BlockRegister
-                                    .Enchanted_Tall_Grass_Block
+                                    .Enchanted_Tall_Grass_Block.tallgrass
                                     .get()
                                     .defaultBlockState();
 
@@ -264,7 +264,7 @@ public class EnchantedGrassMeadowFeature
                      */
                     BlockState shortState =
                             BlockRegister
-                                    .Enchanted_Short_Grass_Block
+                                    .Enchanted_Short_Grass_Block.shortgrass
                                     .get()
                                     .defaultBlockState();
 

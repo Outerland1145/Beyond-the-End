@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "#beyond_the_end:end_plant_plantable",
+    "beyond_the_end:enchanted_end_stone"
+  ]
+}

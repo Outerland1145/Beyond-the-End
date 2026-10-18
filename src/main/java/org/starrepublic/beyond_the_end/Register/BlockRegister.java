@@ -29,58 +29,11 @@ public class BlockRegister {
     public static final PlantRegisterHelper INFESTED_GRASS = PlantRegisterHelper.PlantRegisterWithoutTallSet("infested_grass");
     public static final PlantRegisterHelper INFESTED_ROOT = PlantRegisterHelper.PlantRegisterWithoutTallSet("infested_root");
 
-    //public static final PlantRegisterHelper END_GRASS = PlantRegisterHelper.PlantRegisterWithTallSet("end_grass");
-    //public static final PlantRegisterHelper ENCHANTED_GRASS = PlantRegisterHelper.PlantRegisterWithTallSet("enchanted_grass");
+    public static final PlantRegisterHelper END_GRASS = PlantRegisterHelper.PlantRegisterWithTallSet("end_grass");
 
-    public static final DeferredBlock<EnchantedPlants> Enchanted_Short_Grass_Block =
-            BlockRegisterHelper.RegisterNewBlock(
-                    "enchanted_short_grass",
-                    () -> new EnchantedPlants(
-                            BlockBehaviour.Properties
-                                    .ofFullCopy(Blocks.SHORT_GRASS)
-                                    .mapColor(MapColor.COLOR_PURPLE)
-                                    .noCollission()
-                                    .noOcclusion()
-                    ),
-                    true
-            );
-    public static final DeferredBlock<EnchantedPlants> Enchanted_Tall_Grass_Block =
-            BlockRegisterHelper.RegisterNewBlock(
-                    "enchanted_tall_grass",
-                    () -> new EnchantedPlants(
-                            BlockBehaviour.Properties
-                                    .ofFullCopy(Blocks.SHORT_GRASS)
-                                    .mapColor(MapColor.COLOR_PURPLE)
-                                    .noCollission()
-                                    .noOcclusion()
-                    ),
-                    true
-            );
+    public static final PlantRegisterHelper Enchanted_Short_Grass_Block = PlantRegisterHelper.PlantRegisterWithoutTallSet("enchanted_short_grass");
+    public static final PlantRegisterHelper Enchanted_Tall_Grass_Block = PlantRegisterHelper.PlantRegisterWithoutTallSet("enchanted_tall_grass");
 
-    public static final DeferredBlock<EndTallGrassBlock> END_Tall_Grass_Block =
-            BlockRegisterHelper.RegisterNewBlock(
-                    "end_tall_grass",
-                    () -> new EndTallGrassBlock(
-                            BlockBehaviour.Properties
-                                    .ofFullCopy(Blocks.TALL_GRASS)
-                                    .mapColor(MapColor.COLOR_PURPLE)
-                                    .noCollission()
-                                    .noOcclusion()
-                    ),
-                    true
-            );
-    public static final DeferredBlock<EndShortGrassBlock> END_Short_Grass_Block =
-            BlockRegisterHelper.RegisterNewBlock(
-                    "end_short_grass",
-                    () -> new EndShortGrassBlock(
-                            BlockBehaviour.Properties
-                                    .ofFullCopy(Blocks.SHORT_GRASS)
-                                    .mapColor(MapColor.COLOR_PURPLE)
-                                    .noCollission()
-                                    .noOcclusion()
-                    ),
-                    true
-            );
     public static final DeferredBlock<DecorativeEndGatewayBlock> DECORATIVE_END_GATEWAY =
             BlockRegisterHelper.RegisterNewBlockWithSpecialItem(
                     "decorative_end_gateway",
