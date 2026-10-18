@@ -6,6 +6,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.EnderMan;
 
 import net.neoforged.bus.api.IEventBus;
@@ -18,7 +19,9 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import org.starrepublic.beyond_the_end.Beyond_the_end;
+import org.starrepublic.beyond_the_end.Entitys.client.renderer.AncientEnderDragonRenderer;
 import org.starrepublic.beyond_the_end.Entitys.client.renderer.SmallEndermanRenderer;
+import org.starrepublic.beyond_the_end.Entitys.mob.AncientEnderDragonEntity;
 import org.starrepublic.beyond_the_end.Entitys.mob.AngryEndermanEntity;
 import org.starrepublic.beyond_the_end.Entitys.mob.SmallEndermanEntity;
 import org.starrepublic.beyond_the_end.Register.helper.EntityHelper;
@@ -66,6 +69,8 @@ public final class EntityRegister {
 
     public static final EntityHelper.MobEntry<AngryEndermanEntity>
             ANGRY_ENDERMAN = EntityHelper.registerMob("angry_enderman", AngryEndermanEntity.SPEC);
+    public static final EntityHelper.MobEntry<AncientEnderDragonEntity>
+            ANCIENT_ENDER_DRAGON = EntityHelper.registerMob("ancient_ender_dragon", AncientEnderDragonEntity.SPEC);
 
     // =========================================================
     // 共同端入口：主 Mod 建構子只呼叫這一次
@@ -148,12 +153,22 @@ public final class EntityRegister {
                         // 直接使用原版模型
                         EntityHelper.Client.vanillaModel(ModelLayers.ENDERMAN)
                 );
-
+        private static final EntityHelper.Client.RenderSpec<AncientEnderDragonEntity>
+                ANCIENT_ENDER_DRAGON_RENDER =
+                EntityHelper.Client.<AncientEnderDragonEntity>bind(
+                        ANCIENT_ENDER_DRAGON.type(),
+                        AncientEnderDragonRenderer::new,
+                        EntityHelper.Client.vanillaModel(
+                                ModelLayers.ENDER_DRAGON
+                        )
+                );
 
 
         private static final List<EntityHelper.Client.RenderSpec<?>> RENDERS =
                 List.of(SMALL_ENDERMAN_RENDER,
-                        ANGRY_ENDERMAN_RENDER);
+                        ANGRY_ENDERMAN_RENDER,
+                        ANCIENT_ENDER_DRAGON_RENDER
+                        );
         //註冊部分，不要動
         private static void register(IEventBus modEventBus) {
             modEventBus.addListener(Client::registerRenderers);

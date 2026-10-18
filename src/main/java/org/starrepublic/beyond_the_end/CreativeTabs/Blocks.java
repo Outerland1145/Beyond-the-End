@@ -146,6 +146,7 @@ public class Blocks {
                                         output.accept( ItemRegister.END_CRYSTAL_REMOVER.get());
                                         output.accept(EntityRegister.SMALL_ENDERMAN.spawnEgg().get());
                                         output.accept(EntityRegister.ANGRY_ENDERMAN.spawnEgg().get());
+                                        output.accept(EntityRegister.ANCIENT_ENDER_DRAGON.spawnEgg().get());
                                         output.accept(PotionContents.createItemStack(Items.POTION, PotionRegister.ENDER_INFESTED));
                                         output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, PotionRegister.ENDER_INFESTED));
                                         output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, PotionRegister.ENDER_INFESTED));
