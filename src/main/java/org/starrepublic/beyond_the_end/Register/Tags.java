@@ -4,11 +4,14 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 
 import static org.starrepublic.beyond_the_end.Register.FluidRegister.FLUIDS;
@@ -26,6 +29,14 @@ public class Tags {
                     ResourceLocation.fromNamespaceAndPath(
                             Beyond_the_end.MODID,
                             "crystal_remover_blacklist"
+                    )
+            );
+    public static final TagKey<Biome> IGNORE_MONSTER_SPAWN_LIGHT =
+            TagKey.create(
+                    Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(
+                            Beyond_the_end.MODID,
+                            "ignore_monster_spawn_light"
                     )
             );
     public static final TagKey<EntityType<?>> ENDER_GOO_IMMUNE =
@@ -50,4 +61,5 @@ public class Tags {
     public static TagKey<Block> blockTag(String modid, String name) {
         return TagKey.create(Registries.BLOCK,ResourceLocation.fromNamespaceAndPath(modid, name));
     }
+
 }

@@ -1,0 +1,13 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "beyond_the_end:burning_lands",
+  "spawners":
+  [
+    {
+      "type": "beyond_the_end:angry_enderman",
+      "weight": 10,
+      "minCount": 6,
+      "maxCount": 6
+    }
+  ]
+}

@@ -1,10 +1,12 @@
 {
   "type": "neoforge:add_spawns",
   "biomes": "beyond_the_end:infested_lands",
-  "spawners": {
-    "type": "minecraft:enderman",
-    "weight": 10,
-    "minCount": 4,
-    "maxCount": 4
-  }
+  "spawners": [
+      {
+        "type": "minecraft:enderman",
+        "weight": 10,
+        "minCount": 4,
+        "maxCount": 4
+      }
+  ]
 }
