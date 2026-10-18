@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:enderman"
+    "minecraft:enderman",
+    "beyond_the_end:small_enderman"
   ]
 }

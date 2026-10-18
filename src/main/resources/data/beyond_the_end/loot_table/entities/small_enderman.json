@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:dynamic",
+          "name": "beyond_the_end:small_enderman_carried"
+        }
+      ]
+    }
+  ]
+}

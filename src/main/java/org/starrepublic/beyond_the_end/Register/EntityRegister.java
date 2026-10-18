@@ -1,5 +1,7 @@
 package org.starrepublic.beyond_the_end.Register;
 
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.entity.EndermanRenderer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -16,6 +18,8 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import org.starrepublic.beyond_the_end.Beyond_the_end;
+import org.starrepublic.beyond_the_end.Entitys.client.renderer.SmallEndermanRenderer;
+import org.starrepublic.beyond_the_end.Entitys.mob.AngryEndermanEntity;
 import org.starrepublic.beyond_the_end.Entitys.mob.SmallEndermanEntity;
 import org.starrepublic.beyond_the_end.Register.helper.EntityHelper;
 
@@ -60,11 +64,8 @@ public final class EntityRegister {
     public static final EntityHelper.MobEntry<SmallEndermanEntity> SMALL_ENDERMAN =
             EntityHelper.registerMob("small_enderman", SmallEndermanEntity.SPEC);
 
-    // =========================================================
-    // 私有集中註冊函式：真正 .register(...) 只在這個檔案執行
-    // =========================================================
-
-
+    public static final EntityHelper.MobEntry<AngryEndermanEntity>
+            ANGRY_ENDERMAN = EntityHelper.registerMob("angry_enderman", AngryEndermanEntity.SPEC);
 
     // =========================================================
     // 共同端入口：主 Mod 建構子只呼叫這一次
@@ -127,19 +128,33 @@ public final class EntityRegister {
         // =====================================================
         // Renderer + Model 清單：這裡決定每隻實體使用哪個
         // =====================================================
-
+        //小安德渲染註冊
         private static final EntityHelper.Client.RenderSpec<EnderMan> SMALL_ENDERMAN_RENDER =
                 EntityHelper.Client.<EnderMan>bind(
                         SMALL_ENDERMAN.type(),
-                        net.minecraft.client.renderer.entity.EndermanRenderer::new,
+                        SmallEndermanRenderer::new,
                         EntityHelper.Client.vanillaModel(
                                 net.minecraft.client.model.geom.ModelLayers.ENDERMAN
                         )
                 );
+        private static final EntityHelper.Client.RenderSpec<EnderMan>
+                ANGRY_ENDERMAN_RENDER =
+                EntityHelper.Client.<EnderMan>bind(
+                        ANGRY_ENDERMAN.type(),
+
+                        // 直接使用原版 Renderer
+                        EndermanRenderer::new,
+
+                        // 直接使用原版模型
+                        EntityHelper.Client.vanillaModel(ModelLayers.ENDERMAN)
+                );
+
+
 
         private static final List<EntityHelper.Client.RenderSpec<?>> RENDERS =
-                List.of(SMALL_ENDERMAN_RENDER);
-
+                List.of(SMALL_ENDERMAN_RENDER,
+                        ANGRY_ENDERMAN_RENDER);
+        //註冊部分，不要動
         private static void register(IEventBus modEventBus) {
             modEventBus.addListener(Client::registerRenderers);
             modEventBus.addListener(Client::registerModelLayers);

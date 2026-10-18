@@ -135,7 +135,7 @@ public class Blocks {
                             // 分頁圖示
                             .icon(
                                     () -> new ItemStack(
-                                            BlockRegister.END_STONE_ENCHANTED.get()
+                                            ItemRegister.VOID_CRYSTAL_SHARD.get()
                                     )
                             )
 
@@ -145,6 +145,7 @@ public class Blocks {
                                         output.accept( ItemRegister.VOID_CRYSTAL_SHARD.get());
                                         output.accept( ItemRegister.END_CRYSTAL_REMOVER.get());
                                         output.accept(EntityRegister.SMALL_ENDERMAN.spawnEgg().get());
+                                        output.accept(EntityRegister.ANGRY_ENDERMAN.spawnEgg().get());
                             }
                             ).build()
             );

@@ -55,6 +55,8 @@
   "block.beyond_the_end.burning_fern": "灼燒蕨",
   "block.beyond_the_end.burning_grass": "灼燒草",
   "entity.beyond_the_end.small_enderman": "小終界使者",
+  "entity.beyond_the_end.angry_enderman": "憤怒的終界使者",
+  "item.beyond_the_end.angry_enderman_spawn_egg": "憤怒的終界使者生成蛋",
   "item.beyond_the_end.small_enderman_spawn_egg": "小終界使者生成蛋",
   "item.beyond_the_end.ender_goo_bucket": "終界黏漿桶",
   "item.beyond_the_end.crystal_remover": "水晶拆除器",
