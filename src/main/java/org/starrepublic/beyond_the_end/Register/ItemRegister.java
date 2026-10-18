@@ -29,8 +29,13 @@ public class ItemRegister {
                                     .craftRemainder(Items.BUCKET)
                     )
             );
-    public static final DeferredItem<Item> VOID_CRYSTAL_SHARD =
-            ITEMS.registerSimpleItem("void_crystal_shard");
+
+    public static final DeferredItem<Item> VOID_CRYSTAL_SHARD = ITEMS.registerSimpleItem("void_crystal_shard");
+    public static final DeferredItem<Item> END_CRYSTAL_REMOVER = ITEMS.registerSimpleItem("crystal_remover");
+
+    public static final DeferredItem<Item> DRAGON_ESSENCE = ITEMS.registerSimpleItem("dragon_essence");
+    public static final DeferredItem<Item> SOUL_ESSENCE = ITEMS.registerSimpleItem("soul_essence");
+    public static final DeferredItem<Item> FIRE_ESSENCE = ITEMS.registerSimpleItem("fire_essence");
 
 
     public static void register(IEventBus eventBus) {

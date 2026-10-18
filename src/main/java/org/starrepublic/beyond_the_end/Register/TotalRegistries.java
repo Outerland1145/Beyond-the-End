@@ -8,8 +8,6 @@ public final class TotalRegistries {
 
     public static void register(IEventBus eventBus) {
         DataRegister.register(eventBus);
-        //BTEStructureType.register(eventBus);
-        //BTEStructureLimiters.bootstrap();
         JigsawRegister.register(eventBus);
 
         /*
@@ -24,6 +22,7 @@ public final class TotalRegistries {
         FluidRegister.register(eventBus);
         BlockRegister.register(eventBus);
         BlockEntityRegister.register(eventBus);
+        EntityRegister.register(eventBus);
         BlockItemRegistry.register(eventBus);
         ItemRegister.register(eventBus);
         CommonSetupRegistry.register(eventBus);

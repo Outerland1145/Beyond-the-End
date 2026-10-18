@@ -24,6 +24,7 @@ public class RenderRegistry {
         eventBus.addListener(
                 RenderRegistry::registerDimensionEffects
         );
+        EntityRegister.registerClient(eventBus);
     }
 
     private static void registerBlockEntityRenderers(

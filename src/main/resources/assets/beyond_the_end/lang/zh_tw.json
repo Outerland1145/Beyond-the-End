@@ -1,9 +1,10 @@
 {
   "itemGroup.beyond_the_end.beyond_the_end_building_tab": "終界之後 建材",
   "itemGroup.beyond_the_end.beyond_the_end_nature_tab": "終界之後 自然",
-  "itemGroup.beyond_the_end.beyond_the_end_item": "終界之後 物品",
+  "itemGroup.beyond_the_end.beyond_the_end_item_tab": "終界之後 物品",
   "itemGroup.beyond_the_end.beyond_the_end_tool": "終界之後 工具",
   "fluid.beyond_the_end.ender_goo": "終界黏漿",
+  "fluidtype.beyond_the_end.ender_goo": "終界黏漿",
   "block.beyond_the_end.ender_goo": "終界黏漿",
   "block.beyond_the_end.decorative_end_gateway": "星空方塊",
   "block.beyond_the_end.barrier_node_block": "結界節點",
@@ -13,35 +14,25 @@
   "block.beyond_the_end.short_end_grass": "終界矮草",
   "block.beyond_the_end.tall_end_grass": "終界高草",
   "block.beyond_the_end.void_block": "虛空方塊",
-
   "block.beyond_the_end.small_void_crystal_bud": "小虛空水晶芽",
   "block.beyond_the_end.medium_void_crystal_bud": "中虛空水晶芽",
   "block.beyond_the_end.large_void_crystal_bud": "大虛空水晶芽",
   "block.beyond_the_end.void_crystal_cluster": "虛空水晶簇",
   "block.beyond_the_end.void_crystal_block": "虛空水晶塊",
   "block.beyond_the_end.void_crystal_budding_block": "虛空水晶母岩",
-  "item.beyond_the_end.void_crystal_shard": "虛空水晶碎片",
-
   "block.beyond_the_end.end_pointed_dripstone": "終界鐘乳石",
   "block.beyond_the_end.end_lantern_block": "虛空燈",
-
   "block.beyond_the_end.end_lantern": "虛空燈籠",
   "block.beyond_the_end.end_fire": "虛無火",
   "block.beyond_the_end.end_torch": "虛無火把",
   "block.beyond_the_end.end_wall_torch": "虛無火把",
   "block.beyond_the_end.end_campfire": "虛無營火",
-
   "block.beyond_the_end.enchanted_end_stone": "附魔終界石",
   "block.beyond_the_end.infested_end_stone": "腐化終界石",
   "block.beyond_the_end.burned_end_stone": "灼燒終界石",
-
   "block.beyond_the_end.enchanted_tall_grass": "魔力矮草",
   "block.beyond_the_end.enchanted_short_grass": "魔力草",
   "block.beyond_the_end.enchanted_flower": "魔力花",
-
-  "item.beyond_the_end.ender_goo_bucket": "終界黏漿桶",
-  "item.beyond_the_end.crystal_remover": "水晶拆除器",
-
   "block.beyond_the_end.spooky_log": "幽靈原木",
   "block.beyond_the_end.spooky_wood": "幽靈木塊",
   "block.beyond_the_end.stripped_spooky_log": "剝皮幽靈原木",
@@ -57,19 +48,24 @@
   "block.beyond_the_end.spooky_button": "幽靈木按鈕",
   "block.beyond_the_end.spooky_leaves": "幽靈木樹葉",
   "block.beyond_the_end.spooky_sapling": "幽靈木樹苗",
-
   "block.beyond_the_end.tall_infested_fern": "高侵蝕蕨",
   "block.beyond_the_end.short_infested_fern": "侵蝕蕨",
   "block.beyond_the_end.infested_grass": "侵蝕草",
   "block.beyond_the_end.infested_root": "侵蝕菌",
-
   "block.beyond_the_end.burning_fern": "灼燒蕨",
   "block.beyond_the_end.burning_grass": "灼燒草",
-
-
+  "entity.beyond_the_end.small_enderman": "小終界使者",
+  "item.beyond_the_end.small_enderman_spawn_egg": "小終界使者生成蛋",
+  "item.beyond_the_end.ender_goo_bucket": "終界黏漿桶",
+  "item.beyond_the_end.crystal_remover": "水晶拆除器",
+  "item.beyond_the_end.void_crystal_shard": "虛空水晶碎片",
+  "item.beyond_the_end.dragon_essence": "龍之精華",
+  "item.beyond_the_end.soul_essence": "魂之精華",
+  "item.beyond_the_end.fire_essence": "炎之精華",
 
   "message.beyond_the_end.anchor_set": "錨定位置已設置",
   "message.beyond_the_end.anchor_lost": "錨定點已遺失",
   "message.beyond_the_end.anchor_blocked": "錨定點遭到阻擋",
+  "message.beyond_the_end.crystal_remover_blocked": "無法在此群系拆除終界水晶",
   "commands.beyond_the_end.end_city_disabled":"原版終界城生成已遭到禁用，請通過配置文件重新開啟或使用/locate structure beyond_the_end:new_end_city來尋找"
 }

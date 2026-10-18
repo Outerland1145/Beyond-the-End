@@ -9,6 +9,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Register.BlockItemRegistry;
 import org.starrepublic.beyond_the_end.Register.BlockRegister;
+import org.starrepublic.beyond_the_end.Register.EntityRegister;
 import org.starrepublic.beyond_the_end.Register.ItemRegister;
 
 import java.util.function.Supplier;
@@ -67,12 +68,6 @@ public class Blocks {
                                 output.accept( BlockRegister.SPOOKY.trapdoor.get());
                                 output.accept( BlockRegister.SPOOKY.pressureplate.get());
                                 output.accept( BlockRegister.SPOOKY.button.get());
-
-
-                                output.accept( ItemRegister.ENDER_GOO_BUCKET);
-                                output.accept( ItemRegister.VOID_CRYSTAL_SHARD);
-
-
                             })
 
                             .build()
@@ -125,7 +120,34 @@ public class Blocks {
                             }
                             ).build()
             );
+    public static final Supplier<CreativeModeTab> BTE_END_ITEM_TAB =
+            CREATIVE_TABS.register(
+                    "beyond_the_end_item_tab",
+                    () -> CreativeModeTab.builder()
 
+                            // 分頁名稱
+                            .title(
+                                    Component.translatable(
+                                            "itemGroup.beyond_the_end.beyond_the_end_item_tab"
+                                    )
+                            )
+
+                            // 分頁圖示
+                            .icon(
+                                    () -> new ItemStack(
+                                            BlockRegister.END_STONE_ENCHANTED.get()
+                                    )
+                            )
+
+                            // 分頁中的所有物品
+                            .displayItems((parameters, output) -> {
+                                        output.accept( ItemRegister.ENDER_GOO_BUCKET.get());
+                                        output.accept( ItemRegister.VOID_CRYSTAL_SHARD.get());
+                                        output.accept( ItemRegister.END_CRYSTAL_REMOVER.get());
+                                        output.accept(EntityRegister.SMALL_ENDERMAN.spawnEgg().get());
+                            }
+                            ).build()
+            );
     public static void register(IEventBus eventBus) {
         CREATIVE_TABS.register(eventBus);
     }
