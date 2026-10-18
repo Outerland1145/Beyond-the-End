@@ -11,6 +11,8 @@ import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.World.worldgen.structure.jigsaw.BTEComponentPoolElement;
 import org.starrepublic.beyond_the_end.World.worldgen.structure.jigsaw.BTEDeferredJigsawPiece;
 import org.starrepublic.beyond_the_end.World.worldgen.structure.jigsaw.BTEJigsawStructure;
+import org.starrepublic.beyond_the_end.World.worldgen.structure.volcano.LargeVolcanoPiece;
+import org.starrepublic.beyond_the_end.World.worldgen.structure.volcano.LargeVolcanoStructure;
 
 public class JigsawRegister {
     private JigsawRegister() {}
@@ -22,19 +24,6 @@ public class JigsawRegister {
                     Beyond_the_end.MODID
             );
 
-    public static final DeferredHolder<
-                StructureType<?>,
-                StructureType<BTEJigsawStructure>
-                >
-            CONTROLLED_JIGSAW =
-            STRUCTURE_TYPES.register(
-
-                    "controlled_jigsaw",
-
-                    () ->
-                            () ->
-                                    BTEJigsawStructure.CODEC
-            );
     public static final DeferredRegister<
             StructurePoolElementType<?>
             >
@@ -45,6 +34,27 @@ public class JigsawRegister {
                             .STRUCTURE_POOL_ELEMENT,
 
                     Beyond_the_end.MODID
+            );
+
+
+    public static final DeferredRegister<StructurePieceType> STRUCTURE_PIECE_TYPES =
+            DeferredRegister.create(
+                    BuiltInRegistries.STRUCTURE_PIECE,
+                    Beyond_the_end.MODID
+            );
+
+    public static final DeferredHolder<
+            StructureType<?>,
+            StructureType<BTEJigsawStructure>
+            >
+            CONTROLLED_JIGSAW =
+            STRUCTURE_TYPES.register(
+
+                    "controlled_jigsaw",
+
+                    () ->
+                            () ->
+                                    BTEJigsawStructure.CODEC
             );
 
     public static final DeferredHolder<
@@ -60,11 +70,6 @@ public class JigsawRegister {
                             () ->
                                     BTEComponentPoolElement.CODEC
             );
-    public static final DeferredRegister<StructurePieceType> STRUCTURE_PIECE_TYPES =
-            DeferredRegister.create(
-                    BuiltInRegistries.STRUCTURE_PIECE,
-                    Beyond_the_end.MODID
-            );
 
     public static final DeferredHolder<StructurePieceType, StructurePieceType> DEFERRED_JIGSAW_PIECE =
             STRUCTURE_PIECE_TYPES.register(
@@ -72,6 +77,24 @@ public class JigsawRegister {
                     () -> BTEDeferredJigsawPiece::new
             );
 
+    public static final DeferredHolder<
+            StructureType<?>,
+            StructureType<LargeVolcanoStructure>
+            >
+            LARGE_VOLCANO =
+            STRUCTURE_TYPES.register(
+                    "large_volcano",
+                    () -> () -> LargeVolcanoStructure.CODEC
+            );
+    public static final DeferredHolder<
+            StructurePieceType,
+            StructurePieceType.ContextlessType
+            >
+            LARGE_VOLCANO_PIECE =
+            STRUCTURE_PIECE_TYPES.register(
+                    "large_volcano_piece",
+                    () -> LargeVolcanoPiece::new
+            );
     public static void register(
             IEventBus modBus
     ) {

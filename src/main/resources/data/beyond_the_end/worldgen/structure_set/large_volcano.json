@@ -1,0 +1,11 @@
+{
+  "structures": [
+    {"structure": "beyond_the_end:large_volcano", "weight": 1}
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 48,
+    "separation": 28,
+    "salt": 17386429
+  }
+}

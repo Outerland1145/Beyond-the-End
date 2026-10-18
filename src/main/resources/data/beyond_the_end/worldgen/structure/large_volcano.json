@@ -1,0 +1,164 @@
+{
+  "type": "beyond_the_end:large_volcano",
+  "biomes": "beyond_the_end:burning_lands",
+  "step": "surface_structures",
+  "terrain_adaptation": "none",
+  "spawn_overrides": {},
+  "min_radius": 56,
+  "max_radius": 96,
+  "min_height": 42,
+  "max_height": 78,
+  "min_crater_ratio": 0.2,
+  "max_crater_ratio": 0.28,
+  "lava_lake_chance": 0.75,
+  "min_rivers": 2,
+  "max_rivers": 5,
+  "river_max_cut_depth": 6,
+  "palette": {
+    "surface": [
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 52
+      },
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 30
+      },
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 10
+      },
+      {
+        "state": {
+          "Name": "minecraft:end_stone"
+        },
+        "weight": 8
+      }
+    ],
+    "interior": [
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 60
+      },
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 28
+      },
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 12
+      }
+    ],
+    "rim": [
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 35
+      },
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 30
+      },
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 25
+      },
+      {
+        "state": {
+          "Name": "minecraft:magma_block"
+        },
+        "weight": 10
+      }
+    ],
+    "crater": [
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 42
+      },
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 30
+      },
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 18
+      },
+      {
+        "state": {
+          "Name": "minecraft:magma_block"
+        },
+        "weight": 10
+      }
+    ],
+    "river_bed": [
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 55
+      },
+      {
+        "state": {
+          "Name": "minecraft:magma_block"
+        },
+        "weight": 30
+      },
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 15
+      }
+    ],
+    "river_bank": [
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 40
+      },
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 30
+      },
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 30
+      }
+    ],
+    "lava": {
+      "Name": "minecraft:lava"
+    }
+  },
+  "crater_lava_height_ratio": 0.78,
+  "crater_lava_fill_ratio": 0.96,
+  "foundation_extension_radius": 22,
+  "foundation_extension_height": 5
+}
