@@ -26,6 +26,7 @@ public final class TotalRegistries {
         BlockItemRegistry.register(eventBus);
         ItemRegister.register(eventBus);
         CommonSetupRegistry.register(eventBus);
+        EffectRegister.register(eventBus);
         /*以下為創造模式面板*/
         Blocks.register(eventBus);
 
