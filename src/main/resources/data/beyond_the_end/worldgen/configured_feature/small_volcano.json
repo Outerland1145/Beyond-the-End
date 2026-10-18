@@ -1,0 +1,125 @@
+{
+  "type": "beyond_the_end:small_volcano",
+  "config": {
+    "min_radius": 5,
+    "max_radius": 9,
+    "min_height": 5,
+    "max_height": 13,
+    "crater_ratio": 0.34,
+    "lava_chance_percent": 70,
+    "lava_height_ratio": 0.72,
+    "ground_blocks": [
+      "beyond_the_end:burned_end_stone",
+      "minecraft:end_stone",
+      "minecraft:basalt",
+      "minecraft:polished_basalt",
+      "minecraft:blackstone",
+      "minecraft:obsidian",
+      "minecraft:magma_block"
+    ],
+    "replaceable_blocks": [
+      "beyond_the_end:burned_end_stone",
+      "minecraft:end_stone",
+      "minecraft:basalt",
+      "minecraft:polished_basalt",
+      "minecraft:blackstone",
+      "minecraft:obsidian",
+      "minecraft:magma_block"
+    ],
+    "surface": [
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 43
+      },
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 35
+      },
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 13
+      },
+      {
+        "state": {
+          "Name": "minecraft:magma_block"
+        },
+        "weight": 9
+      }
+    ],
+    "core": [
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 70
+      },
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 20
+      },
+      {
+        "state": {
+          "Name": "minecraft:end_stone"
+        },
+        "weight": 10
+      }
+    ],
+    "rim": [
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 40
+      },
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 28
+      },
+      {
+        "state": {
+          "Name": "minecraft:magma_block"
+        },
+        "weight": 22
+      },
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 10
+      }
+    ],
+    "crater_floor": [
+      {
+        "state": {
+          "Name": "minecraft:magma_block"
+        },
+        "weight": 45
+      },
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 35
+      },
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 20
+      }
+    ],
+    "lava": {
+      "Name": "minecraft:lava"
+    }
+  }
+}

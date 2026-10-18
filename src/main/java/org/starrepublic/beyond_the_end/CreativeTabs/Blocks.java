@@ -113,6 +113,8 @@ public class Blocks {
                                         output.accept( BlockRegister.END_GRASS.tallgrass.get());
                                         output.accept( BlockRegister.Enchanted_Short_Grass_Block.shortgrass.get());
                                         output.accept( BlockRegister.Enchanted_Tall_Grass_Block.shortgrass.get());
+                                        output.accept( BlockRegister.BURNINGGRASS.shortgrass.get());
+                                        output.accept( BlockRegister.BURNINGGFERN.shortgrass.get());
                                         output.accept( BlockRegister.MAGIC_FLOWER.get());
                                         output.accept( BlockRegister.SPOOKY.sapling.get());
                                         output.accept( BlockRegister.SPOOKY.leaves.get());

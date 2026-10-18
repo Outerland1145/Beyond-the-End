@@ -153,6 +153,17 @@ public class FeatureRegister {
                     )
             );
 
+    public static final DeferredHolder<Feature<?>, VolcanicColumnsFeature> VOLCANIC_COLUMNS =
+            FEATURES.register("volcanic_columns", VolcanicColumnsFeature::new);
+    public static final DeferredHolder<Feature<?>, VolcanicRubbleFeature> VOLCANIC_RUBBLE =
+            FEATURES.register("volcanic_rubble", VolcanicRubbleFeature::new);
+    public static final DeferredHolder<Feature<?>, VolcanicFissureFeature> VOLCANIC_FISSURE =
+            FEATURES.register("volcanic_fissure", VolcanicFissureFeature::new);
+    public static final DeferredHolder<Feature<?>, SmallVolcanoFeature> SMALL_VOLCANO =
+            FEATURES.register("small_volcano", SmallVolcanoFeature::new);
+    public static final DeferredHolder<Feature<?>, BurningFlameFeature> BURNING_FLAME =
+            FEATURES.register("burning_flame", BurningFlameFeature::new);
+
 
     public static void register(
             IEventBus modBus

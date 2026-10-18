@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "beyond_the_end:burning_lands",
+  "features": [
+    "beyond_the_end:burning_flame",
+    "beyond_the_end:burning_grass_patch"
+  ],
+  "step": "vegetal_decoration"
+}

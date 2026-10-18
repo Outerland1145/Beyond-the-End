@@ -1,0 +1,74 @@
+{
+  "type": "beyond_the_end:volcanic_columns",
+  "config": {
+    "min_height": 3,
+    "max_height": 13,
+    "column_count": 6,
+    "spread": 5,
+    "max_width": 2,
+    "ground_blocks": [
+      "beyond_the_end:burned_end_stone",
+      "minecraft:end_stone",
+      "minecraft:basalt",
+      "minecraft:polished_basalt",
+      "minecraft:blackstone",
+      "minecraft:obsidian",
+      "minecraft:magma_block"
+    ],
+    "replaceable_blocks": [
+      "beyond_the_end:burned_end_stone",
+      "minecraft:end_stone",
+      "minecraft:basalt",
+      "minecraft:polished_basalt",
+      "minecraft:blackstone",
+      "minecraft:obsidian",
+      "minecraft:magma_block"
+    ],
+    "core": [
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 65
+      },
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 25
+      },
+      {
+        "state": {
+          "Name": "minecraft:end_stone"
+        },
+        "weight": 10
+      }
+    ],
+    "crust": [
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 42
+      },
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 36
+      },
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 12
+      },
+      {
+        "state": {
+          "Name": "minecraft:magma_block"
+        },
+        "weight": 10
+      }
+    ]
+  }
+}

@@ -63,6 +63,9 @@
   "block.beyond_the_end.infested_grass": "侵蝕草",
   "block.beyond_the_end.infested_root": "侵蝕菌",
 
+  "block.beyond_the_end.burning_fern": "灼燒蕨",
+  "block.beyond_the_end.burning_grass": "灼燒草",
+
 
 
   "message.beyond_the_end.anchor_set": "錨定位置已設置",

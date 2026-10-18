@@ -1,0 +1,80 @@
+{
+  "type": "beyond_the_end:volcanic_rubble",
+  "config": {
+    "min_radius": 3,
+    "max_radius": 7,
+    "max_depth": 2,
+    "boulder_chance_percent": 9,
+    "ground_blocks": [
+      "beyond_the_end:burned_end_stone",
+      "minecraft:end_stone",
+      "minecraft:end_stone",
+      "minecraft:basalt",
+      "minecraft:polished_basalt",
+      "minecraft:blackstone",
+      "minecraft:obsidian",
+      "minecraft:magma_block"
+    ],
+    "replaceable_blocks": [
+      "beyond_the_end:burned_end_stone",
+      "minecraft:end_stone",
+      "minecraft:basalt",
+      "minecraft:polished_basalt",
+      "minecraft:blackstone",
+      "minecraft:obsidian",
+      "minecraft:magma_block"
+    ],
+    "surface": [
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 28
+      },
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 33
+      },
+      {
+        "state": {
+          "Name": "minecraft:end_stone"
+        },
+        "weight": 18
+      },
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 10
+      },
+      {
+        "state": {
+          "Name": "minecraft:magma_block"
+        },
+        "weight": 11
+      }
+    ],
+    "boulder": [
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 48
+      },
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 32
+      },
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 20
+      }
+    ]
+  }
+}

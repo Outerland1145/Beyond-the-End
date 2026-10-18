@@ -1,0 +1,71 @@
+{
+  "type": "beyond_the_end:volcanic_fissure",
+  "config": {
+    "min_length": 5,
+    "max_length": 12,
+    "max_width": 2,
+    "max_depth": 3,
+    "lava_chance_percent": 48,
+    "ground_blocks": [
+      "beyond_the_end:burned_end_stone",
+      "minecraft:end_stone",
+      "minecraft:basalt",
+      "minecraft:polished_basalt",
+      "minecraft:blackstone",
+      "minecraft:obsidian",
+      "minecraft:magma_block"
+    ],
+    "replaceable_blocks": [
+      "beyond_the_end:burned_end_stone",
+      "minecraft:end_stone",
+      "minecraft:basalt",
+      "minecraft:polished_basalt",
+      "minecraft:blackstone",
+      "minecraft:obsidian",
+      "minecraft:magma_block"
+    ],
+    "bed": [
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 45
+      },
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 40
+      },
+      {
+        "state": {
+          "Name": "minecraft:magma_block"
+        },
+        "weight": 15
+      }
+    ],
+    "banks": [
+      {
+        "state": {
+          "Name": "minecraft:blackstone"
+        },
+        "weight": 50
+      },
+      {
+        "state": {
+          "Name": "minecraft:basalt"
+        },
+        "weight": 30
+      },
+      {
+        "state": {
+          "Name": "minecraft:obsidian"
+        },
+        "weight": 20
+      }
+    ],
+    "lava": {
+      "Name": "minecraft:lava"
+    }
+  }
+}

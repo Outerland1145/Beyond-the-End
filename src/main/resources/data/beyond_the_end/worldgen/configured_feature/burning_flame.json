@@ -1,0 +1,38 @@
+{
+  "type": "beyond_the_end:burning_flame",
+  "config": {
+    "attempts": 7,
+    "spread": 7,
+    "chance_percent": 50,
+    "fire": {
+      "Name": "beyond_the_end:end_fire"
+    },
+    "ground_blocks": [
+      "beyond_the_end:burned_end_stone",
+      "minecraft:end_stone",
+      "minecraft:basalt",
+      "minecraft:polished_basalt",
+      "minecraft:blackstone",
+      "minecraft:obsidian",
+      "minecraft:magma_block"
+    ],
+    "replaceable_blocks": [
+      "beyond_the_end:burned_end_stone",
+      "minecraft:end_stone",
+      "minecraft:basalt",
+      "minecraft:polished_basalt",
+      "minecraft:blackstone",
+      "minecraft:obsidian",
+      "minecraft:magma_block"
+    ],
+    "support_conversion_percent": 100,
+    "support": [
+      {
+        "state": {
+          "Name": "minecraft:end_stone"
+        },
+        "weight": 100
+      }
+    ]
+  }
+}
