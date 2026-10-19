@@ -27,7 +27,7 @@ public class DragonEssenceAltarBlockEntity
     // ========================================================
 
     private int dragonTickCounter = 0;
-
+    private String recipeFailure = "";
     private boolean dragonSpeedUpgraded = false;
     private boolean dragonRangeUpgraded = false;
     private boolean dragonEfficiencyUpgraded = false;
@@ -49,7 +49,24 @@ public class DragonEssenceAltarBlockEntity
                 state
         );
     }
+    public String getRecipeFailure() {
+        return recipeFailure;
+    }
 
+    public void setRecipeFailure(String reason) {
+
+        if (reason == null) {
+            reason = "";
+        }
+
+        if (recipeFailure.equals(reason)) {
+            return;
+        }
+
+        recipeFailure = reason;
+
+        markUpdated();
+    }
     @Override
     public String getEssenceType() {
         return "dragon";
@@ -216,6 +233,7 @@ public class DragonEssenceAltarBlockEntity
                 "DragonEfficiency",
                 dragonEfficiencyUpgraded
         );
+        tag.putString("RecipeFailure", recipeFailure);
     }
 
     @Override
@@ -237,5 +255,6 @@ public class DragonEssenceAltarBlockEntity
         dragonPedestals.clear();
 
         dragonTickCounter = 0;
+        recipeFailure = tag.getString("RecipeFailure");
     }
 }

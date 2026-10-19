@@ -10,7 +10,9 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Block;
@@ -18,7 +20,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
+import org.starrepublic.beyond_the_end.Register.Tags;
 
 public abstract class EssenceAltarBlockEntity extends BlockEntity {
 
@@ -30,6 +34,172 @@ public abstract class EssenceAltarBlockEntity extends BlockEntity {
     private ItemStack displayEssenceItem = ItemStack.EMPTY;
     public ItemStack getDisplayEssenceItem() {
         return displayEssenceItem.copy();
+    }
+
+    // ========================================================
+// 依照祭壇類型檢查精華物品
+// ========================================================
+
+    public boolean acceptsEssenceItem(ItemStack stack) {
+
+        if (stack.isEmpty()) {
+            return false;
+        }
+
+        TagKey<Item> tag;
+
+        switch (getEssenceType()) {
+
+            case "dragon":
+                tag = Tags.DRAGON_ESSENCE;
+                break;
+
+            case "soul":
+                tag = Tags.SOUL_ESSENCE;
+                break;
+
+            case "fire":
+                tag = Tags.FIRE_ESSENCE;
+                break;
+
+            default:
+                return false;
+        }
+
+        if (!stack.is(tag)) {
+            return false;
+        }
+
+        ItemStack current = getDisplayEssenceItem();
+
+        return essence <= 0
+                || current.isEmpty()
+                || ItemStack.isSameItemSameComponents(current, stack);
+    }
+
+    private final IItemHandler essenceAutomationHandler = new IItemHandler() {
+
+        @Override
+        public int getSlots() {
+            return 1;
+        }
+
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+
+            if (slot != 0 || getEssence() <= 0) {
+                return ItemStack.EMPTY;
+            }
+
+            ItemStack template = getDisplayEssenceItem();
+
+            if (template.isEmpty()) {
+                return ItemStack.EMPTY;
+            }
+
+            return template.copyWithCount(
+                    Math.min(
+                            getEssence(),
+                            template.getMaxStackSize()
+                    )
+            );
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return slot == 0 ? 64 : 0;
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return slot == 0 && acceptsEssenceItem(stack);
+        }
+
+        // ====================================================
+        // 自動輸入精華
+        // ====================================================
+
+        @Override
+        public ItemStack insertItem(
+                int slot,
+                ItemStack stack,
+                boolean simulate
+        ) {
+
+            if (slot != 0 || !acceptsEssenceItem(stack)) {
+                return stack;
+            }
+
+            int accepted = Math.min(
+                    stack.getCount(),
+                    Integer.MAX_VALUE - getEssence()
+            );
+
+            if (accepted <= 0) {
+                return stack;
+            }
+
+            if (!simulate) {
+
+                accepted = addEssence(stack, accepted);
+
+                if (accepted <= 0) {
+                    return stack;
+                }
+            }
+
+            int remainder = stack.getCount() - accepted;
+
+            return remainder <= 0
+                    ? ItemStack.EMPTY
+                    : stack.copyWithCount(remainder);
+        }
+
+        // ====================================================
+        // 自動提取精華
+        // ====================================================
+
+        @Override
+        public ItemStack extractItem(
+                int slot,
+                int amount,
+                boolean simulate
+        ) {
+
+            if (slot != 0 || amount <= 0 || getEssence() <= 0) {
+                return ItemStack.EMPTY;
+            }
+
+            ItemStack template = getDisplayEssenceItem();
+
+            if (template.isEmpty()) {
+                return ItemStack.EMPTY;
+            }
+
+            int extracted = Math.min(
+                    amount,
+                    getEssence()
+            );
+
+            extracted = Math.min(
+                    extracted,
+                    template.getMaxStackSize()
+            );
+
+            if (extracted <= 0) {
+                return ItemStack.EMPTY;
+            }
+
+            if (!simulate && !consumeEssence(extracted)) {
+                return ItemStack.EMPTY;
+            }
+
+            return template.copyWithCount(extracted);
+        }
+    };
+
+    public IItemHandler getEssenceAutomationHandler() {
+        return essenceAutomationHandler;
     }
 
     /**
@@ -72,9 +242,10 @@ public abstract class EssenceAltarBlockEntity extends BlockEntity {
 
         return accepted;
     }
+
     // ========================================================
-// 破壞祭壇時返還所有精華
-// ========================================================
+    // 破壞祭壇時返還所有精華
+    // ========================================================
 
     public void dropAllEssence(ServerLevel serverLevel) {
 

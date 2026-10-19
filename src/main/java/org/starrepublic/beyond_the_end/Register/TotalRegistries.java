@@ -28,13 +28,10 @@ public final class TotalRegistries {
         ItemRegister.register(eventBus);
         CommonSetupRegistry.register(eventBus);
         EffectRegister.register(eventBus);
-        eventBus.addListener(
-                SpawnRules::registerSpawnPlacements
-        );
-
         RecipeRegister.register(eventBus);
-        /*以下為創造模式面板*/
         Blocks.register(eventBus);
+        eventBus.addListener(SpawnRules::registerSpawnPlacements);
+        eventBus.addListener(CapabilityRegister::register);
 
     }
 }

@@ -3,6 +3,7 @@ package org.starrepublic.beyond_the_end.Blocks;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -16,6 +17,8 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -27,15 +30,25 @@ public class AltarPedestalBlock extends BaseEntityBlock {
 
     public static final MapCodec<AltarPedestalBlock> CODEC =
             simpleCodec(AltarPedestalBlock::new);
-
+    public static final BooleanProperty OUTPUT =
+            BooleanProperty.create("output");
     //private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 10, 14);
 
     public AltarPedestalBlock(
             BlockBehaviour.Properties properties
     ) {
         super(properties);
+        // false = 輸入，true = 輸出
+        registerDefaultState(
+                stateDefinition.any().setValue(OUTPUT, false)
+        );
     }
-
+    @Override
+    protected void createBlockStateDefinition(
+            StateDefinition.Builder<Block, BlockState> builder
+    ) {
+        builder.add(OUTPUT);
+    }
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
@@ -108,7 +121,20 @@ public class AltarPedestalBlock extends BaseEntityBlock {
         if (stack.isEmpty()) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
+        // 輸出模式不允許玩家直接放入材料
+        if (state.getValue(OUTPUT)) {
 
+            if (!level.isClientSide) {
+                player.displayClientMessage(
+                        Component.translatable(
+                                "message.beyond_the_end.pedestal_output_only"
+                        ),
+                        true
+                );
+            }
+
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        }
         AltarPedestalInteraction.interact(
                 player,
                 pedestal,
@@ -134,7 +160,6 @@ public class AltarPedestalBlock extends BaseEntityBlock {
 
         if (!(level.getBlockEntity(pos)
                 instanceof AltarPedestalBlockEntity pedestal)) {
-
             return InteractionResult.PASS;
         }
 
@@ -142,12 +167,43 @@ public class AltarPedestalBlock extends BaseEntityBlock {
             return InteractionResult.PASS;
         }
 
-        AltarPedestalInteraction.interact(
-                player,
-                pedestal,
-                ItemStack.EMPTY,
-                false
-        );
+        if (!level.isClientSide) {
+
+            // 物品未取出前，不允許切換模式
+            if (!pedestal.isEmpty()) {
+
+                player.displayClientMessage(
+                        Component.translatable(
+                                "message.beyond_the_end.pedestal_not_empty"
+                        ),
+                        true
+                );
+
+                return InteractionResult.SUCCESS;
+            }
+
+            // 切換輸入 / 輸出
+            boolean newOutput = !state.getValue(OUTPUT);
+            BlockPos owner = pedestal.getOwnerAltar();
+
+            if (owner != null) {
+                pedestal.release(owner);
+            }
+            level.setBlock(
+                    pos,
+                    state.setValue(OUTPUT, newOutput),
+                    Block.UPDATE_ALL
+            );
+
+            player.displayClientMessage(
+                    Component.translatable(
+                            newOutput
+                                    ? "message.beyond_the_end.pedestal_output"
+                                    : "message.beyond_the_end.pedestal_input"
+                    ),
+                    true
+            );
+        }
 
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

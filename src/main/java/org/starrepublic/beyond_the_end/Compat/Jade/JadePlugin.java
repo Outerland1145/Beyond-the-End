@@ -1,5 +1,6 @@
 package org.starrepublic.beyond_the_end.Compat.Jade;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -9,14 +10,9 @@ import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Blocks.AltarPedestalBlock;
 import org.starrepublic.beyond_the_end.Blocks.EssenceAltarBlock;
 import org.starrepublic.beyond_the_end.Entitys.blockentity.AltarPedestalBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.DragonEssenceAltarBlockEntity;
 import org.starrepublic.beyond_the_end.Entitys.blockentity.EssenceAltarBlockEntity;
-import snownee.jade.api.BlockAccessor;
-import snownee.jade.api.IBlockComponentProvider;
-import snownee.jade.api.ITooltip;
-import snownee.jade.api.IWailaPlugin;
-import snownee.jade.api.IWailaClientRegistration;
-import snownee.jade.api.IWailaCommonRegistration;
-import snownee.jade.api.WailaPlugin;
+import snownee.jade.api.*;
 import snownee.jade.api.config.IPluginConfig;
 
 @WailaPlugin
@@ -69,12 +65,54 @@ public class JadePlugin implements IWailaPlugin {
                 return;
             }
 
-            tooltip.add(
-                    Component.translatable(
-                            "jade.beyond_the_end.essence",
-                            altar.getEssence()
-                    )
+            // 移除 Jade 內建的物品儲存顯示
+            Component fullEssence = Component.translatable(
+                    "jade.beyond_the_end.essence",
+                    altar.getEssence()
             );
+
+            if (!tooltip.replace(
+                    JadeIds.UNIVERSAL_ITEM_STORAGE,
+                    fullEssence
+            )) {
+                tooltip.add(fullEssence);
+            }
+            if (altar instanceof DragonEssenceAltarBlockEntity dragon) {
+
+                String failure = dragon.getRecipeFailure();
+
+                if (!failure.isEmpty()) {
+
+                    String reasonKey = switch (failure) {
+
+                        case "no_output" ->
+                                "jade.beyond_the_end.no_output_pedestal";
+
+                        case "output_full" ->
+                                "jade.beyond_the_end.output_pedestal_full";
+
+                        default ->
+                                "jade.beyond_the_end.unknown_failure";
+                    };
+
+                    tooltip.add(
+                            Component.translatable(
+                                    "jade.beyond_the_end.recipe_failed"
+                            ).withStyle(ChatFormatting.RED)
+                    );
+
+                    tooltip.add(
+                            Component.translatable(reasonKey)
+                                    .withStyle(ChatFormatting.RED)
+                    );
+                }
+            }
+        }
+
+        @Override
+        public int getDefaultPriority() {
+            // 在 Jade 內建物品儲存 Provider 之後執行
+            return TooltipPosition.BODY + 2000;
         }
 
         @Override
@@ -111,27 +149,6 @@ public class JadePlugin implements IWailaPlugin {
                 return;
             }
 
-            ItemStack stack = pedestal.getItem();
-
-            if (stack.isEmpty()) {
-
-                tooltip.add(
-                        Component.translatable(
-                                "jade.beyond_the_end.empty"
-                        )
-                );
-
-                return;
-            }
-
-            tooltip.add(
-                    Component.translatable(
-                            "jade.beyond_the_end.item",
-                            stack.getHoverName(),
-                            stack.getCount()
-                    )
-            );
-
             if (!pedestal.getActiveRecipe().isEmpty()) {
 
                 tooltip.add(
@@ -141,6 +158,13 @@ public class JadePlugin implements IWailaPlugin {
                         )
                 );
             }
+            tooltip.add(
+                    Component.translatable(
+                            pedestal.isOutputMode()
+                                    ? "jade.beyond_the_end.pedestal_output"
+                                    : "jade.beyond_the_end.pedestal_input"
+                    )
+            );
         }
 
         @Override
