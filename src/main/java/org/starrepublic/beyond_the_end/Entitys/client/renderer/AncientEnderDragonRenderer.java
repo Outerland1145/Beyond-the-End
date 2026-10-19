@@ -68,16 +68,19 @@ public class AncientEnderDragonRenderer extends EntityRenderer<AncientEnderDrago
         stack.translate(0.0F, -1.501F, 0.0F);
 
         root.getAllParts().forEach(ModelPart::resetPose);
-        float t = dragon.tickCount + partialTick;
+
+        // 由實體控制動畫時間，而非使用 tickCount
+        float phase = dragon.getFlapPhase(partialTick);
+
         stack.pushPose();
 
-        float phase = t * 0.28F;
         float bob = Mth.sin(phase - 1.0F) + 1.0F;
         bob = (bob * bob + bob * 2.0F) * 0.05F;
 
         stack.translate(0.0F, bob - 2.0F, -3.0F);
         stack.mulPose(Axis.XP.rotationDegrees(bob * 2.0F));
-        animateDragonBody(t);
+
+        animateDragonBody(phase);
 
         int hurtOverlay = OverlayTexture.pack(
                 0.0F,
@@ -204,12 +207,10 @@ public class AncientEnderDragonRenderer extends EntityRenderer<AncientEnderDrago
         }
         super.render(dragon, yaw, partialTick, stack, buffers, light);
     }
-    private void animateDragonBody(float time) {
+    private void animateDragonBody(float phase) {
 
         ModelPart body = root.getChild("body");
         ModelPart head = root.getChild("head");
-
-        float phase = time * 0.28F;
 
         float sin = Mth.sin(phase);
         float cos = Mth.cos(phase);
@@ -302,7 +303,7 @@ public class AncientEnderDragonRenderer extends EntityRenderer<AncientEnderDrago
         float anchorYaw = dragon.getFlightYaw(6, partialTick);
         double anchorY = dragon.getFlightY(6, partialTick);
 
-        float phase = (dragon.tickCount + partialTick) * 0.28F;
+        float phase = dragon.getFlapPhase(partialTick);
         int count = neck ? 5 : 12;
 
         for (int i = 0; i < count; i++) {
