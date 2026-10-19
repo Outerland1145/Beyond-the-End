@@ -88,6 +88,15 @@ public class BlockEntityRegister {
             ).build(null)
     );
 
+    public static final Supplier<BlockEntityType<AltarPedestalBlockEntity>>
+            ALTAR_PEDESTAL = BLOCK_ENTITIES.register(
+            "altar_pedestal",
+            () -> BlockEntityType.Builder.of(
+                    AltarPedestalBlockEntity::new,
+                    BlockRegister.ALTAR_PEDESTAL.get()
+            ).build(null)
+    );
+
 
 
 

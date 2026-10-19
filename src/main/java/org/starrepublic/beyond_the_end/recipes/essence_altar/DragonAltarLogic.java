@@ -1,41 +1,34 @@
 package org.starrepublic.beyond_the_end.recipes.essence_altar;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.core.registries.BuiltInRegistries;
+
+import org.jetbrains.annotations.Nullable;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.AltarPedestalBlockEntity;
 import org.starrepublic.beyond_the_end.Entitys.blockentity.DragonEssenceAltarBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.EssenceAltarBlockEntity;
+import org.starrepublic.beyond_the_end.Register.BlockRegister;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public final class DragonAltarLogic {
 
-    private static final String ITEM_DATA =
-            "beyond_the_end_dragon_altar";
-
     private static final int PEDESTAL_INTERVAL = 20;
-    private static final int ITEM_INTERVAL = 4;
+    private static final int PROCESS_INTERVAL = 4;
 
     private DragonAltarLogic() {
     }
 
     // ========================================================
-    // Main ticker
+    // 主 Tick
     // ========================================================
 
     public static void tick(
@@ -48,16 +41,58 @@ public final class DragonAltarLogic {
             refreshPedestals(level, altar);
         }
 
-        if (ticks % ITEM_INTERVAL == 0) {
+        if (ticks % PROCESS_INTERVAL != 0) {
+            return;
+        }
 
-            for (BlockPos pedestal : altar.getDragonPedestals()) {
-                processPedestal(level, altar, pedestal);
+        // 複製清單，避免處理過程修改原本的清單
+        List<BlockPos> positions = altar.getDragonPedestals();
+
+        for (BlockPos pos : positions) {
+
+            AltarPedestalBlockEntity pedestal =
+                    getPedestal(level, pos);
+
+            if (pedestal == null || pedestal.isEmpty()) {
+                continue;
             }
+
+            processPedestal(level, altar, pedestal);
         }
     }
 
     // ========================================================
-    // Pedestal detection
+    // 基座取得
+    // ========================================================
+
+    @Nullable
+    private static AltarPedestalBlockEntity getPedestal(
+            ServerLevel level,
+            BlockPos pos
+    ) {
+
+        if (!level.hasChunkAt(pos)) {
+            return null;
+        }
+
+        // 硬編碼指定唯一合法的專用基座
+        if (!level.getBlockState(pos).is(
+                BlockRegister.ALTAR_PEDESTAL.get()
+        )) {
+            return null;
+        }
+
+        BlockEntity entity = level.getBlockEntity(pos);
+
+        if (entity instanceof AltarPedestalBlockEntity pedestal) {
+            return pedestal;
+        }
+
+        return null;
+    }
+
+    // ========================================================
+    // 掃描 7×7 / 9×9 內的所有專用基座
     // ========================================================
 
     private static void refreshPedestals(
@@ -68,494 +103,463 @@ public final class DragonAltarLogic {
         BlockPos center = altar.getBlockPos();
 
         int range = altar.isDragonRangeUpgraded() ? 4 : 3;
-        int maximum = altar.isDragonRangeUpgraded() ? 12 : 8;
 
-        Map<Block, List<BlockPos>> candidates = new HashMap<>();
+        List<BlockPos> candidates = new ArrayList<>();
 
-        // 不強制載入尚未載入的區塊
         for (int x = -range; x <= range; x++) {
             for (int z = -range; z <= range; z++) {
 
+                // 祭壇自身不是基座
+                if (x == 0 && z == 0) {
+                    continue;
+                }
+
+                // Y 不做偏移，確保與祭壇同一高度
                 BlockPos pos = center.offset(x, 0, z);
 
-                if (!level.hasChunkAt(pos)) {
-                    return;
+                if (getPedestal(level, pos) == null) {
+                    continue;
                 }
+
+                candidates.add(pos.immutable());
             }
         }
 
-        for (int x = -range; x <= range; x++) {
-            for (int z = -range; z <= range; z++) {
-
-                // 祭壇周圍的一圈不允許作為基座
-                if (Math.abs(x) <= 1 && Math.abs(z) <= 1) {
-                    continue;
-                }
-
-                BlockPos pos = center.offset(x, 0, z);
-
-                if (!isValidPedestal(level, pos)) {
-                    continue;
-                }
-
-                Block block = level.getBlockState(pos).getBlock();
-
-                candidates
-                        .computeIfAbsent(
-                                block,
-                                ignored -> new ArrayList<>()
+        // 固定排序，使掃描順序穩定
+        candidates.sort(
+                Comparator
+                        .comparingDouble(
+                                (BlockPos pos) -> pos.distSqr(center)
                         )
-                        .add(pos.immutable());
+                        .thenComparingInt(BlockPos::getX)
+                        .thenComparingInt(BlockPos::getZ)
+        );
+
+        // 解除不再屬於範圍內的基座
+        for (BlockPos oldPos : altar.getDragonPedestals()) {
+
+            if (candidates.contains(oldPos)) {
+                continue;
+            }
+
+            AltarPedestalBlockEntity oldPedestal =
+                    getPedestal(level, oldPos);
+
+            if (oldPedestal != null) {
+                oldPedestal.release(center);
             }
         }
 
-        // 優先選取數量最多且沒有超過上限的同類基座
-        List<BlockPos> selected = candidates.entrySet()
-                .stream()
-                .filter(entry ->
-                        entry.getValue().size() <= maximum
-                )
-                .sorted(
-                        Comparator
-                                .<Map.Entry<Block, List<BlockPos>>>
-                                        comparingInt(
-                                        entry -> entry.getValue().size()
-                                )
-                                .reversed()
-                                .thenComparing(
-                                        entry -> BuiltInRegistries.BLOCK
-                                                .getKey(entry.getKey())
-                                                .toString()
-                                )
-                )
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElseGet(List::of);
-
-        altar.setDragonPedestals(selected);
-
-        // 若原本使用的基座不再有效，釋放上面的物品
-        releaseInvalidItems(level, altar);
+        altar.setDragonPedestals(candidates);
     }
 
-    private static boolean isValidPedestal(
+    // ========================================================
+    // 檢查另一座祭壇是否占用基座
+    // ========================================================
+
+    private static boolean isAvailableToAltar(
             ServerLevel level,
-            BlockPos pos
+            DragonEssenceAltarBlockEntity altar,
+            AltarPedestalBlockEntity pedestal
     ) {
 
-        BlockState state = level.getBlockState(pos);
+        BlockPos owner = pedestal.getOwnerAltar();
 
-        if (state.isAir()) {
+        if (owner == null || owner.equals(altar.getBlockPos())) {
+            return true;
+        }
+
+        // 不強制載入其他祭壇所處區塊
+        if (!level.hasChunkAt(owner)) {
             return false;
         }
 
-        // 基座必須有碰撞體積
-        if (state.getCollisionShape(level, pos).isEmpty()) {
+        BlockEntity entity = level.getBlockEntity(owner);
+
+        if (entity instanceof EssenceAltarBlockEntity) {
             return false;
         }
 
-        // 基座上方必須為空氣
-        if (!level.isEmptyBlock(pos.above())) {
-            return false;
-        }
-
-        // 水平四個方向必須沒有碰撞箱
-        for (Direction direction : Direction.Plane.HORIZONTAL) {
-
-            BlockPos adjacent = pos.relative(direction);
-
-            if (!level.getBlockState(adjacent)
-                    .getCollisionShape(level, adjacent)
-                    .isEmpty()) {
-                return false;
-            }
-        }
+        // 已經不存在的祭壇
+        pedestal.release(owner);
 
         return true;
     }
 
     // ========================================================
-    // Item processing
+    // 尋找可用的空輸出基座
+    // ========================================================
+
+    @Nullable
+    private static AltarPedestalBlockEntity findEmptyPedestal(
+            ServerLevel level,
+            DragonEssenceAltarBlockEntity altar,
+            BlockPos inputPos
+    ) {
+
+        List<AltarPedestalBlockEntity> available =
+                new ArrayList<>();
+
+        for (BlockPos pos : altar.getDragonPedestals()) {
+
+            // 原料基座不可兼任輸出基座
+            if (pos.equals(inputPos)) {
+                continue;
+            }
+
+            AltarPedestalBlockEntity pedestal =
+                    getPedestal(level, pos);
+
+            if (pedestal == null || !pedestal.isEmpty()) {
+                continue;
+            }
+
+            if (!isAvailableToAltar(level, altar, pedestal)) {
+                continue;
+            }
+
+            available.add(pedestal);
+        }
+
+        if (available.isEmpty()) {
+            return null;
+        }
+
+        // 優先使用距離輸入基座最近的空基座
+        available.sort(
+                Comparator
+                        .comparingDouble(
+                                (AltarPedestalBlockEntity pedestal) ->
+                                        pedestal.getBlockPos().distSqr(inputPos)
+                        )
+                        .thenComparingInt(
+                                pedestal -> pedestal.getBlockPos().getX()
+                        )
+                        .thenComparingInt(
+                                pedestal -> pedestal.getBlockPos().getZ()
+                        )
+        );
+
+        return available.get(0);
+    }
+
+    // ========================================================
+    // 配方執行
     // ========================================================
 
     private static void processPedestal(
             ServerLevel level,
             DragonEssenceAltarBlockEntity altar,
-            BlockPos pedestal
+            AltarPedestalBlockEntity inputPedestal
     ) {
 
-        double x = pedestal.getX() + 0.5D;
-        double y = pedestal.getY() + 1.15D;
-        double z = pedestal.getZ() + 0.5D;
+        BlockPos altarPos = altar.getBlockPos();
 
-        AABB area = new AABB(
-                x - 0.30D, y - 0.30D, z - 0.30D,
-                x + 0.30D, y + 0.35D, z + 0.30D
-        );
-
-        List<ItemEntity> items =
-                level.getEntitiesOfClass(ItemEntity.class, area);
-
-        ItemEntity activeItem = null;
-
-        // 優先尋找已經被這個祭壇固定的物品
-        for (ItemEntity item : items) {
-
-            if (isOwnedBy(item, altar.getBlockPos(), pedestal)) {
-                activeItem = item;
-                break;
-            }
-        }
-
-        // 基座目前沒有正在注魔的物品
-        if (activeItem == null) {
-
-            for (ItemEntity item : items) {
-
-                if (!item.isAlive() || item.getItem().isEmpty()) {
-                    continue;
-                }
-
-                // 不能拿走其他祭壇正在處理的物品
-                if (isClaimed(item)) {
-                    continue;
-                }
-
-                Optional<RecipeHolder<EssenceAltarRecipe>> recipe =
-                        altar.findMatchingRecipe(
-                                List.of(item.getItem())
-                        );
-
-                if (recipe.isEmpty()) {
-                    continue;
-                }
-
-                activeItem = claimItem(
-                        level,
-                        altar,
-                        pedestal,
-                        item
-                );
-
-                if (activeItem != null) {
-                    break;
-                }
-            }
-        }
-
-        if (activeItem == null) {
+        if (!isAvailableToAltar(level, altar, inputPedestal)) {
             return;
         }
 
-        if (!activeItem.isAlive() || activeItem.getItem().isEmpty()) {
+        ItemStack inputStack = inputPedestal.getItem();
+
+        if (inputStack.isEmpty()) {
+
+            inputPedestal.release(altarPos);
             return;
         }
 
-        // 如果其他機制把材料合併成多件，將多餘的部分分離
-        if (!separateExtraItems(level, activeItem)) {
-            return;
-        }
-
-        // 在沒有足夠精華時也維持基座上的位置
-        stabilizeItem(activeItem, pedestal);
-
+        // 取得資料包配方
         Optional<RecipeHolder<EssenceAltarRecipe>> found =
-                altar.findMatchingRecipe(
-                        List.of(activeItem.getItem())
-                );
+                altar.findMatchingRecipe(inputStack);
 
-        // 資料包被修改、材料不再匹配等情況
         if (found.isEmpty()) {
-            releaseItem(activeItem);
-            return;
-        }
 
-        if (altar.getEssence() <= 0) {
-            return;
-        }
-
-        // HEE 的物品轉化不是每次更新都會推進
-        if (level.random.nextInt(5) != 0) {
+            inputPedestal.release(altarPos);
             return;
         }
 
         RecipeHolder<EssenceAltarRecipe> holder = found.get();
         EssenceAltarRecipe recipe = holder.value();
 
-        CompoundTag data = activeItem
-                .getPersistentData()
-                .getCompound(ITEM_DATA);
+        // ====================================================
+        // 先檢查空輸出基座
+        // ====================================================
 
-        // 配方重新載入或發生切換時清除舊進度
-        String recipeId = holder.id().toString();
+        AltarPedestalBlockEntity outputPedestal =
+                findEmptyPedestal(
+                        level,
+                        altar,
+                        inputPedestal.getBlockPos()
+                );
 
-        if (!recipeId.equals(data.getString("Recipe"))) {
+        if (outputPedestal == null) {
 
-            data.putString("Recipe", recipeId);
-            data.putInt("Progress", 0);
+            // 沒有空基座，暫停工作
+            // 已有的注魔進度保留
+            return;
         }
 
-        int progress = data.getInt("Progress");
+        if (!inputPedestal.claim(altarPos)) {
+            return;
+        }
+
+        // ====================================================
+        // 計算精華成本
+        // ====================================================
 
         int requiredCost = recipe.getCost();
 
-        // 效率升級：降低精華消耗
         if (altar.isDragonEfficiencyUpgraded()) {
 
             requiredCost = Math.max(
-                    recipe.getCost() >> 1,
-                    (int) Math.ceil(recipe.getCost() * 0.65D)
+                    1,
+                    (int) Math.ceil(requiredCost * 0.65D)
             );
         }
 
-        requiredCost = Math.max(1, requiredCost);
+        // 防止配方成本、產物或輸入資料改變後沿用舊進度
+        String recipeSignature =
+                holder.id()
+                        + "#"
+                        + requiredCost
+                        + "#"
+                        + ItemStack.hashItemAndComponents(inputStack)
+                        + "#"
+                        + ItemStack.hashItemAndComponents(recipe.getResult())
+                        + "#"
+                        + recipe.getResult().getCount();
+
+        inputPedestal.setActiveRecipe(recipeSignature);
+
+        // 之前已經完成進度，但當時缺少空基座
+        if (inputPedestal.getProgress() >= requiredCost) {
+
+            finishRecipe(
+                    level,
+                    altar,
+                    inputPedestal,
+                    outputPedestal,
+                    recipe
+            );
+
+            return;
+        }
+
+        // 缺少精華時暫停，不清除進度
+        if (altar.getEssence() <= 0) {
+            return;
+        }
+
+        // ====================================================
+        // 祭壇 → 原料基座 粒子流
+        // ====================================================
+
+        spawnParticleStream(
+                level,
+                altarPos,
+                inputPedestal.getBlockPos()
+        );
+
+        // 保留原本隨機推進機制
+        if (level.random.nextInt(5) != 0) {
+            return;
+        }
 
         int operations = altar.isDragonSpeedUpgraded() ? 2 : 1;
 
         for (int i = 0; i < operations; i++) {
 
-            if (progress >= requiredCost) {
+            if (inputPedestal.getProgress() >= requiredCost) {
                 break;
             }
 
-            // 每次推進消耗一點精華
             if (!altar.consumeEssence(1)) {
                 break;
             }
 
-            progress++;
+            inputPedestal.advanceProgress();
 
-            data.putInt("Progress", progress);
-            activeItem.getPersistentData().put(ITEM_DATA, data);
+            if (inputPedestal.getProgress() >= requiredCost) {
 
-            spawnProgressParticles(level, pedestal);
-
-            if (progress >= requiredCost) {
-
-                EssenceAltarRecipeInput input =
-                        new EssenceAltarRecipeInput(
-                                "dragon",
-                                List.of(activeItem.getItem().copy())
+                // 完成時重新尋找可用的空基座
+                AltarPedestalBlockEntity destination =
+                        findEmptyPedestal(
+                                level,
+                                altar,
+                                inputPedestal.getBlockPos()
                         );
 
-                ItemStack result = recipe.assemble(
-                        input,
-                        level.registryAccess()
-                );
+                if (destination != null) {
 
-                if (result.isEmpty()) {
-                    releaseItem(activeItem);
-                    return;
+                    finishRecipe(
+                            level,
+                            altar,
+                            inputPedestal,
+                            destination,
+                            recipe
+                    );
                 }
 
-                // 一份材料只執行一次轉化
-                activeItem.setItem(result);
-
-                releaseItem(activeItem);
-
-                activeItem.setDeltaMovement(
-                        new Vec3(0.0D, 0.12D, 0.0D)
-                );
-
-                spawnCompletionParticles(level, pedestal);
                 return;
             }
         }
     }
 
     // ========================================================
-    // Claiming and splitting items
+    // 完成配方：將產物放入空基座
     // ========================================================
 
-    private static ItemEntity claimItem(
+    private static boolean finishRecipe(
             ServerLevel level,
             DragonEssenceAltarBlockEntity altar,
-            BlockPos pedestal,
-            ItemEntity original
+            AltarPedestalBlockEntity inputPedestal,
+            AltarPedestalBlockEntity outputPedestal,
+            EssenceAltarRecipe recipe
     ) {
 
-        ItemStack stack = original.getItem();
+        BlockPos altarPos = altar.getBlockPos();
 
-        if (stack.isEmpty()) {
-            return null;
-        }
-
-        ItemEntity claimed;
-
-        if (stack.getCount() > 1) {
-
-            ItemStack single = stack.copyWithCount(1);
-
-            ItemEntity separated = new ItemEntity(
-                    level,
-                    pedestal.getX() + 0.5D,
-                    pedestal.getY() + 1.15D,
-                    pedestal.getZ() + 0.5D,
-                    single
-            );
-
-            separated.setDeltaMovement(Vec3.ZERO);
-
-            // 先確定新實體成功生成，才減少原有物品數量
-            if (!level.addFreshEntity(separated)) {
-                return null;
-            }
-
-            original.setItem(
-                    stack.copyWithCount(stack.getCount() - 1)
-            );
-
-            claimed = separated;
-
-        } else {
-            claimed = original;
-        }
-
-        CompoundTag data = new CompoundTag();
-
-        data.putLong("Owner", altar.getBlockPos().asLong());
-        data.putLong("Pedestal", pedestal.asLong());
-        data.putInt("Progress", 0);
-        data.putString("Recipe", "");
-
-        claimed.getPersistentData().put(ITEM_DATA, data);
-
-        claimed.setNoGravity(true);
-        claimed.setDeltaMovement(Vec3.ZERO);
-        claimed.setPickUpDelay(50);
-
-        claimed.setExtendedLifetime();
-
-        stabilizeItem(claimed, pedestal);
-
-        return claimed;
-    }
-
-    private static boolean separateExtraItems(
-            ServerLevel level,
-            ItemEntity item
-    ) {
-
-        ItemStack stack = item.getItem();
-
-        if (stack.getCount() <= 1) {
-            return true;
-        }
-
-        ItemStack excess = stack.copyWithCount(
-                stack.getCount() - 1
-        );
-
-        ItemEntity extra = new ItemEntity(
-                level,
-                item.getX() + 0.8D,
-                item.getY() + 0.3D,
-                item.getZ() + 0.8D,
-                excess
-        );
-
-        extra.setDeltaMovement(
-                new Vec3(0.12D, 0.10D, 0.12D)
-        );
-
-        if (!level.addFreshEntity(extra)) {
+        if (inputPedestal == outputPedestal) {
             return false;
         }
 
-        item.setItem(stack.copyWithCount(1));
+        if (inputPedestal.isEmpty() || !outputPedestal.isEmpty()) {
+            return false;
+        }
+
+        if (!isAvailableToAltar(level, altar, outputPedestal)) {
+            return false;
+        }
+
+        EssenceAltarRecipeInput recipeInput =
+                new EssenceAltarRecipeInput(
+                        "dragon",
+                        List.of(inputPedestal.getItem())
+                );
+
+        ItemStack result = recipe.assemble(
+                recipeInput,
+                level.registryAccess()
+        );
+
+        if (result.isEmpty()
+                || result.getCount() > result.getMaxStackSize()) {
+            return false;
+        }
+
+        // 先鎖定輸出基座
+        if (!outputPedestal.claim(altarPos)) {
+            return false;
+        }
+
+        // 將成品放入輸出基座
+        int inserted = outputPedestal.insert(
+                result,
+                result.getCount()
+        );
+
+        if (inserted != result.getCount()) {
+
+            if (inserted > 0) {
+                outputPedestal.extract(inserted);
+            }
+
+            outputPedestal.release(altarPos);
+            return false;
+        }
+
+        // 確定輸出成功後，才真正消耗一件材料
+        ItemStack consumed = inputPedestal.extract(1);
+
+        if (consumed.isEmpty()) {
+
+            // 理論上不應發生，仍提供回滾保護
+            outputPedestal.extract(inserted);
+            outputPedestal.release(altarPos);
+
+            return false;
+        }
+
+        inputPedestal.release(altarPos);
+        outputPedestal.release(altarPos);
+
+        spawnCompletionParticles(
+                level,
+                outputPedestal.getBlockPos()
+        );
+
         return true;
     }
 
-    private static void stabilizeItem(
-            ItemEntity item,
-            BlockPos pedestal
-    ) {
-
-        item.setNoGravity(true);
-        item.setDeltaMovement(Vec3.ZERO);
-
-        item.setPos(
-                pedestal.getX() + 0.5D,
-                pedestal.getY() + 1.15D,
-                pedestal.getZ() + 0.5D
-        );
-
-        // 持續注魔期間避免普通物品壽命耗盡
-        item.setExtendedLifetime();
-    }
-
     // ========================================================
-    // Owner validation
+    // 粒子：祭壇向基座輸送能量
     // ========================================================
 
-    private static boolean isClaimed(ItemEntity item) {
-        return item.getPersistentData()
-                .contains(ITEM_DATA, Tag.TAG_COMPOUND);
-    }
-
-    private static boolean isOwnedBy(
-            ItemEntity item,
+    private static void spawnParticleStream(
+            ServerLevel level,
             BlockPos altar,
             BlockPos pedestal
     ) {
 
-        if (!isClaimed(item)) {
-            return false;
-        }
-
-        CompoundTag data = item.getPersistentData()
-                .getCompound(ITEM_DATA);
-
-        return data.getLong("Owner") == altar.asLong()
-                && data.getLong("Pedestal") == pedestal.asLong();
-    }
-
-    // ========================================================
-    // Release and cleanup
-    // ========================================================
-
-    private static void releaseItem(ItemEntity item) {
-
-        item.getPersistentData().remove(ITEM_DATA);
-
-        item.setNoGravity(false);
-        item.setNoPickUpDelay();
-    }
-
-    private static void releaseInvalidItems(
-            ServerLevel level,
-            DragonEssenceAltarBlockEntity altar
-    ) {
-
-        BlockPos center = altar.getBlockPos();
-
-        AABB area = new AABB(center).inflate(
-                5.5D, 2.5D, 5.5D
+        Vec3 start = new Vec3(
+                altar.getX() + 0.5D,
+                altar.getY() + 1.25D,
+                altar.getZ() + 0.5D
         );
 
-        for (ItemEntity item :
-                level.getEntitiesOfClass(ItemEntity.class, area)) {
+        Vec3 end = new Vec3(
+                pedestal.getX() + 0.5D,
+                pedestal.getY() + 1.0D,
+                pedestal.getZ() + 0.5D
+        );
 
-            if (!isClaimed(item)) {
-                continue;
-            }
+        double phase =
+                (level.getGameTime() % 20L) / 20.0D;
 
-            CompoundTag data = item.getPersistentData()
-                    .getCompound(ITEM_DATA);
+        for (int i = 0; i < 4; i++) {
 
-            if (data.getLong("Owner") != center.asLong()) {
-                continue;
-            }
+            double t =
+                    (phase + i * 0.25D) % 1.0D;
 
-            BlockPos pedestal = BlockPos.of(
-                    data.getLong("Pedestal")
+            Vec3 point = start.lerp(end, t);
+
+            double arc =
+                    Math.sin(t * Math.PI) * 0.30D;
+
+            level.sendParticles(
+                    ParticleTypes.END_ROD,
+                    point.x,
+                    point.y + arc,
+                    point.z,
+                    1,
+                    0.015D,
+                    0.015D,
+                    0.015D,
+                    0.0D
             );
-
-            if (!altar.getDragonPedestals().contains(pedestal)) {
-                releaseItem(item);
-            }
         }
     }
+
+    private static void spawnCompletionParticles(
+            ServerLevel level,
+            BlockPos pos
+    ) {
+
+        level.sendParticles(
+                ParticleTypes.REVERSE_PORTAL,
+                pos.getX() + 0.5D,
+                pos.getY() + 1.0D,
+                pos.getZ() + 0.5D,
+                30,
+                0.25D,
+                0.25D,
+                0.25D,
+                0.08D
+        );
+    }
+
+    // ========================================================
+    // 祭壇被破壞：釋放基座
+    // ========================================================
 
     public static void releaseAll(
             ServerLevel level,
@@ -564,66 +568,22 @@ public final class DragonAltarLogic {
 
         BlockPos center = altar.getBlockPos();
 
-        AABB area = new AABB(center).inflate(
-                5.5D, 2.5D, 5.5D
-        );
+        // 按最大升級範圍檢查
+        for (int x = -4; x <= 4; x++) {
+            for (int z = -4; z <= 4; z++) {
 
-        for (ItemEntity item :
-                level.getEntitiesOfClass(ItemEntity.class, area)) {
+                BlockPos pos = center.offset(x, 0, z);
 
-            if (!isClaimed(item)) {
-                continue;
-            }
+                AltarPedestalBlockEntity pedestal =
+                        getPedestal(level, pos);
 
-            CompoundTag data = item.getPersistentData()
-                    .getCompound(ITEM_DATA);
-
-            if (data.getLong("Owner") == center.asLong()) {
-                releaseItem(item);
+                if (pedestal != null) {
+                    pedestal.release(center);
+                }
             }
         }
 
         altar.setDragonPedestals(List.of());
-    }
-
-    // ========================================================
-    // Effects
-    // ========================================================
-
-    private static void spawnProgressParticles(
-            ServerLevel level,
-            BlockPos pedestal
-    ) {
-
-        level.sendParticles(
-                ParticleTypes.PORTAL,
-                pedestal.getX() + 0.5D,
-                pedestal.getY() + 1.2D,
-                pedestal.getZ() + 0.5D,
-                2,
-                0.15D,
-                0.15D,
-                0.15D,
-                0.025D
-        );
-    }
-
-    private static void spawnCompletionParticles(
-            ServerLevel level,
-            BlockPos pedestal
-    ) {
-
-        level.sendParticles(
-                ParticleTypes.REVERSE_PORTAL,
-                pedestal.getX() + 0.5D,
-                pedestal.getY() + 1.15D,
-                pedestal.getZ() + 0.5D,
-                35,
-                0.35D,
-                0.40D,
-                0.35D,
-                0.10D
-        );
     }
 }
 

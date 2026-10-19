@@ -5,6 +5,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import org.starrepublic.beyond_the_end.Entitys.client.renderer.EssenceAltarPedestalRenderer;
+import org.starrepublic.beyond_the_end.Entitys.client.renderer.EssenceAltarRenderer;
 import org.starrepublic.beyond_the_end.Renders.blockentity.DecorativeEndGatewayRenderer;
 import org.starrepublic.beyond_the_end.Renders.blockentity.EndCampfireRenderer;
 import org.starrepublic.beyond_the_end.Renders.blockentity.EndNetherPortalRenderer;
@@ -41,6 +43,25 @@ public class RenderRegistry {
         event.registerBlockEntityRenderer(
                 BlockEntityRegister.END_CAMPFIRE.get(),
                 EndCampfireRenderer::new
+        );
+        event.registerBlockEntityRenderer(
+                BlockEntityRegister.DRAGON_ESSENCE_ALTAR.get(),
+                EssenceAltarRenderer::new
+        );
+
+        event.registerBlockEntityRenderer(
+                BlockEntityRegister.SOUL_ESSENCE_ALTAR.get(),
+                EssenceAltarRenderer::new
+        );
+
+        event.registerBlockEntityRenderer(
+                BlockEntityRegister.FIRE_ESSENCE_ALTAR.get(),
+                EssenceAltarRenderer::new
+        );
+
+        event.registerBlockEntityRenderer(
+                BlockEntityRegister.ALTAR_PEDESTAL.get(),
+                EssenceAltarPedestalRenderer::new
         );
     }
     private static void registerItemRenderers(

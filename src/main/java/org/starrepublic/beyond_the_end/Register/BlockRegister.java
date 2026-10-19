@@ -38,6 +38,20 @@ public class BlockRegister {
     public static final PlantRegisterHelper BURNINGGFERN = PlantRegisterHelper.PlantRegisterWithoutTallSet("burning_fern");
 
     public static final AltarBlockHelper Essence_Altar = AltarBlockHelper.AltarBlockSet("essence");
+    public static final DeferredBlock<AltarPedestalBlock> ALTAR_PEDESTAL =
+            BlockRegisterHelper.RegisterNewBlock(
+                    "altar_pedestal",
+                    () -> new AltarPedestalBlock(
+                            BlockBehaviour.Properties.of()
+                                    .strength(3.0F, 15.0F)
+                                    .sound(SoundType.STONE)
+                                    .requiresCorrectToolForDrops()
+                                    .noOcclusion()
+
+
+                    ),
+                    true
+            );
 
     public static final DeferredBlock<DecorativeEndGatewayBlock> DECORATIVE_END_GATEWAY =
             BlockRegisterHelper.RegisterNewBlockWithSpecialItem(

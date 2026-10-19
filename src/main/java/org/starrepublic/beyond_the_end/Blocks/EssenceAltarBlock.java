@@ -31,6 +31,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import org.jetbrains.annotations.Nullable;
 import org.starrepublic.beyond_the_end.Entitys.blockentity.DragonEssenceAltarBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.EssenceAltarBlockEntity;
 import org.starrepublic.beyond_the_end.Entitys.blockentity.FireEssenceAltarBlockEntity;
 import org.starrepublic.beyond_the_end.Entitys.blockentity.SoulEssenceAltarBlockEntity;
 import org.starrepublic.beyond_the_end.Register.BlockEntityRegister;
@@ -184,7 +185,7 @@ public class EssenceAltarBlock extends BaseEntityBlock {
                     amount = player.isShiftKeyDown() ? 1 : 32;
                 }
 
-                int accepted = altar.addEssence(amount);
+                int accepted = altar.addEssence(stack, amount);
 
                 if (accepted > 0
                         && !player.getAbilities().instabuild) {
@@ -311,16 +312,24 @@ public class EssenceAltarBlock extends BaseEntityBlock {
             boolean movedByPiston
     ) {
 
+        // 只有真正替換成另一種方塊時才返還
         if (state.getBlock() != newState.getBlock()) {
 
             if (level instanceof ServerLevel serverLevel
                     && level.getBlockEntity(pos)
-                    instanceof DragonEssenceAltarBlockEntity altar) {
+                    instanceof EssenceAltarBlockEntity altar) {
 
-                DragonAltarLogic.releaseAll(
-                        serverLevel,
-                        altar
-                );
+                // 龍祭壇先解除與基座的連接
+                if (altar instanceof DragonEssenceAltarBlockEntity dragon) {
+
+                    DragonAltarLogic.releaseAll(
+                            serverLevel,
+                            dragon
+                    );
+                }
+
+                // 三種精華祭壇共用的返還功能
+                altar.dropAllEssence(serverLevel);
             }
         }
 
