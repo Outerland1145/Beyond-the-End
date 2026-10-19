@@ -31,6 +31,7 @@ public final class TotalRegistries {
         eventBus.addListener(
                 SpawnRules::registerSpawnPlacements
         );
+        RecipeRegister.register(eventBus);
         /*以下為創造模式面板*/
         Blocks.register(eventBus);
 

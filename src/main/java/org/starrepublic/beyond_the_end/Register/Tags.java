@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -21,8 +22,26 @@ public class Tags {
     public static final TagKey<Block> END_FIRE_BASE_BLOCKS = blockTag("end_fire_base_blocks");
     public static final TagKey<Block> CHORUS_PLANTABLE = blockTag("chorus_plantable");
     public static final TagKey<Block> ENDER_GOO_INFECTABLE = blockTag("ender_goo_infectable");
-    public static final TagKey<Fluid> ENDER_GOO = FLUIDS.createTagKey("ender_goo");
     public static final TagKey<Block> ENCHANTED_FEATURE_GROUND = blockTag("enchanted_feature_ground");
+
+    public static final TagKey<Item> DRAGON_ESSENCE =
+            TagKey.create(
+                    Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath(
+                            Beyond_the_end.MODID,
+                            "dragon_essence"
+                    )
+            );
+    public static final TagKey<Item> END_POWDER =
+            TagKey.create(
+                    Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath(
+                            Beyond_the_end.MODID,
+                            "altar_end_powder"
+                    )
+            );
+
+    public static final TagKey<Fluid> ENDER_GOO = FLUIDS.createTagKey("ender_goo");
     public static final TagKey<Biome> CRYSTAL_REMOVER_BLACKLIST =
             TagKey.create(
                     Registries.BIOME,

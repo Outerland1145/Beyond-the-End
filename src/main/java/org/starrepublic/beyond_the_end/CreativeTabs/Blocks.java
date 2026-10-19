@@ -68,6 +68,9 @@ public class Blocks {
                                 output.accept( BlockRegister.SPOOKY.trapdoor.get());
                                 output.accept( BlockRegister.SPOOKY.pressureplate.get());
                                 output.accept( BlockRegister.SPOOKY.button.get());
+                                output.accept( BlockRegister.Essence_Altar.soul.get());
+                                output.accept( BlockRegister.Essence_Altar.dragon.get());
+                                output.accept( BlockRegister.Essence_Altar.fires.get());
                             })
 
                             .build()

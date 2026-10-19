@@ -37,6 +37,8 @@ public class BlockRegister {
     public static final PlantRegisterHelper BURNINGGRASS = PlantRegisterHelper.PlantRegisterWithoutTallSet("burning_grass");
     public static final PlantRegisterHelper BURNINGGFERN = PlantRegisterHelper.PlantRegisterWithoutTallSet("burning_fern");
 
+    public static final AltarBlockHelper Essence_Altar = AltarBlockHelper.AltarBlockSet("essence");
+
     public static final DeferredBlock<DecorativeEndGatewayBlock> DECORATIVE_END_GATEWAY =
             BlockRegisterHelper.RegisterNewBlockWithSpecialItem(
                     "decorative_end_gateway",

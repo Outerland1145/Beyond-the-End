@@ -36,6 +36,7 @@ public class ItemRegister {
     public static final DeferredItem<Item> DRAGON_ESSENCE = ITEMS.registerSimpleItem("dragon_essence");
     public static final DeferredItem<Item> SOUL_ESSENCE = ITEMS.registerSimpleItem("soul_essence");
     public static final DeferredItem<Item> FIRE_ESSENCE = ITEMS.registerSimpleItem("fire_essence");
+    public static final DeferredItem<Item> END_POWDER = ITEMS.registerSimpleItem("end_powder");
 
 
     public static void register(IEventBus eventBus) {

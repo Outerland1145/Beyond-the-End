@@ -1,0 +1,12 @@
+{
+  "type": "beyond_the_end:essence_altar",
+  "essence": "dragon",
+  "ingredient": {
+    "item": "minecraft:ender_eye"
+  },
+  "result": {
+    "id": "minecraft:end_crystal",
+    "count": 1
+  },
+  "cost": 50
+}

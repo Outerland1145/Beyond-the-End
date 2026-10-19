@@ -6,9 +6,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
-import org.starrepublic.beyond_the_end.Entitys.blockentity.DecorativeEndGatewayBlockEntity;
-import org.starrepublic.beyond_the_end.Entitys.blockentity.EndCampfireBlockEntity;
-import org.starrepublic.beyond_the_end.Entitys.blockentity.EndNetherPortalBlockEntity;
+import org.starrepublic.beyond_the_end.Entitys.blockentity.*;
 
 import java.util.function.Supplier;
 
@@ -52,6 +50,46 @@ public class BlockEntityRegister {
                             BlockRegister.END_FIRE.campfire.get()
                     ).build(null)
             );
+    public static final Supplier<
+            BlockEntityType<DragonEssenceAltarBlockEntity>>
+            DRAGON_ESSENCE_ALTAR = BLOCK_ENTITIES.register(
+            "dragon_essence_altar",
+            () -> BlockEntityType.Builder.of(
+                    DragonEssenceAltarBlockEntity::new,
+                    BlockRegister.Essence_Altar.dragon.get()
+            ).build(null)
+    );
+
+    // ========================================================
+    // Soul Essence Altar
+    // ========================================================
+
+    public static final Supplier<
+            BlockEntityType<SoulEssenceAltarBlockEntity>>
+            SOUL_ESSENCE_ALTAR = BLOCK_ENTITIES.register(
+            "soul_essence_altar",
+            () -> BlockEntityType.Builder.of(
+                    SoulEssenceAltarBlockEntity::new,
+                    BlockRegister.Essence_Altar.soul.get()
+            ).build(null)
+    );
+
+    // ========================================================
+    // Fire Essence Altar
+    // ========================================================
+
+    public static final Supplier<
+            BlockEntityType<FireEssenceAltarBlockEntity>>
+            FIRE_ESSENCE_ALTAR = BLOCK_ENTITIES.register(
+            "fire_essence_altar",
+            () -> BlockEntityType.Builder.of(
+                    FireEssenceAltarBlockEntity::new,
+                    BlockRegister.Essence_Altar.fires.get()
+            ).build(null)
+    );
+
+
+
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
