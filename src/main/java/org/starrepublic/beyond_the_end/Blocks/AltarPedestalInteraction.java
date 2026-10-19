@@ -86,73 +86,53 @@ public final class AltarPedestalInteraction {
     ) {
 
         Player player = event.getEntity();
+
+        if (event.getHand() != InteractionHand.MAIN_HAND
+                || !player.isShiftKeyDown()
+                || player.isSpectator()) {
+            return;
+        }
+
         Level level = event.getLevel();
         BlockPos pos = event.getPos();
 
-        // 只處理主手，避免一次操作執行兩次
-        if (event.getHand() != InteractionHand.MAIN_HAND) {
-            return;
-        }
-
-        if (player.isSpectator()) {
-            return;
-        }
-
-        // 只處理本模組的專用基座
         if (!level.getBlockState(pos).is(
                 BlockRegister.ALTAR_PEDESTAL.get()
         )) {
             return;
         }
 
-        // ====================================================
-        // 確認 BlockEntity
-        // ====================================================
-
-        BlockEntity entity = level.getBlockEntity(pos);
-
-        if (!(entity instanceof AltarPedestalBlockEntity pedestal)) {
-
-            // 暫時保留除錯訊息
-            LOGGER.error(
-                    "[BTE] Pedestal interaction failed! Side={}, Pos={}, Block={}, BlockEntity={}",
-                    level.isClientSide ? "CLIENT" : "SERVER",
-                    pos,
-                    level.getBlockState(pos).getBlock().getClass().getName(),
-                    entity == null
-                            ? "NULL"
-                            : entity.getClass().getName()
-            );
-
+        if (!(level.getBlockEntity(pos)
+                instanceof AltarPedestalBlockEntity pedestal)) {
             return;
         }
 
-        // ====================================================
-        // 所有基座互動走同一個入口
-        // ====================================================
-
         ItemStack heldItem = player.getMainHandItem();
 
-        // 客戶端只回傳互動成功，不修改物品
         if (!level.isClientSide) {
 
-            interact(
-                    player,
-                    pedestal,
-                    heldItem,
-                    player.isShiftKeyDown()
-            );
+            if (heldItem.isEmpty()) {
 
-            // 暫時保留除錯訊息
-            LOGGER.info(
-                    "[BTE] Pedestal interaction executed. Pos={}, Item={}, Count={}",
-                    pos,
-                    pedestal.getItem().getItem(),
-                    pedestal.getItem().getCount()
-            );
+                // 潛行＋空手：取出全部物品
+                interact(
+                        player,
+                        pedestal,
+                        ItemStack.EMPTY,
+                        true
+                );
+
+            } else if (pedestal.isInputMode()) {
+
+                // 潛行＋手持物品：放入整組
+                interact(
+                        player,
+                        pedestal,
+                        heldItem,
+                        true
+                );
+            }
         }
 
-        // 阻止後續一般方塊與物品交互
         event.setCancellationResult(
                 InteractionResult.sidedSuccess(level.isClientSide)
         );

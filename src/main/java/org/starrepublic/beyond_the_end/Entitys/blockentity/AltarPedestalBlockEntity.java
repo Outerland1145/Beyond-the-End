@@ -7,12 +7,15 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
+import org.starrepublic.beyond_the_end.Blocks.AltarPedestalBlock;
 import org.starrepublic.beyond_the_end.Register.BlockEntityRegister;
 
 public class AltarPedestalBlockEntity extends BlockEntity {
@@ -47,11 +50,214 @@ public class AltarPedestalBlockEntity extends BlockEntity {
     public boolean isEmpty() {
         return item.isEmpty();
     }
+    public boolean isOutputMode() {
+        BlockState state = getBlockState();
 
+        return state.hasProperty(AltarPedestalBlock.OUTPUT)
+                && state.getValue(AltarPedestalBlock.OUTPUT);
+    }
+
+    public boolean isInputMode() {
+        return !isOutputMode();
+    }
     /**
      * 嘗試插入物品。
      * 回傳實際插入數量。
      */
+    // ========================================================
+// 依照祭壇類型檢查精華物品
+// ========================================================
+
+    public boolean acceptsEssenceItem(ItemStack stack) {
+
+        if (stack.isEmpty()) {
+            return false;
+        }
+
+        TagKey<Item> tag;
+
+        switch (getEssenceType()) {
+
+            case "dragon":
+                tag = BTEAltarTags.DRAGON_ESSENCE;
+                break;
+
+            case "soul":
+                tag = BTEAltarTags.SOUL_ESSENCE;
+                break;
+
+            case "fire":
+                tag = BTEAltarTags.FIRE_ESSENCE;
+                break;
+
+            default:
+                return false;
+        }
+
+        if (!stack.is(tag)) {
+            return false;
+        }
+
+        ItemStack current = getDisplayEssenceItem();
+
+        return essence <= 0
+                || current.isEmpty()
+                || ItemStack.isSameItemSameComponents(current, stack);
+    }
+    // ========================================================
+// 祭壇配方輸出
+// ========================================================
+
+    public boolean canAcceptCraftedResult(ItemStack result) {
+
+        return level != null
+                && !level.isClientSide
+                && isOutputMode()
+                && item.isEmpty()
+                && !result.isEmpty()
+                && result.getCount() <= result.getMaxStackSize();
+    }
+
+    public boolean placeCraftedResult(ItemStack result) {
+
+        if (!canAcceptCraftedResult(result)) {
+            return false;
+        }
+
+        item = result.copy();
+
+        resetProgress();
+        markUpdated();
+
+        return true;
+    }
+
+    private final IItemHandler automationHandler = new IItemHandler() {
+
+        @Override
+        public int getSlots() {
+            return 1;
+        }
+
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+
+            if (slot != 0) {
+                return ItemStack.EMPTY;
+            }
+
+            return getItem();
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return slot == 0 ? 64 : 0;
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return slot == 0
+                    && isInputMode()
+                    && !stack.isEmpty();
+        }
+
+        // ====================================================
+        // 外部物品輸入
+        // ====================================================
+
+        @Override
+        public ItemStack insertItem(
+                int slot,
+                ItemStack stack,
+                boolean simulate
+        ) {
+
+            if (slot != 0 || stack.isEmpty() || !isInputMode()) {
+                return stack;
+            }
+
+            ItemStack stored = getItem();
+
+            if (!stored.isEmpty()
+                    && !ItemStack.isSameItemSameComponents(stored, stack)) {
+                return stack;
+            }
+
+            int current = stored.isEmpty() ? 0 : stored.getCount();
+
+            int capacity = Math.max(
+                    0,
+                    stack.getMaxStackSize() - current
+            );
+
+            int accepted = Math.min(
+                    stack.getCount(),
+                    capacity
+            );
+
+            if (accepted <= 0) {
+                return stack;
+            }
+
+            if (!simulate) {
+
+                accepted = insert(stack, accepted);
+
+                if (accepted <= 0) {
+                    return stack;
+                }
+            }
+
+            int remainder = stack.getCount() - accepted;
+
+            return remainder <= 0
+                    ? ItemStack.EMPTY
+                    : stack.copyWithCount(remainder);
+        }
+
+        // ====================================================
+        // 外部物品抽取
+        // ====================================================
+
+        @Override
+        public ItemStack extractItem(
+                int slot,
+                int amount,
+                boolean simulate
+        ) {
+
+            if (slot != 0 || amount <= 0 || !isOutputMode()) {
+                return ItemStack.EMPTY;
+            }
+
+            ItemStack stored = getItem();
+
+            if (stored.isEmpty()) {
+                return ItemStack.EMPTY;
+            }
+
+            int extracted = Math.min(
+                    amount,
+                    stored.getCount()
+            );
+
+            extracted = Math.min(
+                    extracted,
+                    stored.getMaxStackSize()
+            );
+
+            if (simulate) {
+                return stored.copyWithCount(extracted);
+            }
+
+            return extract(extracted);
+        }
+    };
+
+    public IItemHandler getAutomationHandler() {
+        return automationHandler;
+    }
+
     public int insert(ItemStack source, int requested) {
 
         if (level == null || level.isClientSide
@@ -61,6 +267,9 @@ public class AltarPedestalBlockEntity extends BlockEntity {
 
         if (!item.isEmpty()
                 && !ItemStack.isSameItemSameComponents(item, source)) {
+            return 0;
+        }
+        if (!isInputMode()) {
             return 0;
         }
 

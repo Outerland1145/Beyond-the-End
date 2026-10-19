@@ -32,6 +32,22 @@ public class Tags {
                             "dragon_essence"
                     )
             );
+    public static final TagKey<Item> SOUL_ESSENCE =
+            TagKey.create(
+                    Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath(
+                            Beyond_the_end.MODID,
+                            "soul_essence"
+                    )
+            );
+    public static final TagKey<Item> FIRE_ESSENCE =
+            TagKey.create(
+                    Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath(
+                            Beyond_the_end.MODID,
+                            "fire_essence"
+                    )
+            );
     public static final TagKey<Item> END_POWDER =
             TagKey.create(
                     Registries.ITEM,
