@@ -148,7 +148,7 @@ public final class DragonAltarLogic {
 
         BlockPos center = altar.getBlockPos();
 
-        int range = altar.isDragonRangeUpgraded() ? 4 : 3;
+        int range = 3;
 
         List<BlockPos> candidates = new ArrayList<>();
 
@@ -411,21 +411,15 @@ public final class DragonAltarLogic {
         // 計算精華成本
         // ====================================================
 
-        int requiredCost = recipe.getCost();
+        // ========================================================
+// 末影粉模式：每份配方消耗一個末影粉
+// ========================================================
 
-        if (altar.isDragonEfficiencyUpgraded()) {
-
-            requiredCost = Math.max(
-                    1,
-                    (int) Math.ceil(requiredCost * 0.65D)
-            );
-        }
-
-        // 防止配方成本、產物或輸入資料改變後沿用舊進度
-        String recipeSignature =
+// 建立不包含強化模式的配方識別
+        String baseSignature =
                 holder.id()
                         + "#"
-                        + requiredCost
+                        + recipe.getCost()
                         + "#"
                         + ItemStack.hashItemAndComponents(inputStack)
                         + "#"
@@ -433,7 +427,53 @@ public final class DragonAltarLogic {
                         + "#"
                         + recipe.getResult().getCount();
 
-        inputPedestal.setActiveRecipe(recipeSignature);
+        // 讀取基座目前正在執行的模式
+        int activeMode = inputPedestal.getActivePowderMode();
+
+        String expectedSignature =
+                baseSignature + "#mode=" + activeMode;
+
+        // 如果是新配方，或者原本的配方已改變
+        if (!expectedSignature.equals(
+                inputPedestal.getActiveRecipe()
+        )) {
+
+            // 沒有龍之精華時，不開始新的工作
+            if (altar.getEssence() <= 0) {
+                return;
+            }
+
+            int selectedMode = altar.getPowderMode();
+
+            // 預設為沒有加成
+            activeMode = 0;
+
+            // 只在開始新配方時消耗一次末影粉
+            if (selectedMode != 0 && altar.consumePowder()) {
+                activeMode = selectedMode;
+            }
+
+            inputPedestal.setActiveRecipe(
+                    baseSignature + "#mode=" + activeMode,
+                    activeMode
+            );
+        }
+
+        // ========================================================
+        // 計算實際需要的龍之精華
+        // ========================================================
+
+        int requiredCost = recipe.getCost();
+
+        // 只保留新的末影粉效率模式
+
+        if (activeMode == 2) {
+
+            requiredCost = Math.max(
+                    1,
+                    (int) Math.ceil(requiredCost * 0.65D)
+            );
+        }
 
         // 之前已經完成進度，但當時缺少空基座
         if (inputPedestal.getProgress() >= requiredCost) {
@@ -469,8 +509,8 @@ public final class DragonAltarLogic {
             return;
         }
 
-        int operations = altar.isDragonSpeedUpgraded() ? 2 : 1;
-
+        //int operations = altar.isDragonSpeedUpgraded() ? 2 : 1;
+        int operations = activeMode == 1 ? 2 : 1;
         for (int i = 0; i < operations; i++) {
 
             if (inputPedestal.getProgress() >= requiredCost) {
@@ -557,8 +597,8 @@ public final class DragonAltarLogic {
         }
 
         // ========================================================
-// 驗證輸入與輸出基座
-// ========================================================
+        // 驗證輸入與輸出基座
+        // ========================================================
 
         if (!inputPedestal.isInputMode()
                 || !outputPedestal.isOutputMode()) {
@@ -577,7 +617,7 @@ public final class DragonAltarLogic {
             return false;
         }
 
-// 原本的 recipeInput 和 result 組裝邏輯保留
+        // 原本的 recipeInput 和 result 組裝邏輯保留
 
         if (!outputPedestal.canAcceptCraftedResult(result)) {
             return false;
@@ -660,7 +700,7 @@ public final class DragonAltarLogic {
                     Math.sin(t * Math.PI) * 0.30D;
 
             level.sendParticles(
-                    ParticleTypes.END_ROD,
+                    ParticleTypes.DRIPPING_OBSIDIAN_TEAR,
                     point.x,
                     point.y + arc,
                     point.z,

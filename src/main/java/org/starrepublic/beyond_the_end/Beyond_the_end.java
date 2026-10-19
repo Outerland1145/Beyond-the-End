@@ -32,6 +32,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.starrepublic.beyond_the_end.Blocks.AltarPedestalInteraction;
+import org.starrepublic.beyond_the_end.Blocks.DragonAltarModeInteraction;
 import org.starrepublic.beyond_the_end.Events.*;
 import org.starrepublic.beyond_the_end.Register.*;
 import org.starrepublic.beyond_the_end.World.worldgen.biomedefinition.EndBiomeDefinition;
@@ -63,6 +64,7 @@ public class Beyond_the_end {
             FeatureRegister.register( modEventBus );
             modEventBus.addListener(BlockEntityEvents::addValidBlocks);
             modEventBus.addListener(PayloadRegistry::registerPayloads);
+            NeoForge.EVENT_BUS.addListener(DragonAltarModeInteraction::onRightClickBlock);
             NeoForge.EVENT_BUS.addListener(EndSkySyncEvents::onPlayerLoggedIn);
             NeoForge.EVENT_BUS.addListener(CrystalRemoverEvents::onCrystalInteract);
             NeoForge.EVENT_BUS.addListener(AltarPedestalInteraction::onRightClickBlock);

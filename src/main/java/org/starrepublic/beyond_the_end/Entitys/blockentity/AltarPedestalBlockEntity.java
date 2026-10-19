@@ -18,7 +18,7 @@ import org.starrepublic.beyond_the_end.Blocks.AltarPedestalBlock;
 import org.starrepublic.beyond_the_end.Register.BlockEntityRegister;
 
 public class AltarPedestalBlockEntity extends BlockEntity {
-
+    private int activePowderMode = 0;
     private ItemStack item = ItemStack.EMPTY;
 
     private int progress = 0;
@@ -36,6 +36,9 @@ public class AltarPedestalBlockEntity extends BlockEntity {
                 pos,
                 state
         );
+    }
+    public int getActivePowderMode() {
+        return activePowderMode;
     }
     public boolean isOutputMode() {
         BlockState state = getBlockState();
@@ -372,12 +375,17 @@ public class AltarPedestalBlockEntity extends BlockEntity {
     }
 
     public void setActiveRecipe(String recipeId) {
+        setActiveRecipe(recipeId, 0);
+    }
+
+    public void setActiveRecipe(String recipeId, int mode) {
 
         if (recipeId.equals(activeRecipe)) {
             return;
         }
 
         activeRecipe = recipeId;
+        activePowderMode = mode;
         progress = 0;
 
         markUpdated();
@@ -396,6 +404,7 @@ public class AltarPedestalBlockEntity extends BlockEntity {
     private void resetProgress() {
         progress = 0;
         activeRecipe = "";
+        activePowderMode = 0;
     }
 
     // ========================================================
@@ -419,6 +428,7 @@ public class AltarPedestalBlockEntity extends BlockEntity {
         if (ownerAltar != null) {
             tag.putLong("OwnerAltar", ownerAltar.asLong());
         }
+        tag.putInt("ActivePowderMode", activePowderMode);
     }
 
     @Override
@@ -441,6 +451,11 @@ public class AltarPedestalBlockEntity extends BlockEntity {
         ownerAltar = tag.contains("OwnerAltar", Tag.TAG_LONG)
                 ? BlockPos.of(tag.getLong("OwnerAltar"))
                 : null;
+        activePowderMode = Math.clamp(
+                tag.getInt("ActivePowderMode"),
+                0,
+                2
+        );
     }
 
     // ========================================================

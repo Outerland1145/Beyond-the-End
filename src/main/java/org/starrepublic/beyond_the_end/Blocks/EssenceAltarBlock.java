@@ -168,6 +168,29 @@ public class EssenceAltarBlock extends BaseEntityBlock {
             return ItemInteractionResult
                     .PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
+        // ========================================================
+        // 投入末影粉
+        // ========================================================
+
+        if (stack.is(Tags.END_POWDER)) {
+
+            if (!level.isClientSide) {
+
+                int inserted = altar.addPowder(
+                        stack,
+                        stack.getCount()
+                );
+
+                if (inserted > 0
+                        && !player.getAbilities().instabuild) {
+                    stack.shrink(inserted);
+                }
+            }
+
+            return ItemInteractionResult.sidedSuccess(
+                    level.isClientSide
+            );
+        }
 
         // ====================================================
         // 注入龍之精華
@@ -203,53 +226,53 @@ public class EssenceAltarBlock extends BaseEntityBlock {
         // 龍祭壇升級
         // ====================================================
 
-        boolean speedItem = stack.is(Items.REDSTONE_BLOCK);
-        boolean rangeItem = stack.is(Items.LAPIS_BLOCK);
-        boolean efficiencyItem = stack.is(Items.EMERALD_BLOCK);
+        //boolean speedItem = stack.is(Items.REDSTONE_BLOCK);
+        //boolean rangeItem = stack.is(Items.LAPIS_BLOCK);
+        //boolean efficiencyItem = stack.is(Items.EMERALD_BLOCK);
 
-        if (speedItem || rangeItem || efficiencyItem) {
+        //if (speedItem || rangeItem || efficiencyItem) {
 
-            if (!level.isClientSide) {
+            //if (!level.isClientSide) {
 
-                boolean alreadyUpgraded =
-                        (speedItem && altar.isDragonSpeedUpgraded())
-                                || (rangeItem && altar.isDragonRangeUpgraded())
-                                || (efficiencyItem
-                                && altar.isDragonEfficiencyUpgraded());
+                //boolean alreadyUpgraded =
+                        //(speedItem && altar.isDragonSpeedUpgraded())
+                                //|| (rangeItem && altar.isDragonRangeUpgraded())
+                                //|| (efficiencyItem
+                                //&& altar.isDragonEfficiencyUpgraded());
 
-                if (!alreadyUpgraded) {
+                //if (!alreadyUpgraded) {
 
-                    boolean creative =
-                            player.getAbilities().instabuild;
+                    //boolean creative =
+                            //player.getAbilities().instabuild;
 
-                    if (creative || countEndPowder(player) >= 4) {
+                    //if (creative || countEndPowder(player) >= 4) {
 
-                        boolean applied = false;
+                        //boolean applied = false;
 
-                        if (speedItem) {
-                            applied = altar.upgradeDragonSpeed();
-                        }
-                        else if (rangeItem) {
-                            applied = altar.upgradeDragonRange();
-                        }
-                        else if (efficiencyItem) {
-                            applied = altar.upgradeDragonEfficiency();
-                        }
+                        //if (speedItem) {
+                            //applied = altar.upgradeDragonSpeed();
+                        //}
+                        //else if (rangeItem) {
+                            //applied = altar.upgradeDragonRange();
+                        //}
+                        //else if (efficiencyItem) {
+                            //applied = altar.upgradeDragonEfficiency();
+                        //}
 
-                        if (applied && !creative) {
+                        //if (applied && !creative) {
 
-                            consumeEndPowder(player, 4);
+                            //consumeEndPowder(player, 4);
 
-                            stack.shrink(1);
-                        }
-                    }
-                }
-            }
+                            //stack.shrink(1);
+                        //}
+                    //}
+                //}
+            //}
 
-            return ItemInteractionResult.sidedSuccess(
-                    level.isClientSide
-            );
-        }
+            //return ItemInteractionResult.sidedSuccess(
+                    //level.isClientSide
+            //);
+        //}
 
         return ItemInteractionResult
                 .PASS_TO_DEFAULT_BLOCK_INTERACTION;
@@ -326,6 +349,7 @@ public class EssenceAltarBlock extends BaseEntityBlock {
                             serverLevel,
                             dragon
                     );
+                    dragon.dropUnusedPowder(serverLevel);
                 }
 
                 // 三種精華祭壇共用的返還功能
