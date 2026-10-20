@@ -22,7 +22,7 @@ import java.util.Optional;
 public final class DragonAltarLogic {
 
     private static final int PEDESTAL_INTERVAL = 20;
-    private static final int PROCESS_INTERVAL = 4;
+    private static final int PROCESS_INTERVAL = 2;
 
     private DragonAltarLogic() {
     }
@@ -148,7 +148,7 @@ public final class DragonAltarLogic {
 
         BlockPos center = altar.getBlockPos();
 
-        int range = altar.isDragonRangeUpgraded() ? 4 : 3;
+        int range = 3;
 
         List<BlockPos> candidates = new ArrayList<>();
 
@@ -411,19 +411,53 @@ public final class DragonAltarLogic {
         // 計算精華成本
         // ====================================================
 
-        int requiredCost = recipe.getCost();
+        // ========================================================
+// 取得目前生效的模式
+// ========================================================
 
-        if (altar.isDragonEfficiencyUpgraded()) {
+        String mode = altar.getEffectivePowderMode();
 
-            requiredCost = Math.max(
-                    1,
-                    (int) Math.ceil(requiredCost * 0.65D)
-            );
+        int baseCost = recipe.getCost();
+
+        int requiredCost = baseCost;
+
+// 普通模式：每 1 點精華成本對應 20 tick
+        int requiredTicks = baseCost * 20;
+
+// ========================================================
+// 加速模式
+// 時間 50%，精華 200%
+// ========================================================
+
+        if (mode.equals("speed")) {
+
+            requiredCost = baseCost * 2;
+
+            requiredTicks = baseCost * 10;
         }
 
-        // 防止配方成本、產物或輸入資料改變後沿用舊進度
+// ========================================================
+// 效率模式
+// 時間 200%，精華 50%
+// ========================================================
+
+        else if (mode.equals("efficiency")) {
+
+            requiredCost = (baseCost + 1) / 2;
+
+            requiredTicks = baseCost * 40;
+        }
+
+// ========================================================
+// 配方工作階段識別
+// ========================================================
+
         String recipeSignature =
                 holder.id()
+                        + "#"
+                        + mode
+                        + "#"
+                        + altar.getPowderSession()
                         + "#"
                         + requiredCost
                         + "#"
@@ -433,10 +467,28 @@ public final class DragonAltarLogic {
                         + "#"
                         + recipe.getResult().getCount();
 
-        inputPedestal.setActiveRecipe(recipeSignature);
+// ========================================================
+// 模式切換、效果中斷或配方變化
+// ========================================================
 
-        // 之前已經完成進度，但當時缺少空基座
-        if (inputPedestal.getProgress() >= requiredCost) {
+        if (!recipeSignature.equals(inputPedestal.getActiveRecipe())) {
+
+            // 舊配方已消耗的精華返還祭壇
+            int refund = inputPedestal.getProgress();
+
+            if (refund > 0) {
+                altar.addEssence(refund);
+            }
+
+            // 重新開始計時及精華計算
+            inputPedestal.setActiveRecipe(recipeSignature);
+        }
+
+// ========================================================
+// 已完成工作時間，重新嘗試輸出
+// ========================================================
+
+        if (inputPedestal.getProcessingTicks() >= requiredTicks) {
 
             finishRecipe(
                     level,
@@ -449,14 +501,9 @@ public final class DragonAltarLogic {
             return;
         }
 
-        // 缺少精華時暫停，不清除進度
-        if (altar.getEssence() <= 0) {
-            return;
-        }
-
-        // ====================================================
-        // 祭壇 → 原料基座 粒子流
-        // ====================================================
+// ========================================================
+// 祭壇至基座的粒子流
+// ========================================================
 
         spawnParticleStream(
                 level,
@@ -464,47 +511,72 @@ public final class DragonAltarLogic {
                 inputPedestal.getBlockPos()
         );
 
-        // 保留原本隨機推進機制
-        if (level.random.nextInt(5) != 0) {
-            return;
+    // ========================================================
+    // 計算本次經過的工作時間
+    // ========================================================
+
+        int currentTicks = inputPedestal.getProcessingTicks();
+
+        int nextTicks = Math.min(
+                requiredTicks,
+                currentTicks + PROCESS_INTERVAL
+        );
+        // 按工作時間比例計算應消耗的總精華
+        int targetEssenceSpent = (int) (
+                (long) requiredCost * nextTicks / requiredTicks
+        );
+
+        // 本次實際需要消耗的精華
+        int essenceToConsume = targetEssenceSpent - inputPedestal.getProgress();
+
+    // ========================================================
+    // 消耗精華
+    // ========================================================
+
+        if (essenceToConsume > 0) {
+
+            if (!altar.consumeEssence(essenceToConsume)) {
+
+                // 精華不足，不增加工作時間
+                return;
+            }
+
+            for (int i = 0; i < essenceToConsume; i++) {
+                inputPedestal.advanceProgress();
+            }
         }
 
-        int operations = altar.isDragonSpeedUpgraded() ? 2 : 1;
+    // ========================================================
+    // 推進工作時間
+    // ========================================================
 
-        for (int i = 0; i < operations; i++) {
+        inputPedestal.advanceProcessingTicks(
+                nextTicks - currentTicks
+        );
 
-            if (inputPedestal.getProgress() >= requiredCost) {
-                break;
-            }
+    // ========================================================
+    // 配方完成
+    // ========================================================
 
-            if (!altar.consumeEssence(1)) {
-                break;
-            }
+        if (inputPedestal.getProcessingTicks() >= requiredTicks) {
 
-            inputPedestal.advanceProgress();
-
-            if (inputPedestal.getProgress() >= requiredCost) {
-
-                // 完成時重新尋找可用的空基座
-                AltarPedestalBlockEntity destination =
-                        findEmptyPedestal(
-                                level,
-                                altar,
-                                inputPedestal.getBlockPos()
-                        );
-
-                if (destination != null) {
-
-                    finishRecipe(
+            // 完成前重新確認輸出基座仍然可用
+            AltarPedestalBlockEntity destination =
+                    findEmptyPedestal(
                             level,
                             altar,
-                            inputPedestal,
-                            destination,
-                            recipe
+                            inputPedestal.getBlockPos()
                     );
-                }
 
-                return;
+            if (destination != null) {
+
+                finishRecipe(
+                        level,
+                        altar,
+                        inputPedestal,
+                        destination,
+                        recipe
+                );
             }
         }
     }

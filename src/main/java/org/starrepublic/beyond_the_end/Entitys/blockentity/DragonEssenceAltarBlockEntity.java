@@ -31,7 +31,18 @@ public class DragonEssenceAltarBlockEntity
     private boolean dragonSpeedUpgraded = false;
     private boolean dragonRangeUpgraded = false;
     private boolean dragonEfficiencyUpgraded = false;
+    // ========================================================
+    // 末影粉模式
+    // ========================================================
 
+    // normal / speed / efficiency
+    private String powderMode = "normal";
+
+    // 剩餘加成時間，單位：tick
+    private int powderTicks = 0;
+
+    // 用來識別效果是否曾經中斷
+    private long powderSession = 0L;
     // 由世界掃描取得，不需要儲存 NBT
     private final List<BlockPos> dragonPedestals = new ArrayList<>();
 
@@ -48,6 +59,104 @@ public class DragonEssenceAltarBlockEntity
                 pos,
                 state
         );
+    }
+    // ========================================================
+    // 末影粉模式管理
+    // ========================================================
+
+    public String getPowderMode() {
+        return powderMode;
+    }
+
+    public int getPowderTicks() {
+        return powderTicks;
+    }
+
+    public long getPowderSession() {
+        return powderSession;
+    }
+
+    // 取得目前真正生效的模式
+    public String getEffectivePowderMode() {
+
+        if (powderTicks <= 0) {
+            return "normal";
+        }
+
+        return powderMode;
+    }
+
+    // 潛行右鍵切換模式
+    public void cyclePowderMode() {
+
+        if (level == null || level.isClientSide) {
+            return;
+        }
+
+        if (powderMode.equals("normal")) {
+            powderMode = "speed";
+
+        } else if (powderMode.equals("speed")) {
+            powderMode = "efficiency";
+
+        } else {
+            powderMode = "normal";
+        }
+
+        // 切換模式會使原有配方工作階段失效
+        powderSession++;
+
+        markUpdated();
+    }
+
+    // 消耗一個末影粉，增加一分鐘效果
+    public boolean addPowderMinute() {
+
+        if (level == null || level.isClientSide) {
+            return false;
+        }
+
+        // 普通模式不消耗末影粉
+        if (powderMode.equals("normal")) {
+            return false;
+        }
+
+        // 防止整數溢出
+        powderTicks = (int) Math.min(
+                Integer.MAX_VALUE,
+                (long) powderTicks + 1200L
+        );
+
+        markUpdated();
+
+        return true;
+    }
+
+    // 每個伺服器 tick 更新一次
+    public void tickPowderEffect() {
+
+        if (level == null || level.isClientSide) {
+            return;
+        }
+
+        if (powderTicks <= 0) {
+            return;
+        }
+
+        powderTicks--;
+
+        // 每秒標記一次存檔
+        if (powderTicks % 20 == 0) {
+            setChanged();
+        }
+
+        // 加成到期，原本配方不能繼續享有加成
+        if (powderTicks == 0) {
+
+            powderSession++;
+
+            markUpdated();
+        }
     }
     public String getRecipeFailure() {
         return recipeFailure;
@@ -201,6 +310,9 @@ public class DragonEssenceAltarBlockEntity
 
         altar.dragonTickCounter++;
 
+        // 更新末影粉效果時間
+        altar.tickPowderEffect();
+
         DragonAltarLogic.tick(
                 serverLevel,
                 altar,
@@ -234,6 +346,9 @@ public class DragonEssenceAltarBlockEntity
                 dragonEfficiencyUpgraded
         );
         tag.putString("RecipeFailure", recipeFailure);
+        tag.putString("PowderMode", powderMode);
+        tag.putInt("PowderTicks", powderTicks);
+        tag.putLong("PowderSession", powderSession);
     }
 
     @Override
@@ -256,5 +371,19 @@ public class DragonEssenceAltarBlockEntity
 
         dragonTickCounter = 0;
         recipeFailure = tag.getString("RecipeFailure");
+        String savedMode = tag.getString("PowderMode");
+
+        powderMode =
+                savedMode.equals("speed") ||
+                        savedMode.equals("efficiency")
+                        ? savedMode
+                        : "normal";
+
+        powderTicks = Math.max(
+                0,
+                tag.getInt("PowderTicks")
+        );
+
+        powderSession = tag.getLong("PowderSession");
     }
 }

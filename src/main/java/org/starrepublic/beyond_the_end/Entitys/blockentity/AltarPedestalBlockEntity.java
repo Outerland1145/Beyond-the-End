@@ -23,6 +23,8 @@ public class AltarPedestalBlockEntity extends BlockEntity {
 
     private int progress = 0;
     private String activeRecipe = "";
+    // 已經執行的工作時間，單位：tick
+    private int processingTicks = 0;
 
     @Nullable
     private BlockPos ownerAltar = null;
@@ -36,6 +38,25 @@ public class AltarPedestalBlockEntity extends BlockEntity {
                 pos,
                 state
         );
+    }
+    public int getProcessingTicks() {
+        return processingTicks;
+    }
+
+    public void advanceProcessingTicks(int ticks) {
+
+        if (level == null || level.isClientSide || ticks <= 0) {
+            return;
+        }
+
+        processingTicks += ticks;
+
+        setChanged();
+
+        // 不必每個 tick 都同步一次
+        if (processingTicks % 20 == 0) {
+            markUpdated();
+        }
     }
     public boolean isOutputMode() {
         BlockState state = getBlockState();
@@ -379,7 +400,7 @@ public class AltarPedestalBlockEntity extends BlockEntity {
 
         activeRecipe = recipeId;
         progress = 0;
-
+        processingTicks = 0;
         markUpdated();
     }
 
@@ -395,6 +416,7 @@ public class AltarPedestalBlockEntity extends BlockEntity {
 
     private void resetProgress() {
         progress = 0;
+        processingTicks = 0;
         activeRecipe = "";
     }
 
@@ -415,7 +437,7 @@ public class AltarPedestalBlockEntity extends BlockEntity {
 
         tag.putInt("Progress", progress);
         tag.putString("ActiveRecipe", activeRecipe);
-
+        tag.putInt("ProcessingTicks", processingTicks);
         if (ownerAltar != null) {
             tag.putLong("OwnerAltar", ownerAltar.asLong());
         }
@@ -434,7 +456,10 @@ public class AltarPedestalBlockEntity extends BlockEntity {
                 tag.getCompound("Item")
         )
                 : ItemStack.EMPTY;
-
+        processingTicks = Math.max(
+                0,
+                tag.getInt("ProcessingTicks")
+        );
         progress = Math.max(0, tag.getInt("Progress"));
         activeRecipe = tag.getString("ActiveRecipe");
 

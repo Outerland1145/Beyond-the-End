@@ -1,6 +1,7 @@
 package org.starrepublic.beyond_the_end.Register;
 
 import net.neoforged.bus.api.IEventBus;
+import org.starrepublic.beyond_the_end.Blocks.EssenceAltarBlock;
 import org.starrepublic.beyond_the_end.CreativeTabs.Blocks;
 import org.starrepublic.beyond_the_end.Events.SpawnRules;
 
