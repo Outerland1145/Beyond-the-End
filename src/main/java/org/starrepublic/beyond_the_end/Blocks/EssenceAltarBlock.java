@@ -331,30 +331,51 @@ public class EssenceAltarBlock extends BaseEntityBlock {
             // 投入末影粉
             // ----------------------------------------------------
 
+            // ========================================================
+// 炎之精華祭壇：末影粉投入
+// ========================================================
+
             if (stack.is(Tags.END_POWDER)) {
 
                 if (!level.isClientSide) {
 
-                    if (fireAltar.addPowderMinute()) {
+                    boolean accepted = fireAltar.addPowderMinute();
 
+                    if (accepted) {
+
+                        // 每次只消耗一個
                         if (!player.getAbilities().instabuild) {
                             stack.shrink(1);
                         }
 
-                        player.displayClientMessage(
-                                Component.literal(
-                                        "炎之精華祭壇：剩餘 "
-                                                + ((fireAltar.getPowderTicks() + 19) / 20)
-                                                + " 秒"
-                                ),
-                                true
-                        );
+                        if ("smelting".equals(fireAltar.getPowderMode())) {
+
+                            // 熔煉模式顯示速度，而不是舊的60秒倒數
+                            player.displayClientMessage(
+                                    Component.translatable(
+                                            "message.beyond_the_end.smelting_powder_added",
+                                            fireAltar.getSmeltingSpeedPercent()
+                                    ),
+                                    true
+                            );
+
+                        } else {
+
+                            // 原本加速與效率模式的提示
+                            player.displayClientMessage(
+                                    Component.translatable(
+                                            "message.beyond_the_end.powder_time",
+                                            (fireAltar.getPowderTicks() + 19) / 20
+                                    ),
+                                    true
+                            );
+                        }
 
                     } else {
 
                         player.displayClientMessage(
-                                Component.literal(
-                                        "目前模式不能使用末影粉"
+                                Component.translatable(
+                                        "message.beyond_the_end.powder_rejected"
                                 ),
                                 true
                         );

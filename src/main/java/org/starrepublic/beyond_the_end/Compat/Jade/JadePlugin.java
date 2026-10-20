@@ -23,6 +23,10 @@ public class JadePlugin implements IWailaPlugin {
     @Override
     public void register(IWailaCommonRegistration registration) {
         // 目前使用已同步到客戶端的 BlockEntity 資料
+        registration.registerBlockDataProvider(
+                FireAltarSmeltingProvider.INSTANCE,
+                FireEssenceAltarBlockEntity.class
+        );
     }
 
     @Override
@@ -40,6 +44,10 @@ public class JadePlugin implements IWailaPlugin {
 
         registration.registerBlockComponent(
                 FireModeProvider.INSTANCE,
+                EssenceAltarBlock.class
+        );
+        registration.registerBlockComponent(
+                FireAltarSmeltingProvider.INSTANCE,
                 EssenceAltarBlock.class
         );
     }

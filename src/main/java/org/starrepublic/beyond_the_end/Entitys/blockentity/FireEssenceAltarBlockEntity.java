@@ -202,6 +202,16 @@ public class FireEssenceAltarBlockEntity
         return Math.min(300, 150 + getSmeltingPowderCount());
     }
 
+    public boolean canSmeltWithoutFuel() {
+
+        // 必須處於正常運作中的熔煉加速模式
+        if (!isSmeltingActive()) {
+            return false;
+        }
+
+        // 總工作效率必須嚴格超過 200%
+        return getSmeltingSpeedPercent() > 200;
+    }
     // 一個末影粉：+1% / 3 分鐘
     public boolean addSmeltingPowder() {
 
