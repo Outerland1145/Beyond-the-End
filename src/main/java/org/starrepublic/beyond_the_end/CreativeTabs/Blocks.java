@@ -68,10 +68,17 @@ public class Blocks {
                                 output.accept( BlockRegister.SPOOKY.trapdoor.get());
                                 output.accept( BlockRegister.SPOOKY.pressureplate.get());
                                 output.accept( BlockRegister.SPOOKY.button.get());
+                                output.accept( BlockRegister.CRACK_ENDSTONE.get());
+                                output.accept( BlockRegister.End_Stone_Titles.brick.get());
+                                output.accept( BlockRegister.End_Stone_Titles.slab.get());
+                                output.accept( BlockRegister.End_Stone_Titles.stairs.get());
+                                output.accept( BlockRegister.End_Stone_Titles.wall.get());
+                                output.accept( BlockRegister.End_Stone_Titles.crackedbrick.get());
                                 output.accept( BlockRegister.Essence_Altar.soul.get());
                                 output.accept( BlockRegister.Essence_Altar.dragon.get());
                                 output.accept( BlockRegister.Essence_Altar.fires.get());
                                 output.accept( BlockRegister.ALTAR_PEDESTAL.get());
+                                output.accept( BlockRegister.WEAK_END_PORTAL_FRAME_BLOCK.get());
                             })
 
                             .build()

@@ -54,26 +54,6 @@ public class AltarPedestalBlock extends BaseEntityBlock {
         return CODEC;
     }
 
-    //@Override
-    //protected VoxelShape getShape(
-    //        BlockState state,
-    //        BlockGetter level,
-    //        BlockPos pos,
-    //        CollisionContext context
-    //) {
-    //    return SHAPE;
-    //}
-
-    //@Override
-    //protected VoxelShape getCollisionShape(
-    //        BlockState state,
-    //        BlockGetter level,
-    //       BlockPos pos,
-    //        CollisionContext context
-    //) {
-    //    return SHAPE;
-    //}
-
     @Override
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
@@ -91,10 +71,6 @@ public class AltarPedestalBlock extends BaseEntityBlock {
     // ========================================================
     // 放入物品
     // ========================================================
-
-    // ========================================================
-// 手持物品右鍵：放入一件
-// ========================================================
 
     @Override
     protected ItemInteractionResult useItemOn(

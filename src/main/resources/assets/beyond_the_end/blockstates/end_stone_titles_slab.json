@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "beyond_the_end:block/end_stone_titles_stairs_slab"
+    },
+    "type=double": {
+      "model": "beyond_the_end:block/end_stone_titles"
+    },
+    "type=top": {
+      "model": "beyond_the_end:block/end_stone_titles_stairs_slab_top"
+    }
+  }
+}

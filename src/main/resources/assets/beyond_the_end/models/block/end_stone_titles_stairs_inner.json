@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "beyond_the_end:block/end_stone_titles",
+    "side": "beyond_the_end:block/end_stone_titles",
+    "top": "beyond_the_end:block/end_stone_titles"
+  }
+}
