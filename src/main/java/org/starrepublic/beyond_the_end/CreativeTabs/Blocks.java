@@ -71,7 +71,6 @@ public class Blocks {
                                 output.accept( BlockRegister.Essence_Altar.soul.get());
                                 output.accept( BlockRegister.Essence_Altar.dragon.get());
                                 output.accept( BlockRegister.Essence_Altar.fires.get());
-                                output.accept( BlockRegister.ALTAR_PEDESTAL.get());
                             })
 
                             .build()
@@ -151,7 +150,6 @@ public class Blocks {
                                         output.accept( ItemRegister.DRAGON_ESSENCE.get());
                                         output.accept( ItemRegister.SOUL_ESSENCE.get());
                                         output.accept( ItemRegister.FIRE_ESSENCE.get());
-                                        output.accept( ItemRegister.END_POWDER.get());
                                         output.accept(EntityRegister.SMALL_ENDERMAN.spawnEgg().get());
                                         output.accept(EntityRegister.ANGRY_ENDERMAN.spawnEgg().get());
                                         output.accept(EntityRegister.ANCIENT_ENDER_DRAGON.spawnEgg().get());
