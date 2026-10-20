@@ -71,6 +71,7 @@ public class Blocks {
                                 output.accept( BlockRegister.Essence_Altar.soul.get());
                                 output.accept( BlockRegister.Essence_Altar.dragon.get());
                                 output.accept( BlockRegister.Essence_Altar.fires.get());
+                                output.accept( BlockRegister.ALTAR_PEDESTAL.get());
                             })
 
                             .build()

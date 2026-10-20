@@ -42,7 +42,17 @@ public final class FireAltarLogic {
         if (ticks == 1 || ticks % PEDESTAL_INTERVAL == 0) {
             refreshPedestals(level, altar);
         }
+        if ("smelting".equals(altar.getPowderMode())) {
 
+            altar.setRecipeFailure("");
+
+            // 已進行的注魔退回精華，解除輸入基座所有權
+            cancelActiveInfusions(level, altar);
+
+            // 熔煉加速由 FireSmeltingAura 處理
+            // 不繼續執行任何 fire 祭壇配方
+            return;
+        }
         if (ticks % PROCESS_INTERVAL != 0) {
             return;
         }

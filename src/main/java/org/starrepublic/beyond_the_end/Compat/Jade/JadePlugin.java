@@ -138,12 +138,7 @@ public class JadePlugin implements IWailaPlugin {
                 }
             }
 
-            if (!tooltip.replace(
-                    JadeIds.UNIVERSAL_ITEM_STORAGE,
-                    fullEssence
-            )) {
-                tooltip.add(fullEssence);
-            }
+            tooltip.replace(JadeIds.UNIVERSAL_ITEM_STORAGE,fullEssence);
             if (altar instanceof DragonEssenceAltarBlockEntity dragon) {
 
                 String failure = dragon.getRecipeFailure();
@@ -235,9 +230,12 @@ public class JadePlugin implements IWailaPlugin {
 
                     modeKey = "jade.beyond_the_end.mode_efficiency";
 
-                } else {
+                } else if("normal".equals(mode)){
 
                     modeKey = "jade.beyond_the_end.mode_normal";
+                }
+                else {
+                    modeKey = "jade.beyond_the_end.mode_smelting";
                 }
 
                 tooltip.add(
@@ -251,7 +249,7 @@ public class JadePlugin implements IWailaPlugin {
                 // 模式效果剩餘時間
                 // ====================================================
 
-                if (!"normal".equals(mode)) {
+                if (!"normal".equals(mode)&&!"smelting".equals(mode)) {
 
                     int remainingTicks = fire.getPowderTicks();
 
@@ -277,12 +275,7 @@ public class JadePlugin implements IWailaPlugin {
                 }
             }
 
-            if (!tooltip.replace(
-                    JadeIds.UNIVERSAL_ITEM_STORAGE,
-                    fullEssence
-            )) {
-                tooltip.add(fullEssence);
-            }
+            tooltip.replace(JadeIds.UNIVERSAL_ITEM_STORAGE,fullEssence);
             if (altar instanceof FireEssenceAltarBlockEntity fire) {
 
                 String failure = fire.getRecipeFailure();

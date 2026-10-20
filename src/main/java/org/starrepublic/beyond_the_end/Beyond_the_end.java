@@ -69,6 +69,11 @@ public class Beyond_the_end {
             NeoForge.EVENT_BUS.addListener(EndSkySyncEvents::onPlayerLoggedIn);
             NeoForge.EVENT_BUS.addListener(CrystalRemoverEvents::onCrystalInteract);
             NeoForge.EVENT_BUS.addListener(AltarPedestalInteraction::onRightClickBlock);
+            NeoForge.EVENT_BUS.addListener(FireSmeltingEvents::onIncomingDamage);
+
+            NeoForge.EVENT_BUS.addListener(FireSmeltingEvents::onPlayerTickPre);
+
+            NeoForge.EVENT_BUS.addListener(FireSmeltingEvents::onPlayerTickPost);
 
         }
 

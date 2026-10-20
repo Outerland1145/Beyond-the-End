@@ -14,6 +14,7 @@ import org.starrepublic.beyond_the_end.Register.RecipeRegister;
 import org.starrepublic.beyond_the_end.recipes.essence_altar.EssenceAltarRecipe;
 import org.starrepublic.beyond_the_end.recipes.essence_altar.EssenceAltarRecipeInput;
 import org.starrepublic.beyond_the_end.recipes.essence_altar.FireAltarLogic;
+import org.starrepublic.beyond_the_end.recipes.essence_altar.FireSmeltingAura;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +35,12 @@ public class FireEssenceAltarBlockEntity
 
     // 用於驗證配方執行過程中效果是否中斷
     private long powderSession = 0L;
+
+    // 熔煉模式：已支付精華後剩餘的運作時間
+    private int smeltingPaidTicks = 0;
+
+    // 每個末影粉獨立的到期遊戲時間
+    private final List<Long> smeltingPowderExpiries = new ArrayList<>();
 
     // 有效基座清單，不保存 NBT
     private final List<BlockPos> firePedestals = new ArrayList<>();
@@ -161,6 +168,105 @@ public class FireEssenceAltarBlockEntity
         powderSession++;
         markUpdated();
     }
+    // ========================================================
+// Smelting mode
+// ========================================================
+
+    public boolean isSmeltingActive() {
+
+        return level instanceof ServerLevel
+                && "smelting".equals(powderMode)
+                && smeltingPaidTicks > 0;
+    }
+
+    public int getSmeltingPowderCount() {
+
+        if (level == null) {
+            return 0;
+        }
+
+        long now = level.getGameTime();
+
+        int count = 0;
+
+        for (long expiry : smeltingPowderExpiries) {
+            if (expiry > now) {
+                count++;
+            }
+        }
+
+        return Math.min(150, count);
+    }
+
+    public int getSmeltingSpeedPercent() {
+        return Math.min(300, 150 + getSmeltingPowderCount());
+    }
+
+    // 一個末影粉：+1% / 3 分鐘
+    public boolean addSmeltingPowder() {
+
+        if (!(level instanceof ServerLevel)) {
+            return false;
+        }
+
+        if (!"smelting".equals(powderMode)) {
+            return false;
+        }
+
+        // 已達 300%，不再消耗材料
+        if (getSmeltingPowderCount() >= 150) {
+            return false;
+        }
+
+        smeltingPowderExpiries.add(
+                level.getGameTime() + 3600L
+        );
+
+        markUpdated();
+
+        return true;
+    }
+
+    // 每 tick 執行
+    public void tickSmeltingMode() {
+
+        if (!(level instanceof ServerLevel)) {
+            return;
+        }
+
+        long now = level.getGameTime();
+
+        // 移除到期的末影粉加成
+        boolean expired = smeltingPowderExpiries.removeIf(
+                expiry -> expiry <= now
+        );
+
+        if (expired) {
+            markUpdated();
+        }
+
+        if (!"smelting".equals(powderMode)) {
+
+            // 離開模式後，未用完的精華時間不保留
+            if (smeltingPaidTicks != 0) {
+                smeltingPaidTicks = 0;
+                markUpdated();
+            }
+
+            return;
+        }
+
+        // 新的一分鐘，先支付一點精華
+        if (smeltingPaidTicks <= 0) {
+
+            if (!consumeEssence(1)) {
+                return;
+            }
+
+            smeltingPaidTicks = 1200;
+            markUpdated();
+        }
+    }
 
     // ========================================================
     // End powder
@@ -171,7 +277,9 @@ public class FireEssenceAltarBlockEntity
         if (level == null || level.isClientSide) {
             return false;
         }
-
+        if ("smelting".equals(powderMode)) {
+            return addSmeltingPowder();
+        }
         // 普通與預留的熔煉模式不接受末影粉
         if (!"speed".equals(powderMode)
                 && !"efficiency".equals(powderMode)) {
@@ -212,9 +320,7 @@ public class FireEssenceAltarBlockEntity
         }
     }
 
-    // ========================================================
-    // Server ticker
-    // ========================================================
+
 
     public static void serverTick(
             Level level,
@@ -230,12 +336,32 @@ public class FireEssenceAltarBlockEntity
         altar.fireTickCounter++;
 
         altar.tickPowderEffect();
+        altar.tickSmeltingMode();
 
+        // 註冊目前載入的炎祭壇，供附近熔爐與玩家查詢
+        FireSmeltingAura.track(serverLevel, altar);
+
+        // 不影響既有的炎祭壇配方
         FireAltarLogic.tick(
                 serverLevel,
                 altar,
                 altar.fireTickCounter
         );
+
+        // 扣減這次已付費的運作時間
+        if ("smelting".equals(altar.getPowderMode())
+                && altar.smeltingPaidTicks > 0) {
+
+            altar.smeltingPaidTicks--;
+
+            if (altar.smeltingPaidTicks % 20 == 0) {
+                altar.setChanged();
+            }
+
+            if (altar.smeltingPaidTicks % 20 == 0) {
+                altar.markUpdated();
+            }
+        }
     }
 
     // ========================================================
@@ -253,6 +379,15 @@ public class FireEssenceAltarBlockEntity
         tag.putInt("PowderTicks", powderTicks);
         tag.putLong("PowderSession", powderSession);
         tag.putString("RecipeFailure", recipeFailure);
+        tag.putInt("SmeltingPaidTicks", smeltingPaidTicks);
+
+        long[] expiryArray = new long[smeltingPowderExpiries.size()];
+
+        for (int i = 0; i < expiryArray.length; i++) {
+            expiryArray[i] = smeltingPowderExpiries.get(i);
+        }
+
+        tag.putLongArray("SmeltingPowderExpiries", expiryArray);
     }
 
     @Override
@@ -280,6 +415,16 @@ public class FireEssenceAltarBlockEntity
         recipeFailure = tag.getString("RecipeFailure");
         fireTickCounter = 0;
         firePedestals.clear();
+        smeltingPaidTicks = Math.max(
+                0,
+                tag.getInt("SmeltingPaidTicks")
+        );
+
+        smeltingPowderExpiries.clear();
+
+        for (long expiry : tag.getLongArray("SmeltingPowderExpiries")) {
+            smeltingPowderExpiries.add(expiry);
+        }
     }
 }
 
