@@ -25,6 +25,7 @@ public class AltarPedestalBlockEntity extends BlockEntity {
     private String activeRecipe = "";
     // 已經執行的工作時間，單位：tick
     private int processingTicks = 0;
+    private int requiredTicks = 0;
 
     @Nullable
     private BlockPos ownerAltar = null;
@@ -38,6 +39,29 @@ public class AltarPedestalBlockEntity extends BlockEntity {
                 pos,
                 state
         );
+    }
+    // ========================================================
+    // 配方總處理時間
+    // ========================================================
+
+    public int getRequiredTicks() {
+        return requiredTicks;
+    }
+
+    public void setRequiredTicks(int ticks) {
+
+        if (level == null || level.isClientSide) {
+            return;
+        }
+
+        int value = Math.max(0, ticks);
+
+        if (requiredTicks == value) {
+            return;
+        }
+
+        requiredTicks = value;
+        markUpdated();
     }
     public int getProcessingTicks() {
         return processingTicks;
@@ -401,6 +425,7 @@ public class AltarPedestalBlockEntity extends BlockEntity {
         activeRecipe = recipeId;
         progress = 0;
         processingTicks = 0;
+        requiredTicks = 0;
         markUpdated();
     }
 
@@ -417,6 +442,7 @@ public class AltarPedestalBlockEntity extends BlockEntity {
     private void resetProgress() {
         progress = 0;
         processingTicks = 0;
+        requiredTicks = 0;
         activeRecipe = "";
     }
 
@@ -438,6 +464,7 @@ public class AltarPedestalBlockEntity extends BlockEntity {
         tag.putInt("Progress", progress);
         tag.putString("ActiveRecipe", activeRecipe);
         tag.putInt("ProcessingTicks", processingTicks);
+        tag.putInt("RequiredTicks", requiredTicks);
         if (ownerAltar != null) {
             tag.putLong("OwnerAltar", ownerAltar.asLong());
         }
@@ -462,7 +489,7 @@ public class AltarPedestalBlockEntity extends BlockEntity {
         );
         progress = Math.max(0, tag.getInt("Progress"));
         activeRecipe = tag.getString("ActiveRecipe");
-
+        requiredTicks = Math.max(0, tag.getInt("RequiredTicks"));
         ownerAltar = tag.contains("OwnerAltar", Tag.TAG_LONG)
                 ? BlockPos.of(tag.getLong("OwnerAltar"))
                 : null;

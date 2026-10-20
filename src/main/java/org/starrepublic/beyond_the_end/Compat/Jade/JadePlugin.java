@@ -14,6 +14,7 @@ import org.starrepublic.beyond_the_end.Entitys.blockentity.DragonEssenceAltarBlo
 import org.starrepublic.beyond_the_end.Entitys.blockentity.EssenceAltarBlockEntity;
 import snownee.jade.api.*;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IElementHelper;
 
 @WailaPlugin
 public class JadePlugin implements IWailaPlugin {
@@ -70,6 +71,66 @@ public class JadePlugin implements IWailaPlugin {
                     "jade.beyond_the_end.essence",
                     altar.getEssence()
             );
+
+            // ========================================================
+            // 龍之精華祭壇模式
+            // ========================================================
+
+            if (altar instanceof DragonEssenceAltarBlockEntity dragon) {
+
+                String mode = dragon.getPowderMode();
+
+                String modeKey;
+
+                if ("speed".equals(mode)) {
+
+                    modeKey = "jade.beyond_the_end.mode_speed";
+
+                } else if ("efficiency".equals(mode)) {
+
+                    modeKey = "jade.beyond_the_end.mode_efficiency";
+
+                } else {
+
+                    modeKey = "jade.beyond_the_end.mode_normal";
+                }
+
+                tooltip.add(
+                        Component.translatable(
+                                "jade.beyond_the_end.mode",
+                                Component.translatable(modeKey)
+                        )
+                );
+
+                // ====================================================
+                // 模式效果剩餘時間
+                // ====================================================
+
+                if (!"normal".equals(mode)) {
+
+                    int remainingTicks = dragon.getPowderTicks();
+
+                    if (remainingTicks > 0) {
+
+                        int seconds = (remainingTicks + 19) / 20;
+
+                        tooltip.add(
+                                Component.translatable(
+                                        "jade.beyond_the_end.powder_time",
+                                        seconds
+                                )
+                        );
+
+                    } else {
+
+                        tooltip.add(
+                                Component.translatable(
+                                        "jade.beyond_the_end.powder_inactive"
+                                )
+                        );
+                    }
+                }
+            }
 
             if (!tooltip.replace(
                     JadeIds.UNIVERSAL_ITEM_STORAGE,
@@ -149,13 +210,35 @@ public class JadePlugin implements IWailaPlugin {
                 return;
             }
 
-            if (!pedestal.getActiveRecipe().isEmpty()) {
+            // ========================================================
+            // 祭壇注魔進度條
+            // ========================================================
+
+            if (!pedestal.getActiveRecipe().isEmpty()
+                    && pedestal.getRequiredTicks() > 0) {
+
+                int current = pedestal.getProcessingTicks();
+                int total = pedestal.getRequiredTicks();
+
+                // 避免進度超出合法範圍
+                float progress = Math.clamp(
+                        (float) current / (float) total,
+                        0.0F,
+                        1.0F
+                );
+
+                int percent = Math.round(progress * 100.0F);
 
                 tooltip.add(
                         Component.translatable(
                                 "jade.beyond_the_end.progress",
-                                pedestal.getProgress()
+                                percent
                         )
+                );
+
+                // Jade 原生進度條
+                tooltip.add(
+                        IElementHelper.get().progress(progress)
                 );
             }
             tooltip.add(
