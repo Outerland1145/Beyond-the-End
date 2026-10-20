@@ -64,6 +64,7 @@ public class Beyond_the_end {
             FeatureRegister.register( modEventBus );
             modEventBus.addListener(BlockEntityEvents::addValidBlocks);
             modEventBus.addListener(PayloadRegistry::registerPayloads);
+            NeoForge.EVENT_BUS.addListener(EssenceAltarBlock::onFireAltarModeRightClick);
             NeoForge.EVENT_BUS.addListener(EssenceAltarBlock::onDragonAltarModeRightClick);
             NeoForge.EVENT_BUS.addListener(EndSkySyncEvents::onPlayerLoggedIn);
             NeoForge.EVENT_BUS.addListener(CrystalRemoverEvents::onCrystalInteract);

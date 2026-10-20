@@ -8,7 +8,6 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
@@ -19,35 +18,23 @@ import org.starrepublic.beyond_the_end.recipes.essence_altar.EssenceAltarRecipe;
 import java.util.List;
 
 @JeiPlugin
-public class JEIPlugin implements IModPlugin {
-
-    // ========================================================
-    // JEI Recipe Type
-    // ========================================================
+public class FireEssenceAltarRecipeJEIPlugin implements IModPlugin {
 
     public static final RecipeType<EssenceAltarRecipe>
-            DRAGON_ALTAR = RecipeType.create(
+            FIRE_ALTAR = RecipeType.create(
             "beyond_the_end",
-            "dragon_essence_altar",
+            "fire_essence_altar",
             EssenceAltarRecipe.class
     );
-
-    // ========================================================
-    // Plugin UID
-    // ========================================================
 
     @Override
     public ResourceLocation getPluginUid() {
 
         return ResourceLocation.fromNamespaceAndPath(
                 "beyond_the_end",
-                "jei_plugin"
+                "fire_jei_plugin"
         );
     }
-
-    // ========================================================
-    // 註冊配方分類
-    // ========================================================
 
     @Override
     public void registerCategories(
@@ -55,29 +42,23 @@ public class JEIPlugin implements IModPlugin {
     ) {
 
         registration.addRecipeCategories(
-                new DragonEssenceAltarCategory(
+                new FireEssenceAltarCategory(
                         registration.getJeiHelpers().getGuiHelper()
                 )
         );
     }
-
-    // ========================================================
-    // 註冊配方
-    // ========================================================
 
     @Override
     public void registerRecipes(
             IRecipeRegistration registration
     ) {
 
-        ClientLevel level = Minecraft.getInstance().level;
+        var level = Minecraft.getInstance().level;
 
         if (level == null) {
             return;
         }
 
-        // 取得已經載入的所有 Essence Altar 配方
-        // 但只把 dragon 配方交給這個 JEI 分類
         List<EssenceAltarRecipe> recipes =
                 level.getRecipeManager()
                         .getAllRecipesFor(
@@ -86,19 +67,15 @@ public class JEIPlugin implements IModPlugin {
                         .stream()
                         .map(RecipeHolder::value)
                         .filter(recipe ->
-                                "dragon".equals(recipe.getEssence())
+                                "fire".equals(recipe.getEssence())
                         )
                         .toList();
 
         registration.addRecipes(
-                DRAGON_ALTAR,
+                FIRE_ALTAR,
                 recipes
         );
     }
-
-    // ========================================================
-    // 註冊工作方塊
-    // ========================================================
 
     @Override
     public void registerRecipeCatalysts(
@@ -106,9 +83,8 @@ public class JEIPlugin implements IModPlugin {
     ) {
 
         registration.addRecipeCatalysts(
-                DRAGON_ALTAR,
-                BlockRegister.Essence_Altar.dragon.get()
+                FIRE_ALTAR,
+                BlockRegister.Essence_Altar.fires.get()
         );
     }
 }
-

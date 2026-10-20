@@ -42,6 +42,7 @@ import org.starrepublic.beyond_the_end.Register.BlockRegister;
 import org.starrepublic.beyond_the_end.Register.ItemRegister;
 import org.starrepublic.beyond_the_end.Register.Tags;
 import org.starrepublic.beyond_the_end.recipes.essence_altar.DragonAltarLogic;
+import org.starrepublic.beyond_the_end.recipes.essence_altar.FireAltarLogic;
 
 public class EssenceAltarBlock extends BaseEntityBlock {
 
@@ -56,8 +57,65 @@ public class EssenceAltarBlock extends BaseEntityBlock {
         super(properties);
     }
     // ========================================================
-// 潛行右鍵：切換龍之精華祭壇模式
-// ========================================================
+    // Fire Essence Altar Mode Switching
+    // ========================================================
+
+    public static void onFireAltarModeRightClick(
+            PlayerInteractEvent.RightClickBlock event
+    ) {
+
+        if (event.getHand() != InteractionHand.MAIN_HAND) {
+            return;
+        }
+
+        Player player = event.getEntity();
+        Level level = event.getLevel();
+        BlockPos pos = event.getPos();
+
+        if (!player.isShiftKeyDown() || player.isSpectator()) {
+            return;
+        }
+
+        if (!level.getBlockState(pos).is(
+                BlockRegister.Essence_Altar.fires.get()
+        )) {
+            return;
+        }
+
+        if (!level.isClientSide
+                && level.getBlockEntity(pos)
+                instanceof FireEssenceAltarBlockEntity fireAltar) {
+
+            fireAltar.cyclePowderMode();
+
+            String name = switch (fireAltar.getPowderMode()) {
+
+                case "speed" -> "加速模式";
+
+                case "efficiency" -> "效率模式";
+
+                case "smelting" -> "熔煉加速模式";
+
+                default -> "普通模式";
+            };
+
+            player.displayClientMessage(
+                    Component.literal(
+                            "炎之精華祭壇：" + name
+                    ),
+                    true
+            );
+        }
+
+        event.setCancellationResult(
+                InteractionResult.sidedSuccess(level.isClientSide)
+        );
+
+        event.setCanceled(true);
+    }
+    // ========================================================
+    // 潛行右鍵：切換龍之精華祭壇模式
+    // ========================================================
 
     public static void onDragonAltarModeRightClick(
             PlayerInteractEvent.RightClickBlock event
@@ -200,6 +258,18 @@ public class EssenceAltarBlock extends BaseEntityBlock {
                     DragonEssenceAltarBlockEntity::serverTick
             );
         }
+        // ========================================================
+        // Fire Essence Altar Ticker
+        // ========================================================
+
+        if (state.is(BlockRegister.Essence_Altar.fires.get())) {
+
+            return createTickerHelper(
+                    type,
+                    BlockEntityRegister.FIRE_ESSENCE_ALTAR.get(),
+                    FireEssenceAltarBlockEntity::serverTick
+            );
+        }
 
         return null;
     }
@@ -219,7 +289,85 @@ public class EssenceAltarBlock extends BaseEntityBlock {
             BlockHitResult hitResult
     ) {
 
-        // 目前只有龍之精華祭壇擁有互動功能
+        // ========================================================
+// Fire Essence Altar Interaction
+// ========================================================
+
+        if (level.getBlockEntity(pos)
+                instanceof FireEssenceAltarBlockEntity fireAltar) {
+
+            // ----------------------------------------------------
+            // 投入炎之精華
+            // ----------------------------------------------------
+
+            if (stack.is(Tags.FIRE_ESSENCE)) {
+
+                if (!level.isClientSide) {
+
+                    int amount = Math.min(32, stack.getCount());
+
+                    if (player.getAbilities().instabuild) {
+                        amount = 32;
+                    }
+
+                    int accepted = fireAltar.addEssence(
+                            stack,
+                            amount
+                    );
+
+                    if (accepted > 0
+                            && !player.getAbilities().instabuild) {
+
+                        stack.shrink(accepted);
+                    }
+                }
+
+                return ItemInteractionResult.sidedSuccess(
+                        level.isClientSide
+                );
+            }
+
+            // ----------------------------------------------------
+            // 投入末影粉
+            // ----------------------------------------------------
+
+            if (stack.is(Tags.END_POWDER)) {
+
+                if (!level.isClientSide) {
+
+                    if (fireAltar.addPowderMinute()) {
+
+                        if (!player.getAbilities().instabuild) {
+                            stack.shrink(1);
+                        }
+
+                        player.displayClientMessage(
+                                Component.literal(
+                                        "炎之精華祭壇：剩餘 "
+                                                + ((fireAltar.getPowderTicks() + 19) / 20)
+                                                + " 秒"
+                                ),
+                                true
+                        );
+
+                    } else {
+
+                        player.displayClientMessage(
+                                Component.literal(
+                                        "目前模式不能使用末影粉"
+                                ),
+                                true
+                        );
+                    }
+                }
+
+                return ItemInteractionResult.sidedSuccess(
+                        level.isClientSide
+                );
+            }
+
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
         if (!(level.getBlockEntity(pos)
                 instanceof DragonEssenceAltarBlockEntity altar)) {
 
@@ -418,6 +566,13 @@ public class EssenceAltarBlock extends BaseEntityBlock {
                     DragonAltarLogic.releaseAll(
                             serverLevel,
                             dragon
+                    );
+                }
+                if (altar instanceof FireEssenceAltarBlockEntity fireAltar) {
+
+                    FireAltarLogic.releaseAll(
+                            serverLevel,
+                            fireAltar
                     );
                 }
 

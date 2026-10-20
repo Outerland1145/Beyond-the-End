@@ -45,7 +45,7 @@ public class DragonEssenceAltarCategory
 
     @Override
     public RecipeType<EssenceAltarRecipe> getRecipeType() {
-        return JEIPlugin.DRAGON_ALTAR;
+        return DragonEssenceAltarRecipeJEIPlugin.DRAGON_ALTAR;
     }
 
     @Override
