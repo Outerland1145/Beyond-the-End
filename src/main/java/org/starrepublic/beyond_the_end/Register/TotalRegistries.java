@@ -11,7 +11,7 @@ public final class TotalRegistries {
     public static void register(IEventBus eventBus) {
         DataRegister.register(eventBus);
         JigsawRegister.register(eventBus);
-
+        DataComponentRegister.register(eventBus);
         /*
          * 順序：
          *

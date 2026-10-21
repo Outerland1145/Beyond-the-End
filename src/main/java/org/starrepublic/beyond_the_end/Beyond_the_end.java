@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.starrepublic.beyond_the_end.Blocks.AltarPedestalInteraction;
 import org.starrepublic.beyond_the_end.Blocks.EssenceAltarBlock;
 import org.starrepublic.beyond_the_end.Events.*;
+import org.starrepublic.beyond_the_end.Items.charm.rune.RuneClient;
 import org.starrepublic.beyond_the_end.Register.*;
 import org.starrepublic.beyond_the_end.World.worldgen.biomedefinition.EndBiomeDefinition;
 import org.starrepublic.beyond_the_end.World.worldgen.biomedefinition.EndBiomeDefinitionLoader;
@@ -72,9 +73,13 @@ public class Beyond_the_end {
             NeoForge.EVENT_BUS.addListener(FireSmeltingEvents::onIncomingDamage);
             NeoForge.EVENT_BUS.addListener(CrystalRemoverClientEvents::onMouseScroll);
             NeoForge.EVENT_BUS.addListener(FireSmeltingEvents::onPlayerTickPre);
-
             NeoForge.EVENT_BUS.addListener(FireSmeltingEvents::onPlayerTickPost);
 
+        }
+        private static void onClientSetup(
+                FMLClientSetupEvent event
+        ) {
+            RuneClient.setup(event);
         }
 
 }

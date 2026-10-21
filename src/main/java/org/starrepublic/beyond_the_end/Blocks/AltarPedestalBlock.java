@@ -33,8 +33,6 @@ public class AltarPedestalBlock extends BaseEntityBlock {
     public static final BooleanProperty OUTPUT =
             BooleanProperty.create("output");
     //private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 10, 14);
-    public static final BooleanProperty OUTPUT =
-            BooleanProperty.create("output");
     public AltarPedestalBlock(BlockBehaviour.Properties properties) {
         super(properties);
 

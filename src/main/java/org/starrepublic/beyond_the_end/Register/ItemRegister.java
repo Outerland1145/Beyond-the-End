@@ -14,6 +14,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Blocks.Blockitems.DecorativeEndGatewayItem;
 import org.starrepublic.beyond_the_end.Items.SafeEndCrystalItem;
+import org.starrepublic.beyond_the_end.Items.charm.rune.RuneItem;
 
 import java.util.function.Supplier;
 
@@ -39,6 +40,13 @@ public class ItemRegister {
     public static final DeferredItem<Item> SOUL_ESSENCE = ITEMS.registerSimpleItem("soul_essence");
     public static final DeferredItem<Item> FIRE_ESSENCE = ITEMS.registerSimpleItem("fire_essence");
     public static final DeferredItem<Item> END_POWDER = ITEMS.registerSimpleItem("end_powder");
+    public static final DeferredItem<RuneItem>
+            RUNEITEM = ITEMS.register(
+            "rune",
+            () -> new RuneItem(
+                    new Item.Properties()
+            )
+    );
     public static final DeferredItem<Item>
             END_CRYSTAL_REMOVER = ITEMS.register(
             "crystal_remover",

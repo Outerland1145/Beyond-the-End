@@ -7,7 +7,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -104,16 +103,6 @@ public class AltarPedestalBlockEntity extends BlockEntity {
 
     public boolean isEmpty() {
         return item.isEmpty();
-    }
-    public boolean isOutputMode() {
-        BlockState state = getBlockState();
-
-        return state.hasProperty(AltarPedestalBlock.OUTPUT)
-                && state.getValue(AltarPedestalBlock.OUTPUT);
-    }
-
-    public boolean isInputMode() {
-        return !isOutputMode();
     }
     /**
      * 嘗試插入物品。
