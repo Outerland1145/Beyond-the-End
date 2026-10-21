@@ -57,6 +57,14 @@ public class Tags {
                             "altar_end_powder"
                     )
             );
+    public static final TagKey<Item> ACTIVATOR_ITEMS =
+            TagKey.create(
+                    Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath(
+                            Beyond_the_end.MODID,
+                            "weak_end_portal_activators"
+                    )
+            );
 
     public static final TagKey<Fluid> ENDER_GOO = FLUIDS.createTagKey("ender_goo");
     public static final TagKey<Biome> CRYSTAL_REMOVER_BLACKLIST =

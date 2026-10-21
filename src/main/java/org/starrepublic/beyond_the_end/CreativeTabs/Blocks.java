@@ -159,6 +159,7 @@ public class Blocks {
                                         output.accept( ItemRegister.SOUL_ESSENCE.get());
                                         output.accept( ItemRegister.FIRE_ESSENCE.get());
                                         output.accept( ItemRegister.END_POWDER.get());
+                                        output.accept( ItemRegister.SAFE_END_CRYSTAL.get());
                                         output.accept(EntityRegister.SMALL_ENDERMAN.spawnEgg().get());
                                         output.accept(EntityRegister.ANGRY_ENDERMAN.spawnEgg().get());
                                         output.accept(EntityRegister.ANCIENT_ENDER_DRAGON.spawnEgg().get());
