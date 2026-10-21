@@ -88,7 +88,7 @@ public final class AltarPedestalInteraction {
         Player player = event.getEntity();
 
         if (event.getHand() != InteractionHand.MAIN_HAND
-                || player.isShiftKeyDown()
+                || !player.isShiftKeyDown()
                 || player.isSpectator()) {
             return;
         }

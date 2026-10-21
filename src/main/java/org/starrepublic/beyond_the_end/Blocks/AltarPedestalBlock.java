@@ -33,11 +33,11 @@ public class AltarPedestalBlock extends BaseEntityBlock {
     public static final BooleanProperty OUTPUT =
             BooleanProperty.create("output");
     //private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 10, 14);
-
-    public AltarPedestalBlock(
-            BlockBehaviour.Properties properties
-    ) {
+    public static final BooleanProperty OUTPUT =
+            BooleanProperty.create("output");
+    public AltarPedestalBlock(BlockBehaviour.Properties properties) {
         super(properties);
+
         // false = 輸入，true = 輸出
         registerDefaultState(
                 stateDefinition.any().setValue(OUTPUT, false)
@@ -92,6 +92,7 @@ public class AltarPedestalBlock extends BaseEntityBlock {
         if (player.isSpectator()) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
+
 
         // 空手交給 useWithoutItem
         if (stack.isEmpty()) {
