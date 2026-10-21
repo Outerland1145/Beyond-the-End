@@ -22,7 +22,7 @@ import java.util.Optional;
 public final class DragonAltarLogic {
 
     private static final int PEDESTAL_INTERVAL = 20;
-    private static final int PROCESS_INTERVAL = 4;
+    private static final int PROCESS_INTERVAL = 2;
 
     private DragonAltarLogic() {
     }
@@ -45,16 +45,65 @@ public final class DragonAltarLogic {
             return;
         }
 
-        // 複製清單，避免處理過程修改原本的清單
-        List<BlockPos> positions = altar.getDragonPedestals();
+        List<AltarPedestalBlockEntity> inputs = new ArrayList<>();
 
-        for (BlockPos pos : positions) {
+        for (BlockPos pos : altar.getDragonPedestals()) {
 
             AltarPedestalBlockEntity pedestal =
                     getPedestal(level, pos);
 
-            if (pedestal == null || pedestal.isEmpty()) {
+            if (pedestal == null
+                    || !pedestal.isInputMode()
+                    || pedestal.isEmpty()) {
                 continue;
+            }
+
+            if (!isAvailableToAltar(level, altar, pedestal)) {
+                continue;
+            }
+
+            // 只有找到配方的輸入基座才需要輸出位置
+            if (altar.findMatchingRecipe(pedestal.getItem()).isEmpty()) {
+                continue;
+            }
+
+            inputs.add(pedestal);
+        }
+
+        // 沒有任何可執行配方，不顯示輸出失敗
+        if (inputs.isEmpty()) {
+            altar.setRecipeFailure("");
+            return;
+        }
+
+        // ====================================================
+        // 執行前檢查輸出基座
+        // ====================================================
+
+        String status = checkOutputStatus(level, altar);
+
+        if (!status.isEmpty()) {
+
+            altar.setRecipeFailure(status);
+
+            // 不消耗精華，不清空原有注魔進度
+            return;
+        }
+
+        altar.setRecipeFailure("");
+
+        // ====================================================
+        // 正式執行注魔
+        // ====================================================
+
+        for (AltarPedestalBlockEntity pedestal : inputs) {
+
+            // 執行上一份配方後，空位可能已經被占用
+            String currentStatus = checkOutputStatus(level, altar);
+
+            if (!currentStatus.isEmpty()) {
+                altar.setRecipeFailure(currentStatus);
+                return;
             }
 
             processPedestal(level, altar, pedestal);
@@ -75,7 +124,6 @@ public final class DragonAltarLogic {
             return null;
         }
 
-        // 硬編碼指定唯一合法的專用基座
         if (!level.getBlockState(pos).is(
                 BlockRegister.ALTAR_PEDESTAL.get()
         )) {
@@ -84,11 +132,9 @@ public final class DragonAltarLogic {
 
         BlockEntity entity = level.getBlockEntity(pos);
 
-        if (entity instanceof AltarPedestalBlockEntity pedestal) {
-            return pedestal;
-        }
-
-        return null;
+        return entity instanceof AltarPedestalBlockEntity pedestal
+                ? pedestal
+                : null;
     }
 
     // ========================================================
@@ -102,22 +148,31 @@ public final class DragonAltarLogic {
 
         BlockPos center = altar.getBlockPos();
 
-        int range = altar.isDragonRangeUpgraded() ? 4 : 3;
+        int range = 3;
 
         List<BlockPos> candidates = new ArrayList<>();
 
         for (int x = -range; x <= range; x++) {
             for (int z = -range; z <= range; z++) {
 
-                // 祭壇自身不是基座
                 if (x == 0 && z == 0) {
                     continue;
                 }
 
-                // Y 不做偏移，確保與祭壇同一高度
                 BlockPos pos = center.offset(x, 0, z);
 
-                if (getPedestal(level, pos) == null) {
+                if (!level.hasChunkAt(pos)) {
+                    continue;
+                }
+
+                if (!level.getBlockState(pos).is(
+                        BlockRegister.ALTAR_PEDESTAL.get()
+                )) {
+                    continue;
+                }
+
+                if (!(level.getBlockEntity(pos)
+                        instanceof AltarPedestalBlockEntity)) {
                     continue;
                 }
 
@@ -125,7 +180,6 @@ public final class DragonAltarLogic {
             }
         }
 
-        // 固定排序，使掃描順序穩定
         candidates.sort(
                 Comparator
                         .comparingDouble(
@@ -135,22 +189,62 @@ public final class DragonAltarLogic {
                         .thenComparingInt(BlockPos::getZ)
         );
 
-        // 解除不再屬於範圍內的基座
+        // 解除已離開範圍的基座
         for (BlockPos oldPos : altar.getDragonPedestals()) {
 
             if (candidates.contains(oldPos)) {
                 continue;
             }
 
-            AltarPedestalBlockEntity oldPedestal =
-                    getPedestal(level, oldPos);
+            if (!level.hasChunkAt(oldPos)) {
+                continue;
+            }
 
-            if (oldPedestal != null) {
-                oldPedestal.release(center);
+            if (level.getBlockEntity(oldPos)
+                    instanceof AltarPedestalBlockEntity pedestal) {
+
+                pedestal.release(center);
             }
         }
 
         altar.setDragonPedestals(candidates);
+    }
+    private static String checkOutputStatus(
+            ServerLevel level,
+            DragonEssenceAltarBlockEntity altar
+    ) {
+
+        boolean hasOutput = false;
+        boolean hasFreeOutput = false;
+
+        for (BlockPos pos : altar.getDragonPedestals()) {
+
+            AltarPedestalBlockEntity pedestal =
+                    getPedestal(level, pos);
+
+            if (pedestal == null || !pedestal.isOutputMode()) {
+                continue;
+            }
+
+            hasOutput = true;
+
+            if (pedestal.isEmpty()
+                    && isAvailableToAltar(level, altar, pedestal)) {
+
+                hasFreeOutput = true;
+                break;
+            }
+        }
+
+        if (!hasOutput) {
+            return "no_output";
+        }
+
+        if (!hasFreeOutput) {
+            return "output_full";
+        }
+
+        return "";
     }
 
     // ========================================================
@@ -202,7 +296,6 @@ public final class DragonAltarLogic {
 
         for (BlockPos pos : altar.getDragonPedestals()) {
 
-            // 原料基座不可兼任輸出基座
             if (pos.equals(inputPos)) {
                 continue;
             }
@@ -210,7 +303,17 @@ public final class DragonAltarLogic {
             AltarPedestalBlockEntity pedestal =
                     getPedestal(level, pos);
 
-            if (pedestal == null || !pedestal.isEmpty()) {
+            if (pedestal == null) {
+                continue;
+            }
+
+            // 必須是輸出狀態
+            if (!pedestal.isOutputMode()) {
+                continue;
+            }
+
+            // 必須完全沒有物品
+            if (!pedestal.isEmpty()) {
                 continue;
             }
 
@@ -225,7 +328,6 @@ public final class DragonAltarLogic {
             return null;
         }
 
-        // 優先使用距離輸入基座最近的空基座
         available.sort(
                 Comparator
                         .comparingDouble(
@@ -252,7 +354,10 @@ public final class DragonAltarLogic {
             DragonEssenceAltarBlockEntity altar,
             AltarPedestalBlockEntity inputPedestal
     ) {
-
+        // 只有輸入模式可執行配方
+        if (!inputPedestal.isInputMode()) {
+            return;
+        }
         BlockPos altarPos = altar.getBlockPos();
 
         if (!isAvailableToAltar(level, altar, inputPedestal)) {
@@ -302,23 +407,53 @@ public final class DragonAltarLogic {
             return;
         }
 
-        // ====================================================
-        // 計算精華成本
-        // ====================================================
+        // ========================================================
+        // 取得目前生效的模式
+        // ========================================================
 
-        int requiredCost = recipe.getCost();
+        String mode = altar.getEffectivePowderMode();
 
-        if (altar.isDragonEfficiencyUpgraded()) {
+        int baseCost = recipe.getCost();
 
-            requiredCost = Math.max(
-                    1,
-                    (int) Math.ceil(requiredCost * 0.65D)
-            );
+        int requiredCost = baseCost;
+
+// 普通模式：每 1 點精華成本對應 20 tick
+        int requiredTicks = baseCost * 20;
+
+// ========================================================
+// 加速模式
+// 時間 50%，精華 200%
+// ========================================================
+
+        if (mode.equals("speed")) {
+
+            requiredCost = baseCost * 2;
+
+            requiredTicks = baseCost * 10;
         }
 
-        // 防止配方成本、產物或輸入資料改變後沿用舊進度
+// ========================================================
+// 效率模式
+// 時間 200%，精華 50%
+// ========================================================
+
+        else if (mode.equals("efficiency")) {
+
+            requiredCost = (baseCost + 1) / 2;
+
+            requiredTicks = baseCost * 40;
+        }
+
+// ========================================================
+// 配方工作階段識別
+// ========================================================
+
         String recipeSignature =
                 holder.id()
+                        + "#"
+                        + mode
+                        + "#"
+                        + altar.getPowderSession()
                         + "#"
                         + requiredCost
                         + "#"
@@ -328,10 +463,30 @@ public final class DragonAltarLogic {
                         + "#"
                         + recipe.getResult().getCount();
 
-        inputPedestal.setActiveRecipe(recipeSignature);
+        // ========================================================
+        // 模式切換、效果中斷或配方變化
+        // ========================================================
 
-        // 之前已經完成進度，但當時缺少空基座
-        if (inputPedestal.getProgress() >= requiredCost) {
+        if (!recipeSignature.equals(inputPedestal.getActiveRecipe())) {
+
+            // 舊配方已消耗的精華返還祭壇
+            int refund = inputPedestal.getProgress();
+
+            if (refund > 0) {
+                altar.addEssence(refund);
+            }
+
+            // 重新開始計時及精華計算
+            inputPedestal.setActiveRecipe(recipeSignature);
+            // 將本次配方所需時間同步給基座
+            inputPedestal.setRequiredTicks(requiredTicks);
+        }
+
+// ========================================================
+// 已完成工作時間，重新嘗試輸出
+// ========================================================
+
+        if (inputPedestal.getProcessingTicks() >= requiredTicks) {
 
             finishRecipe(
                     level,
@@ -344,14 +499,9 @@ public final class DragonAltarLogic {
             return;
         }
 
-        // 缺少精華時暫停，不清除進度
-        if (altar.getEssence() <= 0) {
-            return;
-        }
-
-        // ====================================================
-        // 祭壇 → 原料基座 粒子流
-        // ====================================================
+// ========================================================
+// 祭壇至基座的粒子流
+// ========================================================
 
         spawnParticleStream(
                 level,
@@ -359,47 +509,72 @@ public final class DragonAltarLogic {
                 inputPedestal.getBlockPos()
         );
 
-        // 保留原本隨機推進機制
-        if (level.random.nextInt(5) != 0) {
-            return;
+    // ========================================================
+    // 計算本次經過的工作時間
+    // ========================================================
+
+        int currentTicks = inputPedestal.getProcessingTicks();
+
+        int nextTicks = Math.min(
+                requiredTicks,
+                currentTicks + PROCESS_INTERVAL
+        );
+        // 按工作時間比例計算應消耗的總精華
+        int targetEssenceSpent = (int) (
+                (long) requiredCost * nextTicks / requiredTicks
+        );
+
+        // 本次實際需要消耗的精華
+        int essenceToConsume = targetEssenceSpent - inputPedestal.getProgress();
+
+    // ========================================================
+    // 消耗精華
+    // ========================================================
+
+        if (essenceToConsume > 0) {
+
+            if (!altar.consumeEssence(essenceToConsume)) {
+
+                // 精華不足，不增加工作時間
+                return;
+            }
+
+            for (int i = 0; i < essenceToConsume; i++) {
+                inputPedestal.advanceProgress();
+            }
         }
 
-        int operations = altar.isDragonSpeedUpgraded() ? 2 : 1;
+    // ========================================================
+    // 推進工作時間
+    // ========================================================
 
-        for (int i = 0; i < operations; i++) {
+        inputPedestal.advanceProcessingTicks(
+                nextTicks - currentTicks
+        );
 
-            if (inputPedestal.getProgress() >= requiredCost) {
-                break;
-            }
+    // ========================================================
+    // 配方完成
+    // ========================================================
 
-            if (!altar.consumeEssence(1)) {
-                break;
-            }
+        if (inputPedestal.getProcessingTicks() >= requiredTicks) {
 
-            inputPedestal.advanceProgress();
-
-            if (inputPedestal.getProgress() >= requiredCost) {
-
-                // 完成時重新尋找可用的空基座
-                AltarPedestalBlockEntity destination =
-                        findEmptyPedestal(
-                                level,
-                                altar,
-                                inputPedestal.getBlockPos()
-                        );
-
-                if (destination != null) {
-
-                    finishRecipe(
+            // 完成前重新確認輸出基座仍然可用
+            AltarPedestalBlockEntity destination =
+                    findEmptyPedestal(
                             level,
                             altar,
-                            inputPedestal,
-                            destination,
-                            recipe
+                            inputPedestal.getBlockPos()
                     );
-                }
 
-                return;
+            if (destination != null) {
+
+                finishRecipe(
+                        level,
+                        altar,
+                        inputPedestal,
+                        destination,
+                        recipe
+                );
             }
         }
     }
@@ -451,36 +626,65 @@ public final class DragonAltarLogic {
             return false;
         }
 
-        // 將成品放入輸出基座
-        int inserted = outputPedestal.insert(
-                result,
-                result.getCount()
-        );
+        // ========================================================
+// 驗證輸入與輸出基座
+// ========================================================
 
-        if (inserted != result.getCount()) {
-
-            if (inserted > 0) {
-                outputPedestal.extract(inserted);
-            }
-
-            outputPedestal.release(altarPos);
+        if (!inputPedestal.isInputMode()
+                || !outputPedestal.isOutputMode()) {
             return false;
         }
 
-        // 確定輸出成功後，才真正消耗一件材料
+        if (inputPedestal == outputPedestal) {
+            return false;
+        }
+
+        if (inputPedestal.isEmpty() || !outputPedestal.isEmpty()) {
+            return false;
+        }
+
+        if (!isAvailableToAltar(level, altar, outputPedestal)) {
+            return false;
+        }
+
+// 原本的 recipeInput 和 result 組裝邏輯保留
+
+        if (!outputPedestal.canAcceptCraftedResult(result)) {
+            return false;
+        }
+
+        // ========================================================
+        // 鎖定輸出基座
+        // ========================================================
+
+        if (!outputPedestal.claim(altar.getBlockPos())) {
+            return false;
+        }
+
+        // ========================================================
+        // 配方完成
+        // ========================================================
+
+        if (!outputPedestal.placeCraftedResult(result)) {
+
+            outputPedestal.release(altar.getBlockPos());
+            return false;
+        }
+
+        // 確定成品已存入後，才扣掉一份材料
         ItemStack consumed = inputPedestal.extract(1);
 
         if (consumed.isEmpty()) {
 
-            // 理論上不應發生，仍提供回滾保護
-            outputPedestal.extract(inserted);
-            outputPedestal.release(altarPos);
+            // 回滾輸出，避免憑空產生物品
+            outputPedestal.extract(result.getCount());
+            outputPedestal.release(altar.getBlockPos());
 
             return false;
         }
 
-        inputPedestal.release(altarPos);
-        outputPedestal.release(altarPos);
+        inputPedestal.release(altar.getBlockPos());
+        outputPedestal.release(altar.getBlockPos());
 
         spawnCompletionParticles(
                 level,

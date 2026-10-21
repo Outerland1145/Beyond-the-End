@@ -7,7 +7,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,6 +23,9 @@ public class AltarPedestalBlockEntity extends BlockEntity {
 
     private int progress = 0;
     private String activeRecipe = "";
+    // 已經執行的工作時間，單位：tick
+    private int processingTicks = 0;
+    private int requiredTicks = 0;
 
     @Nullable
     private BlockPos ownerAltar = null;
@@ -38,6 +40,58 @@ public class AltarPedestalBlockEntity extends BlockEntity {
                 state
         );
     }
+    // ========================================================
+    // 配方總處理時間
+    // ========================================================
+
+    public int getRequiredTicks() {
+        return requiredTicks;
+    }
+
+    public void setRequiredTicks(int ticks) {
+
+        if (level == null || level.isClientSide) {
+            return;
+        }
+
+        int value = Math.max(0, ticks);
+
+        if (requiredTicks == value) {
+            return;
+        }
+
+        requiredTicks = value;
+        markUpdated();
+    }
+    public int getProcessingTicks() {
+        return processingTicks;
+    }
+
+    public void advanceProcessingTicks(int ticks) {
+
+        if (level == null || level.isClientSide || ticks <= 0) {
+            return;
+        }
+
+        processingTicks += ticks;
+
+        setChanged();
+
+        // 不必每個 tick 都同步一次
+        if (processingTicks % 20 == 0) {
+            markUpdated();
+        }
+    }
+    public boolean isOutputMode() {
+        BlockState state = getBlockState();
+
+        return state.hasProperty(AltarPedestalBlock.OUTPUT)
+                && state.getValue(AltarPedestalBlock.OUTPUT);
+    }
+
+    public boolean isInputMode() {
+        return !isOutputMode();
+    }
 
     // ========================================================
     // Item
@@ -50,87 +104,10 @@ public class AltarPedestalBlockEntity extends BlockEntity {
     public boolean isEmpty() {
         return item.isEmpty();
     }
-    public boolean isOutputMode() {
-        BlockState state = getBlockState();
-
-        return state.hasProperty(AltarPedestalBlock.OUTPUT)
-                && state.getValue(AltarPedestalBlock.OUTPUT);
-    }
-
-    public boolean isInputMode() {
-        return !isOutputMode();
-    }
     /**
      * 嘗試插入物品。
      * 回傳實際插入數量。
      */
-    // ========================================================
-// 依照祭壇類型檢查精華物品
-// ========================================================
-
-    public boolean acceptsEssenceItem(ItemStack stack) {
-
-        if (stack.isEmpty()) {
-            return false;
-        }
-
-        TagKey<Item> tag;
-
-        switch (getEssenceType()) {
-
-            case "dragon":
-                tag = BTEAltarTags.DRAGON_ESSENCE;
-                break;
-
-            case "soul":
-                tag = BTEAltarTags.SOUL_ESSENCE;
-                break;
-
-            case "fire":
-                tag = BTEAltarTags.FIRE_ESSENCE;
-                break;
-
-            default:
-                return false;
-        }
-
-        if (!stack.is(tag)) {
-            return false;
-        }
-
-        ItemStack current = getDisplayEssenceItem();
-
-        return essence <= 0
-                || current.isEmpty()
-                || ItemStack.isSameItemSameComponents(current, stack);
-    }
-    // ========================================================
-// 祭壇配方輸出
-// ========================================================
-
-    public boolean canAcceptCraftedResult(ItemStack result) {
-
-        return level != null
-                && !level.isClientSide
-                && isOutputMode()
-                && item.isEmpty()
-                && !result.isEmpty()
-                && result.getCount() <= result.getMaxStackSize();
-    }
-
-    public boolean placeCraftedResult(ItemStack result) {
-
-        if (!canAcceptCraftedResult(result)) {
-            return false;
-        }
-
-        item = result.copy();
-
-        resetProgress();
-        markUpdated();
-
-        return true;
-    }
 
     private final IItemHandler automationHandler = new IItemHandler() {
 
@@ -258,6 +235,33 @@ public class AltarPedestalBlockEntity extends BlockEntity {
         return automationHandler;
     }
 
+    // ========================================================
+    // 祭壇配方輸出
+    // ========================================================
+
+    public boolean canAcceptCraftedResult(ItemStack result) {
+
+        return level != null
+                && !level.isClientSide
+                && isOutputMode()
+                && item.isEmpty()
+                && !result.isEmpty()
+                && result.getCount() <= result.getMaxStackSize();
+    }
+
+    public boolean placeCraftedResult(ItemStack result) {
+
+        if (!canAcceptCraftedResult(result)) {
+            return false;
+        }
+
+        item = result.copy();
+
+        resetProgress();
+        markUpdated();
+
+        return true;
+    }
     public int insert(ItemStack source, int requested) {
 
         if (level == null || level.isClientSide
@@ -285,13 +289,20 @@ public class AltarPedestalBlockEntity extends BlockEntity {
             return 0;
         }
 
-        if (item.isEmpty()) {
+        boolean wasEmpty = item.isEmpty();
+
+        if (wasEmpty) {
             item = source.copyWithCount(inserted);
+
+            // 原本沒有材料，這是新的工作
+            resetProgress();
+
         } else {
+            // 相同物品及資料元件，只增加數量
+            // 不重設目前正在執行的配方
             item.grow(inserted);
         }
 
-        resetProgress();
         markUpdated();
 
         return inserted;
@@ -412,7 +423,8 @@ public class AltarPedestalBlockEntity extends BlockEntity {
 
         activeRecipe = recipeId;
         progress = 0;
-
+        processingTicks = 0;
+        requiredTicks = 0;
         markUpdated();
     }
 
@@ -428,6 +440,8 @@ public class AltarPedestalBlockEntity extends BlockEntity {
 
     private void resetProgress() {
         progress = 0;
+        processingTicks = 0;
+        requiredTicks = 0;
         activeRecipe = "";
     }
 
@@ -448,7 +462,8 @@ public class AltarPedestalBlockEntity extends BlockEntity {
 
         tag.putInt("Progress", progress);
         tag.putString("ActiveRecipe", activeRecipe);
-
+        tag.putInt("ProcessingTicks", processingTicks);
+        tag.putInt("RequiredTicks", requiredTicks);
         if (ownerAltar != null) {
             tag.putLong("OwnerAltar", ownerAltar.asLong());
         }
@@ -467,10 +482,13 @@ public class AltarPedestalBlockEntity extends BlockEntity {
                 tag.getCompound("Item")
         )
                 : ItemStack.EMPTY;
-
+        processingTicks = Math.max(
+                0,
+                tag.getInt("ProcessingTicks")
+        );
         progress = Math.max(0, tag.getInt("Progress"));
         activeRecipe = tag.getString("ActiveRecipe");
-
+        requiredTicks = Math.max(0, tag.getInt("RequiredTicks"));
         ownerAltar = tag.contains("OwnerAltar", Tag.TAG_LONG)
                 ? BlockPos.of(tag.getLong("OwnerAltar"))
                 : null;

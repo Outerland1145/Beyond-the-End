@@ -9,6 +9,7 @@ import org.starrepublic.beyond_the_end.World.EndBarrier.BarrierReturnedPayload;
 import org.starrepublic.beyond_the_end.World.EndBarrier.BarrierStatePayload;
 import org.starrepublic.beyond_the_end.World.EndBarrier.ClientBarrierState;
 import org.starrepublic.beyond_the_end.network.EndSkySeedState;
+import org.starrepublic.beyond_the_end.network.payload.CrystalRemoverModePayload;
 import org.starrepublic.beyond_the_end.network.payload.EndSkySeedPayload;
 
 public final class PayloadRegistry {
@@ -60,6 +61,11 @@ public final class PayloadRegistry {
                 EndSkySeedPayload.TYPE,
                 EndSkySeedPayload.STREAM_CODEC,
                 PayloadRegistry::handleEndSkySeed
+        );
+        registrar.playToServer(
+                CrystalRemoverModePayload.TYPE,
+                CrystalRemoverModePayload.STREAM_CODEC,
+                CrystalRemoverModePayload::handle
         );
     }
     private static void handleEndSkySeed(

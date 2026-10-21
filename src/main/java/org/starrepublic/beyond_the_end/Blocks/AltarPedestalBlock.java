@@ -30,10 +30,9 @@ public class AltarPedestalBlock extends BaseEntityBlock {
 
     public static final MapCodec<AltarPedestalBlock> CODEC =
             simpleCodec(AltarPedestalBlock::new);
-
-    //private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 10, 14);
     public static final BooleanProperty OUTPUT =
             BooleanProperty.create("output");
+    //private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 10, 14);
     public AltarPedestalBlock(BlockBehaviour.Properties properties) {
         super(properties);
 
@@ -48,31 +47,10 @@ public class AltarPedestalBlock extends BaseEntityBlock {
     ) {
         builder.add(OUTPUT);
     }
-
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
-
-    //@Override
-    //protected VoxelShape getShape(
-    //        BlockState state,
-    //        BlockGetter level,
-    //        BlockPos pos,
-    //        CollisionContext context
-    //) {
-    //    return SHAPE;
-    //}
-
-    //@Override
-    //protected VoxelShape getCollisionShape(
-    //        BlockState state,
-    //        BlockGetter level,
-    //       BlockPos pos,
-    //        CollisionContext context
-    //) {
-    //    return SHAPE;
-    //}
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
@@ -91,10 +69,6 @@ public class AltarPedestalBlock extends BaseEntityBlock {
     // ========================================================
     // 放入物品
     // ========================================================
-
-    // ========================================================
-// 手持物品右鍵：放入一件
-// ========================================================
 
     @Override
     protected ItemInteractionResult useItemOn(
@@ -122,6 +96,7 @@ public class AltarPedestalBlock extends BaseEntityBlock {
         if (stack.isEmpty()) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
+        // 輸出模式不允許玩家直接放入材料
         if (state.getValue(OUTPUT)) {
 
             if (!level.isClientSide) {
@@ -184,7 +159,11 @@ public class AltarPedestalBlock extends BaseEntityBlock {
 
             // 切換輸入 / 輸出
             boolean newOutput = !state.getValue(OUTPUT);
+            BlockPos owner = pedestal.getOwnerAltar();
 
+            if (owner != null) {
+                pedestal.release(owner);
+            }
             level.setBlock(
                     pos,
                     state.setValue(OUTPUT, newOutput),

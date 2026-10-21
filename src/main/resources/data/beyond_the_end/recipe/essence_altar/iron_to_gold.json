@@ -1,0 +1,12 @@
+{
+  "type": "beyond_the_end:essence_altar",
+  "essence": "fire",
+  "ingredient": {
+    "item": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "minecraft:gold_ingot",
+    "count": 1
+  },
+  "cost": 50
+}

@@ -16,7 +16,9 @@
       "NoiseBasedChunkGeneratorMixin",
       "ChunkGeneratorMixin",
       "EndCityStructureMixin",
-      "LocateCommandMixin"
+      "LocateCommandMixin",
+      "FireFurnaceMixin",
+      "FireCampfireMixin"
 
   ],
   "client": [

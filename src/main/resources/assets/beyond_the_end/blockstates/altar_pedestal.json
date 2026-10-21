@@ -1,6 +1,9 @@
 {
   "variants": {
-    "": {
+    "output=false": {
+      "model": "beyond_the_end:block/altar_pedestal"
+    },
+    "output=true": {
       "model": "beyond_the_end:block/altar_pedestal"
     }
   }

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 public class RockRegisterHelper {
     public final DeferredBlock<? extends Block> brick;
     public final DeferredBlock<? extends Block> stairs;
+    public final DeferredBlock<? extends Block> wall;
     public final DeferredBlock<? extends Block> slab;
     @Nullable
     public final DeferredBlock<? extends Block> crackedbrick;
@@ -24,8 +25,10 @@ public class RockRegisterHelper {
         this.brick = bricks;
         this.slab = slab;
         this.stairs = stairs;
+        this.wall = wall;
         this.crackedbrick = cracked;
         this.chiseledbrick = chiseled;
+
     }
     public static RockRegisterHelper RegisterBrickSet(
             String name,

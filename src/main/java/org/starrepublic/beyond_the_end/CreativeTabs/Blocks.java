@@ -10,6 +10,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
+import org.starrepublic.beyond_the_end.Items.charm.rune.RuneHelper;
 import org.starrepublic.beyond_the_end.Register.*;
 
 import java.util.function.Supplier;
@@ -68,9 +69,17 @@ public class Blocks {
                                 output.accept( BlockRegister.SPOOKY.trapdoor.get());
                                 output.accept( BlockRegister.SPOOKY.pressureplate.get());
                                 output.accept( BlockRegister.SPOOKY.button.get());
+                                output.accept( BlockRegister.CRACK_ENDSTONE.get());
+                                output.accept( BlockRegister.End_Stone_Titles.brick.get());
+                                output.accept( BlockRegister.End_Stone_Titles.slab.get());
+                                output.accept( BlockRegister.End_Stone_Titles.stairs.get());
+                                output.accept( BlockRegister.End_Stone_Titles.wall.get());
+                                output.accept( BlockRegister.End_Stone_Titles.crackedbrick.get());
                                 output.accept( BlockRegister.Essence_Altar.soul.get());
                                 output.accept( BlockRegister.Essence_Altar.dragon.get());
                                 output.accept( BlockRegister.Essence_Altar.fires.get());
+                                output.accept( BlockRegister.ALTAR_PEDESTAL.get());
+                                output.accept( BlockRegister.WEAK_END_PORTAL_FRAME_BLOCK.get());
                             })
 
                             .build()
@@ -150,6 +159,8 @@ public class Blocks {
                                         output.accept( ItemRegister.DRAGON_ESSENCE.get());
                                         output.accept( ItemRegister.SOUL_ESSENCE.get());
                                         output.accept( ItemRegister.FIRE_ESSENCE.get());
+                                        output.accept( ItemRegister.END_POWDER.get());
+                                        output.accept( ItemRegister.SAFE_END_CRYSTAL.get());
                                         output.accept(EntityRegister.SMALL_ENDERMAN.spawnEgg().get());
                                         output.accept(EntityRegister.ANGRY_ENDERMAN.spawnEgg().get());
                                         output.accept(EntityRegister.ANCIENT_ENDER_DRAGON.spawnEgg().get());
@@ -157,6 +168,7 @@ public class Blocks {
                                         output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, PotionRegister.ENDER_INFESTED));
                                         output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, PotionRegister.ENDER_INFESTED));
                                         output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, PotionRegister.ENDER_INFESTED));
+                                        RuneHelper.addCreativeStacks(output,parameters.holders());
                             }
                             ).build()
             );

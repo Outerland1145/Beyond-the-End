@@ -1,6 +1,7 @@
 package org.starrepublic.beyond_the_end.Register;
 
 import net.neoforged.bus.api.IEventBus;
+import org.starrepublic.beyond_the_end.Blocks.EssenceAltarBlock;
 import org.starrepublic.beyond_the_end.CreativeTabs.Blocks;
 import org.starrepublic.beyond_the_end.Events.SpawnRules;
 
@@ -10,7 +11,7 @@ public final class TotalRegistries {
     public static void register(IEventBus eventBus) {
         DataRegister.register(eventBus);
         JigsawRegister.register(eventBus);
-
+        DataComponentRegister.register(eventBus);
         /*
          * 順序：
          *
@@ -28,13 +29,10 @@ public final class TotalRegistries {
         ItemRegister.register(eventBus);
         CommonSetupRegistry.register(eventBus);
         EffectRegister.register(eventBus);
-        eventBus.addListener(
-                SpawnRules::registerSpawnPlacements
-        );
-        eventBus.addListener(CapabilitiesRegister::register);
         RecipeRegister.register(eventBus);
-        /*以下為創造模式面板*/
         Blocks.register(eventBus);
+        eventBus.addListener(SpawnRules::registerSpawnPlacements);
+        eventBus.addListener(CapabilityRegister::register);
 
     }
 }

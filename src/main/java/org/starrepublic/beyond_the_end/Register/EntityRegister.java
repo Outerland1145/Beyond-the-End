@@ -6,6 +6,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.EnderMan;
 
@@ -20,7 +21,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Entitys.client.renderer.AncientEnderDragonRenderer;
+import org.starrepublic.beyond_the_end.Entitys.client.renderer.SafeEndCrystalRenderer;
 import org.starrepublic.beyond_the_end.Entitys.client.renderer.SmallEndermanRenderer;
+import org.starrepublic.beyond_the_end.Entitys.entity.SafeEndCrystalEntity;
 import org.starrepublic.beyond_the_end.Entitys.mob.AncientEnderDragonEntity;
 import org.starrepublic.beyond_the_end.Entitys.mob.AngryEndermanEntity;
 import org.starrepublic.beyond_the_end.Entitys.mob.SmallEndermanEntity;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * 唯一的實體註冊中心。
@@ -71,6 +75,21 @@ public final class EntityRegister {
             ANGRY_ENDERMAN = EntityHelper.registerMob("angry_enderman", AngryEndermanEntity.SPEC);
     public static final EntityHelper.MobEntry<AncientEnderDragonEntity>
             ANCIENT_ENDER_DRAGON = EntityHelper.registerMob("ancient_ender_dragon", AncientEnderDragonEntity.SPEC);
+
+    public static final Supplier<EntityType<SafeEndCrystalEntity>>
+            SAFE_END_CRYSTAL = ENTITIES.register(
+            "safe_end_crystal",
+            () -> EntityType.Builder
+                    .<SafeEndCrystalEntity>of(
+                            SafeEndCrystalEntity::new,
+                            MobCategory.MISC
+                    )
+                    .sized(2.0F, 2.0F)
+                    .clientTrackingRange(10)
+                    .updateInterval(10)
+                    .fireImmune()
+                    .build("beyond_the_end:safe_end_crystal")
+    );
 
     // =========================================================
     // 共同端入口：主 Mod 建構子只呼叫這一次
@@ -164,6 +183,7 @@ public final class EntityRegister {
                 );
 
 
+
         private static final List<EntityHelper.Client.RenderSpec<?>> RENDERS =
                 List.of(SMALL_ENDERMAN_RENDER,
                         ANGRY_ENDERMAN_RENDER,
@@ -181,6 +201,10 @@ public final class EntityRegister {
             for (EntityHelper.Client.RenderSpec<?> definition : RENDERS) {
                 registerRenderer(event, definition);
             }
+            event.registerEntityRenderer(
+                    SAFE_END_CRYSTAL.get(),
+                    SafeEndCrystalRenderer::new
+            );
         }
 
         private static <T extends Entity> void registerRenderer(

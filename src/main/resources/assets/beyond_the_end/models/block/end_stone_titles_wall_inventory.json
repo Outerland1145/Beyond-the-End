@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "wall": "beyond_the_end:block/end_stone_titles"
+  }
+}

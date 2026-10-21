@@ -5,9 +5,9 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 import org.starrepublic.beyond_the_end.Register.BlockEntityRegister;
 
-public final class CapabilitiesRegister {
+public final class CapabilityRegister {
 
-    private CapabilitiesRegister() {
+    private CapabilityRegister() {
     }
 
     public static void register(

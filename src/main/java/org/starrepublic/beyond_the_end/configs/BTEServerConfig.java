@@ -9,6 +9,7 @@ public class BTEServerConfig {
     public final ModConfigSpec.BooleanValue enableEndBarrier;
     public final ModConfigSpec.BooleanValue enableCustomEndTerrain;
     public final ModConfigSpec.BooleanValue enablevanillaendcity;
+    public final ModConfigSpec.BooleanValue enableweakendportalactivateinend;
 
     public final ModConfigSpec.IntValue normalEndRadius;
 
@@ -242,6 +243,16 @@ public class BTEServerConfig {
                         1,
                         512
                 );
+        enableweakendportalactivateinend =
+                builder
+                        .comment(
+                                "Allow weak end portals to be activated in the End dimension.",
+                                "Default: False"
+                        )
+                        .define(
+                "enable_weak_end_portal_open_in_end",
+                false
+        );
 
         builder.pop();
     }

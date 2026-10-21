@@ -40,6 +40,7 @@ public class Tags {
                             "soul_essence"
                     )
             );
+
     public static final TagKey<Item> FIRE_ESSENCE =
             TagKey.create(
                     Registries.ITEM,
@@ -54,6 +55,14 @@ public class Tags {
                     ResourceLocation.fromNamespaceAndPath(
                             Beyond_the_end.MODID,
                             "altar_end_powder"
+                    )
+            );
+    public static final TagKey<Item> ACTIVATOR_ITEMS =
+            TagKey.create(
+                    Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath(
+                            Beyond_the_end.MODID,
+                            "weak_end_portal_activators"
                     )
             );
 

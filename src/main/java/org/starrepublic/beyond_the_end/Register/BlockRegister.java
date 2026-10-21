@@ -37,7 +37,30 @@ public class BlockRegister {
     public static final PlantRegisterHelper BURNINGGRASS = PlantRegisterHelper.PlantRegisterWithoutTallSet("burning_grass");
     public static final PlantRegisterHelper BURNINGGFERN = PlantRegisterHelper.PlantRegisterWithoutTallSet("burning_fern");
 
+    public static final RockRegisterHelper End_Stone_Titles = RockRegisterHelper.RegisterBrickSet("end_stone_titles",false,true);
+
     public static final AltarBlockHelper Essence_Altar = AltarBlockHelper.AltarBlockSet("essence");
+
+    public static final DeferredBlock<WeakEndPortalFrameBlock> WEAK_END_PORTAL_FRAME_BLOCK =
+            BlockRegisterHelper.RegisterNewBlock(
+                    "weak_end_portal_frame_block",
+                    () -> new WeakEndPortalFrameBlock(
+                            BlockBehaviour.Properties.ofFullCopy(Blocks.OBSIDIAN)
+                                    .sound(SoundType.GLASS)
+                                    .requiresCorrectToolForDrops()
+                    ),
+                    true
+            );
+    public static final DeferredBlock<Block> CRACK_ENDSTONE =
+            BlockRegisterHelper.RegisterNewBlock(
+                    "cracked_end_stone_bricks",
+                    () -> new Block(
+                            BlockBehaviour.Properties.ofFullCopy(Blocks.END_STONE_BRICKS)
+                            .requiresCorrectToolForDrops()
+                    ),
+                    true
+            );
+
     public static final DeferredBlock<AltarPedestalBlock> ALTAR_PEDESTAL =
             BlockRegisterHelper.RegisterNewBlock(
                     "altar_pedestal",

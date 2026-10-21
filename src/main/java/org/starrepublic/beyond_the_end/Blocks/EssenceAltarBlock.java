@@ -3,8 +3,10 @@ package org.starrepublic.beyond_the_end.Blocks;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -29,6 +31,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.jetbrains.annotations.Nullable;
 import org.starrepublic.beyond_the_end.Entitys.blockentity.DragonEssenceAltarBlockEntity;
 import org.starrepublic.beyond_the_end.Entitys.blockentity.EssenceAltarBlockEntity;
@@ -39,6 +42,7 @@ import org.starrepublic.beyond_the_end.Register.BlockRegister;
 import org.starrepublic.beyond_the_end.Register.ItemRegister;
 import org.starrepublic.beyond_the_end.Register.Tags;
 import org.starrepublic.beyond_the_end.recipes.essence_altar.DragonAltarLogic;
+import org.starrepublic.beyond_the_end.recipes.essence_altar.FireAltarLogic;
 
 public class EssenceAltarBlock extends BaseEntityBlock {
 
@@ -52,7 +56,119 @@ public class EssenceAltarBlock extends BaseEntityBlock {
     public EssenceAltarBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }
+    // ========================================================
+    // Fire Essence Altar Mode Switching
+    // ========================================================
 
+    public static void onFireAltarModeRightClick(
+            PlayerInteractEvent.RightClickBlock event
+    ) {
+
+        if (event.getHand() != InteractionHand.MAIN_HAND) {
+            return;
+        }
+
+        Player player = event.getEntity();
+        Level level = event.getLevel();
+        BlockPos pos = event.getPos();
+
+        if (!player.isShiftKeyDown() || player.isSpectator()) {
+            return;
+        }
+
+        if (!level.getBlockState(pos).is(
+                BlockRegister.Essence_Altar.fires.get()
+        )) {
+            return;
+        }
+
+        if (!level.isClientSide
+                && level.getBlockEntity(pos)
+                instanceof FireEssenceAltarBlockEntity fireAltar) {
+
+            fireAltar.cyclePowderMode();
+
+            String name = switch (fireAltar.getPowderMode()) {
+
+                case "speed" -> "加速模式";
+
+                case "efficiency" -> "效率模式";
+
+                case "smelting" -> "熔煉加速模式";
+
+                default -> "普通模式";
+            };
+
+            player.displayClientMessage(
+                    Component.literal(
+                            "炎之精華祭壇：" + name
+                    ),
+                    true
+            );
+        }
+
+        event.setCancellationResult(
+                InteractionResult.sidedSuccess(level.isClientSide)
+        );
+
+        event.setCanceled(true);
+    }
+    // ========================================================
+    // 潛行右鍵：切換龍之精華祭壇模式
+    // ========================================================
+
+    public static void onDragonAltarModeRightClick(
+            PlayerInteractEvent.RightClickBlock event
+    ) {
+
+        if (event.getHand() != InteractionHand.MAIN_HAND) {
+            return;
+        }
+
+        Player player = event.getEntity();
+        Level level = event.getLevel();
+        BlockPos pos = event.getPos();
+
+        if (!player.isShiftKeyDown() || player.isSpectator()) {
+            return;
+        }
+
+        if (!level.getBlockState(pos).is(
+                BlockRegister.Essence_Altar.dragon.get()
+        )) {
+            return;
+        }
+
+        if (!level.isClientSide
+                && level.getBlockEntity(pos)
+                instanceof DragonEssenceAltarBlockEntity altar) {
+
+            altar.cyclePowderMode();
+
+            String modeName;
+
+            if (altar.getPowderMode().equals("speed")) {
+                modeName = "加速模式";
+
+            } else if (altar.getPowderMode().equals("efficiency")) {
+                modeName = "效率模式";
+
+            } else {
+                modeName = "普通模式";
+            }
+
+            player.displayClientMessage(
+                    Component.literal("龍之精華祭壇：" + modeName),
+                    true
+            );
+        }
+
+        event.setCancellationResult(
+                InteractionResult.sidedSuccess(level.isClientSide)
+        );
+
+        event.setCanceled(true);
+    }
     // ========================================================
     // Codec
     // ========================================================
@@ -142,6 +258,18 @@ public class EssenceAltarBlock extends BaseEntityBlock {
                     DragonEssenceAltarBlockEntity::serverTick
             );
         }
+        // ========================================================
+        // Fire Essence Altar Ticker
+        // ========================================================
+
+        if (state.is(BlockRegister.Essence_Altar.fires.get())) {
+
+            return createTickerHelper(
+                    type,
+                    BlockEntityRegister.FIRE_ESSENCE_ALTAR.get(),
+                    FireEssenceAltarBlockEntity::serverTick
+            );
+        }
 
         return null;
     }
@@ -161,14 +289,144 @@ public class EssenceAltarBlock extends BaseEntityBlock {
             BlockHitResult hitResult
     ) {
 
-        // 目前只有龍之精華祭壇擁有互動功能
+        // ========================================================
+// Fire Essence Altar Interaction
+// ========================================================
+
+        if (level.getBlockEntity(pos)
+                instanceof FireEssenceAltarBlockEntity fireAltar) {
+
+            // ----------------------------------------------------
+            // 投入炎之精華
+            // ----------------------------------------------------
+
+            if (stack.is(Tags.FIRE_ESSENCE)) {
+
+                if (!level.isClientSide) {
+
+                    int amount = Math.min(32, stack.getCount());
+
+                    if (player.getAbilities().instabuild) {
+                        amount = 32;
+                    }
+
+                    int accepted = fireAltar.addEssence(
+                            stack,
+                            amount
+                    );
+
+                    if (accepted > 0
+                            && !player.getAbilities().instabuild) {
+
+                        stack.shrink(accepted);
+                    }
+                }
+
+                return ItemInteractionResult.sidedSuccess(
+                        level.isClientSide
+                );
+            }
+
+            // ----------------------------------------------------
+            // 投入末影粉
+            // ----------------------------------------------------
+
+            if (stack.is(Tags.END_POWDER)) {
+
+                if (!level.isClientSide) {
+
+                    boolean accepted = fireAltar.addPowderMinute();
+
+                    if (accepted) {
+
+                        // 每次只消耗一個
+                        if (!player.getAbilities().instabuild) {
+                            stack.shrink(1);
+                        }
+
+                        if ("smelting".equals(fireAltar.getPowderMode())) {
+
+                            // 熔煉模式顯示速度，而不是舊的60秒倒數
+                            player.displayClientMessage(
+                                    Component.translatable(
+                                            "message.beyond_the_end.smelting_powder_added",
+                                            fireAltar.getSmeltingSpeedPercent()
+                                    ),
+                                    true
+                            );
+
+                        } else {
+
+                            // 原本加速與效率模式的提示
+                            player.displayClientMessage(
+                                    Component.translatable(
+                                            "message.beyond_the_end.powder_time",
+                                            (fireAltar.getPowderTicks() + 19) / 20
+                                    ),
+                                    true
+                            );
+                        }
+
+                    } else {
+
+                        player.displayClientMessage(
+                                Component.translatable(
+                                        "message.beyond_the_end.powder_rejected"
+                                ),
+                                true
+                        );
+                    }
+                }
+
+                return ItemInteractionResult.sidedSuccess(
+                        level.isClientSide
+                );
+            }
+
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
         if (!(level.getBlockEntity(pos)
                 instanceof DragonEssenceAltarBlockEntity altar)) {
 
             return ItemInteractionResult
                     .PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
+        // ========================================================
+        // 末影粉：每個增加一分鐘模式效果
+        // ========================================================
 
+        if (stack.is(Tags.END_POWDER)) {
+
+            if (!level.isClientSide) {
+
+                if (altar.addPowderMinute()) {
+
+                    if (!player.getAbilities().instabuild) {
+                        stack.shrink(1);
+                    }
+
+                    player.displayClientMessage(
+                            Component.literal(
+                                    "模式效果剩餘：" +
+                                            ((altar.getPowderTicks() + 19) / 20) +
+                                            " 秒"
+                            ),
+                            true
+                    );
+
+                } else {
+
+                    player.displayClientMessage(
+                            Component.literal("請先切換至加速或效率模式"),
+                            true
+                    );
+                }
+            }
+
+            return ItemInteractionResult.sidedSuccess(
+                    level.isClientSide
+            );
+        }
         // ====================================================
         // 注入龍之精華
         // ====================================================
@@ -203,53 +461,53 @@ public class EssenceAltarBlock extends BaseEntityBlock {
         // 龍祭壇升級
         // ====================================================
 
-        boolean speedItem = stack.is(Items.REDSTONE_BLOCK);
-        boolean rangeItem = stack.is(Items.LAPIS_BLOCK);
-        boolean efficiencyItem = stack.is(Items.EMERALD_BLOCK);
+        //boolean speedItem = stack.is(Items.REDSTONE_BLOCK);
+        //boolean rangeItem = stack.is(Items.LAPIS_BLOCK);
+        //boolean efficiencyItem = stack.is(Items.EMERALD_BLOCK);
 
-        if (speedItem || rangeItem || efficiencyItem) {
+        //if (speedItem || rangeItem || efficiencyItem) {
 
-            if (!level.isClientSide) {
+            //if (!level.isClientSide) {
 
-                boolean alreadyUpgraded =
-                        (speedItem && altar.isDragonSpeedUpgraded())
-                                || (rangeItem && altar.isDragonRangeUpgraded())
-                                || (efficiencyItem
-                                && altar.isDragonEfficiencyUpgraded());
+                //boolean alreadyUpgraded =
+                        //(speedItem && altar.isDragonSpeedUpgraded())
+                                //|| (rangeItem && altar.isDragonRangeUpgraded())
+                                //|| (efficiencyItem
+                                //&& altar.isDragonEfficiencyUpgraded());
 
-                if (!alreadyUpgraded) {
+                //if (!alreadyUpgraded) {
 
-                    boolean creative =
-                            player.getAbilities().instabuild;
+                    //boolean creative =
+                            //player.getAbilities().instabuild;
 
-                    if (creative || countEndPowder(player) >= 4) {
+                    //if (creative || countEndPowder(player) >= 4) {
 
-                        boolean applied = false;
+                        //boolean applied = false;
 
-                        if (speedItem) {
-                            applied = altar.upgradeDragonSpeed();
-                        }
-                        else if (rangeItem) {
-                            applied = altar.upgradeDragonRange();
-                        }
-                        else if (efficiencyItem) {
-                            applied = altar.upgradeDragonEfficiency();
-                        }
+                        //if (speedItem) {
+                            //applied = altar.upgradeDragonSpeed();
+                        //}
+                        //else if (rangeItem) {
+                            //applied = altar.upgradeDragonRange();
+                        //}
+                        //else if (efficiencyItem) {
+                            //applied = altar.upgradeDragonEfficiency();
+                        //}
 
-                        if (applied && !creative) {
+                        //if (applied && !creative) {
 
-                            consumeEndPowder(player, 4);
+                            //consumeEndPowder(player, 4);
 
-                            stack.shrink(1);
-                        }
-                    }
-                }
-            }
+                            //stack.shrink(1);
+                        //}
+                    //}
+                //}
+            //}
 
-            return ItemInteractionResult.sidedSuccess(
-                    level.isClientSide
-            );
-        }
+            //return ItemInteractionResult.sidedSuccess(
+                    //level.isClientSide
+            //);
+        //}
 
         return ItemInteractionResult
                 .PASS_TO_DEFAULT_BLOCK_INTERACTION;
@@ -325,6 +583,13 @@ public class EssenceAltarBlock extends BaseEntityBlock {
                     DragonAltarLogic.releaseAll(
                             serverLevel,
                             dragon
+                    );
+                }
+                if (altar instanceof FireEssenceAltarBlockEntity fireAltar) {
+
+                    FireAltarLogic.releaseAll(
+                            serverLevel,
+                            fireAltar
                     );
                 }
 

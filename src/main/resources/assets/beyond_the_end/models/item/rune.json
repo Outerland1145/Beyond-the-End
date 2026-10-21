@@ -1,0 +1,44 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "beyond_the_end:item/rune_power"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "beyond_the_end:rune_model": 1
+      },
+      "model": "beyond_the_end:item/rune_power"
+    },
+    {
+      "predicate": {
+        "beyond_the_end:rune_model": 2
+      },
+      "model": "beyond_the_end:item/rune_agility"
+    },
+    {
+      "predicate": {
+        "beyond_the_end:rune_model": 3
+      },
+      "model": "beyond_the_end:item/rune_vitality"
+    },
+    {
+      "predicate": {
+        "beyond_the_end:rune_model": 4
+      },
+      "model": "beyond_the_end:item/rune_defense"
+    },
+    {
+      "predicate": {
+        "beyond_the_end:rune_model": 5
+      },
+      "model": "beyond_the_end:item/rune_magic"
+    },
+    {
+      "predicate": {
+        "beyond_the_end:rune_model": 6
+      },
+      "model": "beyond_the_end:item/rune_void"
+    }
+  ]
+}
