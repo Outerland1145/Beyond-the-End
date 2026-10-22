@@ -161,6 +161,7 @@ public class Blocks {
                                         output.accept( ItemRegister.FIRE_ESSENCE.get());
                                         output.accept( ItemRegister.END_POWDER.get());
                                         output.accept( ItemRegister.SAFE_END_CRYSTAL.get());
+                                        output.accept( ItemRegister.CHARMPOUCH.get());
                                         output.accept(EntityRegister.SMALL_ENDERMAN.spawnEgg().get());
                                         output.accept(EntityRegister.ANGRY_ENDERMAN.spawnEgg().get());
                                         output.accept(EntityRegister.ANCIENT_ENDER_DRAGON.spawnEgg().get());
@@ -168,9 +169,33 @@ public class Blocks {
                                         output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, PotionRegister.ENDER_INFESTED));
                                         output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, PotionRegister.ENDER_INFESTED));
                                         output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, PotionRegister.ENDER_INFESTED));
+                            }
+                            ).build()
+            );
+    public static final Supplier<CreativeModeTab> BTE_END_CHARM_TAB =
+            CREATIVE_TABS.register(
+                    "beyond_the_end_charm_tab",
+                    () -> CreativeModeTab.builder()
+
+                            // 分頁名稱
+                            .title(
+                                    Component.translatable(
+                                            "itemGroup.beyond_the_end.beyond_the_end_charm_tab"
+                                    )
+                            )
+
+                            // 分頁圖示
+                            .icon(
+                                    () -> new ItemStack(
+                                            ItemRegister.CHARMPOUCH.get()
+                                    )
+                            )
+
+                            // 分頁中的所有物品
+                            .displayItems((parameters, output) -> {
                                         RuneHelper.addCreativeStacks(output,parameters.holders());
                                         CharmHelper.addCreativeStacks(output,parameters.holders());
-                            }
+                                    }
                             ).build()
             );
     public static void register(IEventBus eventBus) {

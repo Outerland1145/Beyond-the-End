@@ -42,6 +42,13 @@ public class ItemRegister {
                     new Item.Properties()
             )
     );
+    public static final DeferredItem<Item>
+            CHARMPOUCH = ITEMS.register(
+            "charm_pouch",
+            () -> new Item(
+                    new Item.Properties()
+            )
+    );
     public static final DeferredItem<CharmItem>
             CHARMITEM = ITEMS.register(
             "charm",
