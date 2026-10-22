@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
+import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Register.BlockRegister;
 import org.starrepublic.beyond_the_end.Register.RecipeRegister;
 import org.starrepublic.beyond_the_end.recipes.essence_altar.EssenceAltarRecipe;
@@ -22,7 +23,7 @@ public class FireEssenceAltarRecipeJEIPlugin implements IModPlugin {
 
     public static final RecipeType<EssenceAltarRecipe>
             FIRE_ALTAR = RecipeType.create(
-            "beyond_the_end",
+            Beyond_the_end.MODID,
             "fire_essence_altar",
             EssenceAltarRecipe.class
     );
@@ -31,7 +32,7 @@ public class FireEssenceAltarRecipeJEIPlugin implements IModPlugin {
     public ResourceLocation getPluginUid() {
 
         return ResourceLocation.fromNamespaceAndPath(
-                "beyond_the_end",
+                Beyond_the_end.MODID,
                 "fire_jei_plugin"
         );
     }

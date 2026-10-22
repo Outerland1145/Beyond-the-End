@@ -12,6 +12,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
+import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Register.BlockRegister;
 import org.starrepublic.beyond_the_end.Register.RecipeRegister;
 import org.starrepublic.beyond_the_end.recipes.essence_altar.EssenceAltarRecipe;
@@ -27,7 +28,7 @@ public class DragonEssenceAltarRecipeJEIPlugin implements IModPlugin {
 
     public static final RecipeType<EssenceAltarRecipe>
             DRAGON_ALTAR = RecipeType.create(
-            "beyond_the_end",
+            Beyond_the_end.MODID,
             "dragon_essence_altar",
             EssenceAltarRecipe.class
     );
@@ -40,7 +41,7 @@ public class DragonEssenceAltarRecipeJEIPlugin implements IModPlugin {
     public ResourceLocation getPluginUid() {
 
         return ResourceLocation.fromNamespaceAndPath(
-                "beyond_the_end",
+                Beyond_the_end.MODID,
                 "dragon_jei_plugin"
         );
     }

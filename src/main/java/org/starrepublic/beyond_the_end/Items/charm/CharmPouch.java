@@ -23,7 +23,7 @@ import java.util.List;
 
 public class CharmPouch extends Item {
 
-    public static final int SLOT_COUNT = 3;
+    public static final int SLOT_COUNT = CharmPouchMenu.POUCH_SLOTS;
 
     public CharmPouch(Properties properties) {
         super(properties);
