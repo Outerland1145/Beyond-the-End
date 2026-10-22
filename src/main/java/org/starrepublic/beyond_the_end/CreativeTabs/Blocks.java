@@ -193,6 +193,7 @@ public class Blocks {
 
                             // 分頁中的所有物品
                             .displayItems((parameters, output) -> {
+                                        output.accept( ItemRegister.CHARMPOUCH.get());
                                         RuneHelper.addCreativeStacks(output,parameters.holders());
                                         CharmHelper.addCreativeStacks(output,parameters.holders());
                                     }

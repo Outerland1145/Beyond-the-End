@@ -33,6 +33,7 @@ public final class TotalRegistries {
         EffectRegister.register(eventBus);
         RecipeRegister.register(eventBus);
         Blocks.register(eventBus);
+        MenuRegister.register(eventBus);
 
         eventBus.addListener(SpawnRules::registerSpawnPlacements);
         eventBus.addListener(CapabilityRegister::register);

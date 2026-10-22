@@ -140,9 +140,7 @@ dependencies {
 
     localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
-    compileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api"
-
-    localRuntime "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
+    implementation "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
 
 
     // ========================================================

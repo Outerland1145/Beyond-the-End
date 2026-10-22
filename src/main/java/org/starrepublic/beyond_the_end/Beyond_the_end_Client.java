@@ -10,6 +10,7 @@ import org.starrepublic.beyond_the_end.Events.EndSkyClientEvents;
 import org.starrepublic.beyond_the_end.Events.FluidEvents;
 import org.starrepublic.beyond_the_end.Items.charm.CharmClientExtensions;
 import org.starrepublic.beyond_the_end.Items.charm.CharmItem;
+import org.starrepublic.beyond_the_end.Items.charm.CharmPouchMenu;
 import org.starrepublic.beyond_the_end.Items.rune.RuneClient;
 import org.starrepublic.beyond_the_end.Register.ItemRegister;
 import org.starrepublic.beyond_the_end.Register.RenderRegistry;
@@ -21,6 +22,7 @@ public class Beyond_the_end_Client {
         FluidEvents.register(modEventBus);
         NeoForge.EVENT_BUS.register(ClientEndEffectEvents.class);
         NeoForge.EVENT_BUS.addListener(EndSkyClientEvents::onLoggingOut);
+        modEventBus.addListener(CharmPouchMenu::registerMenuScreens);
         modEventBus.addListener(RuneClient::setup);
         modEventBus.addListener(CharmClientExtensions::register);
 

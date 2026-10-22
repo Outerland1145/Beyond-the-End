@@ -9,6 +9,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Items.SafeEndCrystalItem;
 import org.starrepublic.beyond_the_end.Items.charm.CharmItem;
+import org.starrepublic.beyond_the_end.Items.charm.CharmPouch;
 import org.starrepublic.beyond_the_end.Items.rune.RuneItem;
 
 import java.util.function.Supplier;
@@ -42,10 +43,10 @@ public class ItemRegister {
                     new Item.Properties()
             )
     );
-    public static final DeferredItem<Item>
+    public static final DeferredItem<CharmPouch>
             CHARMPOUCH = ITEMS.register(
             "charm_pouch",
-            () -> new Item(
+            () -> new CharmPouch(
                     new Item.Properties()
             )
     );

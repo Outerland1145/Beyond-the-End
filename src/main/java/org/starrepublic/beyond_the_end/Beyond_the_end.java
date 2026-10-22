@@ -51,10 +51,5 @@ public class Beyond_the_end {
             NeoForge.EVENT_BUS.addListener(FireSmeltingEvents::onPlayerTickPost);
 
         }
-        private static void onClientSetup(
-                FMLClientSetupEvent event
-        ) {
-            RuneClient.setup(event);
-        }
 
 }
