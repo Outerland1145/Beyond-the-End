@@ -57,32 +57,10 @@ public class CharmItem extends Item {
                 flag
         );
 
-        CharmData data = stack.get(
-                DataComponentRegister.CHARM_DATA.get()
+        CharmTooltip.append(
+                stack,
+                context,
+                tooltip
         );
-
-        if (data == null) {
-            tooltip.add(
-                    Component.translatable(
-                            "tooltip.beyond_the_end.charm_unassigned"
-                    ).withStyle(ChatFormatting.GRAY)
-            );
-            return;
-        }
-
-        tooltip.add(
-                Component.translatable(
-                        "tooltip.beyond_the_end.charm_variant",
-                        data.level()
-                ).withStyle(ChatFormatting.GRAY)
-        );
-
-        if (flag.isAdvanced()) {
-            tooltip.add(
-                    Component.literal(
-                            data.type().toString()
-                    ).withStyle(ChatFormatting.DARK_GRAY)
-            );
-        }
     }
 }

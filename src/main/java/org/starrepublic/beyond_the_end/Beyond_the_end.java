@@ -9,6 +9,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.starrepublic.beyond_the_end.Blocks.AltarPedestalInteraction;
 import org.starrepublic.beyond_the_end.Blocks.EssenceAltarBlock;
 import org.starrepublic.beyond_the_end.Events.*;
+import org.starrepublic.beyond_the_end.Items.charm.CharmEffectEvents;
 import org.starrepublic.beyond_the_end.Items.rune.RuneClient;
 import org.starrepublic.beyond_the_end.Register.*;
 import org.starrepublic.beyond_the_end.configs.BTEConfigs;
@@ -35,6 +36,7 @@ public class Beyond_the_end {
             NeoForge.EVENT_BUS.register(CommandRegistry.class);
             NeoForge.EVENT_BUS.register(EndBarrierProgressEvents.class);
             NeoForge.EVENT_BUS.register(InteractionEvents.class);
+            NeoForge.EVENT_BUS.register(CharmEffectEvents.class);
             FeatureRegister.register( modEventBus );
             modEventBus.addListener(BlockEntityEvents::addValidBlocks);
             modEventBus.addListener(PayloadRegistry::registerPayloads);
