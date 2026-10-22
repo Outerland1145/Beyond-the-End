@@ -1,20 +1,15 @@
 package org.starrepublic.beyond_the_end.Register;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
-import org.starrepublic.beyond_the_end.Blocks.Blockitems.DecorativeEndGatewayItem;
 import org.starrepublic.beyond_the_end.Items.SafeEndCrystalItem;
-import org.starrepublic.beyond_the_end.Items.charm.rune.RuneItem;
+import org.starrepublic.beyond_the_end.Items.charm.CharmItem;
+import org.starrepublic.beyond_the_end.Items.rune.RuneItem;
 
 import java.util.function.Supplier;
 
@@ -47,6 +42,13 @@ public class ItemRegister {
                     new Item.Properties()
             )
     );
+    public static final DeferredItem<CharmItem>
+            CHARMITEM = ITEMS.register(
+            "charm",
+            () -> new CharmItem(
+                    new Item.Properties()
+            )
+    );
     public static final DeferredItem<Item>
             END_CRYSTAL_REMOVER = ITEMS.register(
             "crystal_remover",
@@ -54,7 +56,6 @@ public class ItemRegister {
                     new Item.Properties().durability(1024)
             )
     );
-
             //registerSimpleItem("crystal_remover");
     public static final Supplier<SafeEndCrystalItem>
             SAFE_END_CRYSTAL = ITEMS.register(

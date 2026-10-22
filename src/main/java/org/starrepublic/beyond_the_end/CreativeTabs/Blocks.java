@@ -5,12 +5,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.starrepublic.beyond_the_end.Beyond_the_end;
-import org.starrepublic.beyond_the_end.Items.charm.rune.RuneHelper;
+import org.starrepublic.beyond_the_end.Items.charm.CharmHelper;
+import org.starrepublic.beyond_the_end.Items.rune.RuneHelper;
 import org.starrepublic.beyond_the_end.Register.*;
 
 import java.util.function.Supplier;
@@ -169,6 +169,7 @@ public class Blocks {
                                         output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, PotionRegister.ENDER_INFESTED));
                                         output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, PotionRegister.ENDER_INFESTED));
                                         RuneHelper.addCreativeStacks(output,parameters.holders());
+                                        CharmHelper.addCreativeStacks(output,parameters.holders());
                             }
                             ).build()
             );
