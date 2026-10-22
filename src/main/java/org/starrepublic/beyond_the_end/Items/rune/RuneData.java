@@ -1,4 +1,4 @@
-package org.starrepublic.beyond_the_end.Items.charm.rune;
+package org.starrepublic.beyond_the_end.Items.rune;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;

@@ -1,4 +1,4 @@
-package org.starrepublic.beyond_the_end.Items.charm.rune;
+package org.starrepublic.beyond_the_end.Items.rune;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -9,12 +9,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 import org.starrepublic.beyond_the_end.Beyond_the_end;
+import org.starrepublic.beyond_the_end.Items.charm.CharmClientExtensions;
 import org.starrepublic.beyond_the_end.Register.ItemRegister;
 
 public final class RuneClient {
 
     public static void setup(FMLClientSetupEvent event) {
-
         event.enqueueWork(() -> {
 
             ItemProperties.register(

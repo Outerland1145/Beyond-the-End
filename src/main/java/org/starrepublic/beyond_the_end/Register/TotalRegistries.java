@@ -4,6 +4,7 @@ import net.neoforged.bus.api.IEventBus;
 import org.starrepublic.beyond_the_end.Blocks.EssenceAltarBlock;
 import org.starrepublic.beyond_the_end.CreativeTabs.Blocks;
 import org.starrepublic.beyond_the_end.Events.SpawnRules;
+import org.starrepublic.beyond_the_end.Items.charm.CharmTypes;
 
 public final class TotalRegistries {
     private TotalRegistries() {}
@@ -12,6 +13,7 @@ public final class TotalRegistries {
         DataRegister.register(eventBus);
         JigsawRegister.register(eventBus);
         DataComponentRegister.register(eventBus);
+        CharmTypes.register(eventBus);
         /*
          * 順序：
          *
@@ -31,6 +33,7 @@ public final class TotalRegistries {
         EffectRegister.register(eventBus);
         RecipeRegister.register(eventBus);
         Blocks.register(eventBus);
+
         eventBus.addListener(SpawnRules::registerSpawnPlacements);
         eventBus.addListener(CapabilityRegister::register);
 
