@@ -10,6 +10,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 
 import org.starrepublic.beyond_the_end.Beyond_the_end;
+import org.starrepublic.beyond_the_end.GUI.EnhancedBrewingMenu;
 import org.starrepublic.beyond_the_end.Items.charm.CharmPouchMenu;
 
 public final class MenuRegister {
@@ -28,6 +29,17 @@ public final class MenuRegister {
                     "charm_pouch",
                     () -> new MenuType<>(
                             CharmPouchMenu::new,
+                            FeatureFlags.DEFAULT_FLAGS
+                    )
+            );
+    public static final DeferredHolder<
+            MenuType<?>,
+            MenuType<EnhancedBrewingMenu>
+            > Enchanted_Brewing =
+            MENUS.register(
+                    "enhanced_brewing_stand",
+                    () -> new MenuType<>(
+                            EnhancedBrewingMenu::new,
                             FeatureFlags.DEFAULT_FLAGS
                     )
             );

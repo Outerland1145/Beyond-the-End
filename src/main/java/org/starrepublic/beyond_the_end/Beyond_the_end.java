@@ -14,6 +14,7 @@ import org.starrepublic.beyond_the_end.Items.rune.RuneClient;
 import org.starrepublic.beyond_the_end.Register.*;
 import org.starrepublic.beyond_the_end.configs.BTEConfigs;
 import org.starrepublic.beyond_the_end.recipes.CharmRecipe.CharmRecipeReloadEvents;
+import org.starrepublic.beyond_the_end.recipes.enhancedbrewing.EnhancedBrewingRecipes;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Beyond_the_end.MODID)
@@ -51,6 +52,7 @@ public class Beyond_the_end {
             NeoForge.EVENT_BUS.addListener(FireSmeltingEvents::onPlayerTickPre);
             NeoForge.EVENT_BUS.addListener(FireSmeltingEvents::onPlayerTickPost);
             NeoForge.EVENT_BUS.register(CharmRecipeReloadEvents.class);
+            NeoForge.EVENT_BUS.addListener(EnhancedBrewingRecipes::registerVanillaBrewing);
         }
 
 }

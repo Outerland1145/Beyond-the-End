@@ -41,6 +41,19 @@ public class BlockRegister {
 
     public static final AltarBlockHelper Essence_Altar = AltarBlockHelper.AltarBlockSet("essence");
 
+    public static final DeferredBlock<EnhancedBrewingStandBlock> ENHANCED_BREWING_STAND_BLOCK =
+            BlockRegisterHelper.RegisterNewBlock(
+                    "end_brewing_stand",
+                    () -> new EnhancedBrewingStandBlock(
+                            BlockBehaviour.Properties.of()
+                                    .strength(0.5F)
+                                    .noOcclusion()
+                                    .lightLevel(state -> 5)
+                                    .requiresCorrectToolForDrops()
+                    ),
+                    true
+            );
+
     public static final DeferredBlock<WeakEndPortalFrameBlock> WEAK_END_PORTAL_FRAME_BLOCK =
             BlockRegisterHelper.RegisterNewBlock(
                     "weak_end_portal_frame_block",

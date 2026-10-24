@@ -1,0 +1,25 @@
+{
+  "type": "beyond_the_end:enhanced_brewing",
+  "input": {
+    "id": "minecraft:potion",
+    "count": 1,
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "minecraft:awkward"
+      }
+    }
+  },
+  "ingredient": {
+    "item": "minecraft:amethyst_shard"
+  },
+  "output": {
+    "id": "minecraft:potion",
+    "count": 1,
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "minecraft:night_vision"
+      }
+    }
+  },
+  "allow_vanilla_stand": false
+}

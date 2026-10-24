@@ -1,0 +1,25 @@
+{
+  "type": "beyond_the_end:enhanced_brewing",
+  "input": {
+    "id": "minecraft:potion",
+    "count": 1,
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "minecraft:water"
+      }
+    }
+  },
+  "ingredient": {
+    "item": "minecraft:ender_pearl"
+  },
+  "output": {
+    "id": "minecraft:potion",
+    "count": 1,
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "minecraft:leaping"
+      }
+    }
+  },
+  "allow_vanilla_stand": true
+}

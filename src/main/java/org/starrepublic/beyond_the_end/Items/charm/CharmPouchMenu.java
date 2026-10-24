@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.items.ComponentItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerCopySlot;
+import org.starrepublic.beyond_the_end.GUI.EnhancedBrewingScreen;
 import org.starrepublic.beyond_the_end.Items.rune.RuneHelper;
 import org.starrepublic.beyond_the_end.Register.ItemRegister;
 import org.starrepublic.beyond_the_end.Register.MenuRegister;
@@ -629,6 +630,10 @@ public class CharmPouchMenu extends AbstractContainerMenu {
         event.register(
                 MenuRegister.CHARM_POUCH.get(),
                 CharmPouchScreen::new
+        );
+        event.register(
+                MenuRegister.Enchanted_Brewing.get(),
+                EnhancedBrewingScreen::new
         );
     }
 }

@@ -97,6 +97,15 @@ public class BlockEntityRegister {
             ).build(null)
     );
 
+    public static final Supplier<BlockEntityType<EnhancedBrewingStandBlockEntity>>
+            ENCHANTEDBREWING = BLOCK_ENTITIES.register(
+            "enchanted_brewing",
+            () -> BlockEntityType.Builder.of(
+                    EnhancedBrewingStandBlockEntity::new,
+                    BlockRegister.ENHANCED_BREWING_STAND_BLOCK.get()
+            ).build(null)
+    );
+
 
 
 

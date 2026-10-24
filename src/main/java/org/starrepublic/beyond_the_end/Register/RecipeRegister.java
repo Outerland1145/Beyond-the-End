@@ -11,6 +11,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.recipes.CharmRecipe.CharmRuneRecipe;
+import org.starrepublic.beyond_the_end.recipes.enhancedbrewing.EnhancedBrewingRecipe;
 import org.starrepublic.beyond_the_end.recipes.essence_altar.EssenceAltarRecipe;
 import org.starrepublic.beyond_the_end.recipes.essence_altar.EssenceAltarRecipeSerializer;
 
@@ -71,6 +72,29 @@ public class RecipeRegister {
             "essence_altar",
             EssenceAltarRecipeSerializer::new
     );
+
+    public static final DeferredHolder<
+            RecipeType<?>,
+            RecipeType<EnhancedBrewingRecipe>
+            > Enchanted_brewing_types =
+            RECIPE_TYPES.register(
+                    "enhanced_brewing",
+                    () -> RecipeType.<EnhancedBrewingRecipe>simple(
+                            ResourceLocation.fromNamespaceAndPath(
+                                    Beyond_the_end.MODID,
+                                    "enhanced_brewing"
+                            )
+                    )
+            );
+
+    public static final DeferredHolder<
+            RecipeSerializer<?>,
+            RecipeSerializer<EnhancedBrewingRecipe>
+            > Enchanted_brewing_serializer =
+            RECIPE_SERIALIZERS.register(
+                    "enhanced_brewing",
+                    EnhancedBrewingRecipe.Serializer::new
+            );
 
     // ========================================================
     // Register
