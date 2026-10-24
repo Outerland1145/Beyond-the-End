@@ -28,6 +28,9 @@ public class BTEServerConfig {
 
     public final ModConfigSpec.IntValue VoidCrystalGrowthHeight;
 
+    public static final ModConfigSpec.IntValue SPIKE_COUNT;
+    public static final ModConfigSpec.IntValue SPIKE_RING_RADIUS;
+
 
 
     public BTEServerConfig(ModConfigSpec.Builder builder) {
@@ -255,5 +258,32 @@ public class BTEServerConfig {
         );
 
         builder.pop();
+        builder.push("end_dragon_fight");
+
+        SPIKE_COUNT = builder
+                .comment(
+                        "Number of obsidian spikes around the End portal."
+                )
+                .defineInRange(
+                        "spikeCount",
+                        15,
+                        10,
+                        100
+                );
+
+        SPIKE_RING_RADIUS = builder
+                .comment(
+                        "Horizontal distance from the End portal center",
+                        "to the center of each obsidian spike."
+                )
+                .defineInRange(
+                        "spikeRingRadius",
+                        60,
+                        42,
+                        512
+                );
+
+        builder.pop();
+
     }
 }

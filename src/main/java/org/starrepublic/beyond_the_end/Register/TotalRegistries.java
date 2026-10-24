@@ -1,10 +1,10 @@
 package org.starrepublic.beyond_the_end.Register;
 
 import net.neoforged.bus.api.IEventBus;
-import org.starrepublic.beyond_the_end.Blocks.EssenceAltarBlock;
 import org.starrepublic.beyond_the_end.CreativeTabs.Blocks;
 import org.starrepublic.beyond_the_end.Events.SpawnRules;
 import org.starrepublic.beyond_the_end.Items.charm.CharmTypes;
+import org.starrepublic.beyond_the_end.World.DFM.BTEDragonFightRegistry;
 
 public final class TotalRegistries {
     private TotalRegistries() {}
@@ -34,7 +34,7 @@ public final class TotalRegistries {
         RecipeRegister.register(eventBus);
         Blocks.register(eventBus);
         MenuRegister.register(eventBus);
-
+        BTEDragonFightRegistry.register();
         eventBus.addListener(SpawnRules::registerSpawnPlacements);
         eventBus.addListener(CapabilityRegister::register);
 
