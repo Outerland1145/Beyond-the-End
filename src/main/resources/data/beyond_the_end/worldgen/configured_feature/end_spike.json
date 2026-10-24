@@ -1,0 +1,8 @@
+
+{
+  "type": "beyond_the_end:end_spike",
+  "config": {
+    "crystal_invulnerable": false,
+    "spikes": []
+  }
+}

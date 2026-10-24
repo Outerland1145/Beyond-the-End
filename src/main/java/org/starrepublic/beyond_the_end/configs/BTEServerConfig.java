@@ -28,8 +28,8 @@ public class BTEServerConfig {
 
     public final ModConfigSpec.IntValue VoidCrystalGrowthHeight;
 
-    public static final ModConfigSpec.IntValue SPIKE_COUNT;
-    public static final ModConfigSpec.IntValue SPIKE_RING_RADIUS;
+    public final ModConfigSpec.IntValue SPIKE_COUNT;
+    public final ModConfigSpec.IntValue SPIKE_RING_RADIUS;
 
 
 
@@ -266,7 +266,7 @@ public class BTEServerConfig {
                 )
                 .defineInRange(
                         "spikeCount",
-                        15,
+                        14,
                         10,
                         100
                 );
@@ -278,9 +278,9 @@ public class BTEServerConfig {
                 )
                 .defineInRange(
                         "spikeRingRadius",
-                        60,
+                        45,
                         42,
-                        512
+                        500
                 );
 
         builder.pop();

@@ -152,6 +152,12 @@ public class FeatureRegister {
                             GroundPlantPatchFeature.Configuration.CODEC
                     )
             );
+    public static final DeferredHolder<
+            Feature<?>, BTEEndSpikeFeature
+            > END_SPIKE = FEATURES.register(
+            "end_spike",
+            BTEEndSpikeFeature::new
+    );
 
     public static final DeferredHolder<Feature<?>, VolcanicColumnsFeature> VOLCANIC_COLUMNS =
             FEATURES.register("volcanic_columns", VolcanicColumnsFeature::new);

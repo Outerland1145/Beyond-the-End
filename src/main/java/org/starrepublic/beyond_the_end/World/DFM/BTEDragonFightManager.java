@@ -20,11 +20,11 @@ import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.EndGatewayConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.SpikeConfiguration;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-
-import net.minecraft.world.level.dimension.end.DragonRespawnAnimation;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.phys.AABB;
 
@@ -41,8 +41,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.resources.ResourceLocation;
+import org.starrepublic.beyond_the_end.Register.FeatureRegister;
 import org.starrepublic.beyond_the_end.World.worldgen.feature.BTEEndGatewayFeature;
 import org.starrepublic.beyond_the_end.World.worldgen.feature.BTEEndPodiumFeature;
+import org.starrepublic.beyond_the_end.World.worldgen.feature.BTEEndSpikeLayout;
 
 public class BTEDragonFightManager extends EndDragonFight {
 
@@ -83,7 +85,7 @@ public class BTEDragonFightManager extends EndDragonFight {
     private BlockPos portalLocation;
 
     @Nullable
-    private DragonRespawnAnimation respawnStage;
+    private BTEDragonRespawnStage respawnStage;
 
     private List<EndCrystal> respawnCrystals;
 
@@ -598,6 +600,26 @@ public class BTEDragonFightManager extends EndDragonFight {
         );
     }
 
+    @Override
+    public void resetSpikeCrystals() {
+
+        for (SpikeFeature.EndSpike spike :
+                BTEEndSpikeLayout.getSpikes(this.level.getSeed())) {
+
+            List<EndCrystal> crystals =
+                    this.level.getEntitiesOfClass(
+                            EndCrystal.class,
+                            spike.getTopBoundingBox()
+                    );
+
+            for (EndCrystal crystal : crystals) {
+
+                crystal.setInvulnerable(false);
+                crystal.setBeamTarget(null);
+            }
+        }
+    }
+
     // =====================================================
     // 折躍門
     // =====================================================
@@ -660,23 +682,22 @@ public class BTEDragonFightManager extends EndDragonFight {
     // 水晶數量
     // =====================================================
 
+
     private void updateCrystalCount() {
 
-        AABB area = new AABB(
-                this.origin.getX() - 160,
-                this.level.getMinBuildHeight(),
-                this.origin.getZ() - 160,
-                this.origin.getX() + 160,
-                this.level.getMaxBuildHeight(),
-                this.origin.getZ() + 160
-        );
+        this.crystalsAlive = 0;
 
-        this.crystalsAlive =
-                this.level.getEntitiesOfClass(
-                        EndCrystal.class,
-                        area
-                ).size();
+        for (SpikeFeature.EndSpike spike :
+                BTEEndSpikeLayout.getSpikes(this.level.getSeed())) {
+
+            this.crystalsAlive +=
+                    this.level.getEntitiesOfClass(
+                            EndCrystal.class,
+                            spike.getTopBoundingBox()
+                    ).size();
+        }
     }
+
 
     @Override
     public int getCrystalsAlive() {
@@ -895,7 +916,7 @@ public class BTEDragonFightManager extends EndDragonFight {
         }
 
         this.respawnCrystals = List.copyOf(crystals);
-        this.respawnStage = DragonRespawnAnimation.START;
+        this.respawnStage = BTEDragonRespawnStage.START;
         this.respawnTime = 0;
 
         this.pendingRespawnRecovery = false;
@@ -944,6 +965,7 @@ public class BTEDragonFightManager extends EndDragonFight {
             return;
         }
 
+        // 若儀式使用的水晶被破壞，立即中止。
         for (EndCrystal crystal : this.respawnCrystals) {
 
             if (crystal.isRemoved()) {
@@ -952,17 +974,32 @@ public class BTEDragonFightManager extends EndDragonFight {
             }
         }
 
-        DragonRespawnAnimation current = this.respawnStage;
+        BTEDragonRespawnStage current =
+                this.respawnStage;
 
-        current.tick(
+        BTEDragonRespawnStage next = current.tick(
                 this.level,
                 this,
                 this.respawnCrystals,
-                this.respawnTime++,
-                this.origin
+                this.respawnTime
         );
-    }
 
+        if (next == BTEDragonRespawnStage.END) {
+            this.finishRespawn();
+            return;
+        }
+
+        if (next != current) {
+
+            this.respawnStage = next;
+            this.respawnTime = 0;
+
+        } else {
+
+            this.respawnTime++;
+        }
+    }
+    /*
     @Override
     protected void setRespawnStage(
             DragonRespawnAnimation stage
@@ -989,6 +1026,65 @@ public class BTEDragonFightManager extends EndDragonFight {
                 stage
         );
     }
+     */
+
+    /**
+     * 龍復活時重建指定的黑曜石柱。
+     *
+     * 使用 BTEEndSpikeFeature，而不是
+     * 原版 Feature.END_SPIKE。
+     */
+    public boolean regenerateSpike(
+            SpikeFeature.EndSpike spike,
+            BlockPos beamTarget
+    ) {
+        /*
+         * 先移除柱頂舊的水晶。
+         * 避免重新生成時疊出兩顆水晶。
+         */
+        List<EndCrystal> oldCrystals =
+                this.level.getEntitiesOfClass(
+                        EndCrystal.class,
+                        spike.getTopBoundingBox()
+                );
+
+        for (EndCrystal crystal : oldCrystals) {
+            crystal.discard();
+        }
+
+        SpikeConfiguration configuration =
+                new SpikeConfiguration(
+                        true,
+                        List.of(spike),
+                        beamTarget
+                );
+
+        BlockPos position = new BlockPos(
+                spike.getCenterX(),
+                0,
+                spike.getCenterZ()
+        );
+
+        boolean success =
+                FeatureRegister.END_SPIKE.get().place(
+                        configuration,
+                        this.level,
+                        this.level.getChunkSource().getGenerator(),
+                        this.level.getRandom(),
+                        position
+                );
+
+        if (!success) {
+
+            LOGGER.error(
+                    "Failed to regenerate End Spike at X={}, Z={}",
+                    spike.getCenterX(),
+                    spike.getCenterZ()
+            );
+        }
+
+        return success;
+    }
 
     private void finishRespawn() {
 
@@ -1001,7 +1097,7 @@ public class BTEDragonFightManager extends EndDragonFight {
                 crystal.discard();
             }
         }
-
+        this.resetSpikeCrystals();
         this.respawnCrystals = List.of();
         this.respawnStage = null;
         this.respawnTime = 0;
