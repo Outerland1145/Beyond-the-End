@@ -1,5 +1,7 @@
 package org.starrepublic.beyond_the_end.World.DFM;
 
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Unit;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -18,6 +20,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
@@ -28,6 +31,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.phys.AABB;
 
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.starrepublic.beyond_the_end.Register.BlockRegister;
@@ -45,6 +49,7 @@ import org.starrepublic.beyond_the_end.Register.FeatureRegister;
 import org.starrepublic.beyond_the_end.World.worldgen.feature.BTEEndGatewayFeature;
 import org.starrepublic.beyond_the_end.World.worldgen.feature.BTEEndPodiumFeature;
 import org.starrepublic.beyond_the_end.World.worldgen.feature.BTEEndSpikeLayout;
+import org.starrepublic.beyond_the_end.configs.BTEConfigs;
 
 public class BTEDragonFightManager extends EndDragonFight {
 
@@ -62,8 +67,8 @@ public class BTEDragonFightManager extends EndDragonFight {
     private static final BTEEndPodiumFeature INACTIVE_PODIUM =
             new BTEEndPodiumFeature(false);
     private static final BTEEndGatewayFeature gateway = new BTEEndGatewayFeature();
-    private static final int GATEWAY_COUNT = 20;
-    private static final int GATEWAY_RADIUS = 96;
+    private final int gatewayCount;
+    private final int gatewayRadius;
     private static final int DRAGON_SCAN_INTERVAL = 1200;
     private static final int CRYSTAL_SCAN_INTERVAL = 100;
     private static final int PLAYER_SCAN_INTERVAL = 20;
@@ -154,26 +159,52 @@ public class BTEDragonFightManager extends EndDragonFight {
         this.bossEvent.setPlayBossMusic(true);
         this.bossEvent.setCreateWorldFog(true);
         this.bossEvent.setVisible(!this.dragonKilled);
+        BTEEndFightSettingsSavedData settings = BTEEndFightSettingsSavedData.get(level);
+        this.gatewayCount = settings.getGatewayCount();
+        this.gatewayRadius = settings.getGatewayRadius();
 
         this.gateways = new ArrayList<>();
 
-        if (data.gateways().isPresent()) {
+        /*
+         * 尚未首次擊殺終界龍：
+         * 使用配置重新建立完整折躍門列表。
+         *
+         * 即使原版管理器預先建立了 20 個索引，
+         * 這裡也會以 Beyond The End 的配置為準。
+         */
+        if (!data.previouslyKilled()
+                || data.gateways().isEmpty()) {
 
-            this.gateways.addAll(
-                    data.gateways().get()
-            );
-
-        } else {
-
-            for (int i = 0; i < GATEWAY_COUNT; i++) {
+            for (int i = 0; i < this.gatewayCount; i++) {
                 this.gateways.add(i);
             }
 
+            // 保留原版依世界種子決定生成順序的方式
             Util.shuffle(
                     this.gateways,
                     RandomSource.create(seed)
             );
+
+        } else {
+
+            /*
+             * 已經擊殺過終界龍：
+             * 保留世界存檔中尚未使用的索引。
+             *
+             * 不重新洗牌，也不補回已使用的折躍門。
+             */
+            this.gateways.addAll(
+                    data.gateways().get()
+            );
         }
+
+        LOGGER.info(
+                "End Gateway settings: count={}, radius={}, remaining={}",
+                this.gatewayCount,
+                this.gatewayRadius,
+                this.gateways.size()
+        );
+
 
         LOGGER.info(
                 "BTE Dragon Fight initialized. Killed={}, Previous={}, Respawning={}",
@@ -604,7 +635,7 @@ public class BTEDragonFightManager extends EndDragonFight {
     public void resetSpikeCrystals() {
 
         for (SpikeFeature.EndSpike spike :
-                BTEEndSpikeLayout.getSpikes(this.level.getSeed())) {
+                BTEEndSpikeLayout.getSpikes(this.level)) {
 
             List<EndCrystal> crystals =
                     this.level.getEntitiesOfClass(
@@ -624,44 +655,63 @@ public class BTEDragonFightManager extends EndDragonFight {
     // 折躍門
     // =====================================================
 
+
     private void spawnNewGateway() {
 
+        // 所有折躍門生成完畢，直接返回
         if (this.gateways.isEmpty()) {
             return;
         }
 
+        // 取得下一個尚未使用的索引
         int index = this.gateways.getLast();
 
-        double angle = 2.0 * (
-                -Math.PI +
-                        (Math.PI / GATEWAY_COUNT) * index
+        // 防止無效索引被用於目前的環形配置
+        if (index < 0 || index >= this.gatewayCount) {
+            LOGGER.error(
+                    "Invalid End Gateway index {} for configured count {}",
+                    index,
+                    this.gatewayCount
+            );
+            return;
+        }
+
+        /*
+         * 依照折躍門總數等角度排列。
+         *
+         * 保留原版角度計算方式。
+         */
+        double angle = 2.0D * (
+                -Math.PI
+                        + (Math.PI / this.gatewayCount) * index
         );
 
         int x = Mth.floor(
-                GATEWAY_RADIUS * Math.cos(angle)
+                this.gatewayRadius * Math.cos(angle)
         );
 
         int z = Mth.floor(
-                GATEWAY_RADIUS * Math.sin(angle)
+                this.gatewayRadius * Math.sin(angle)
         );
 
-        BlockPos position = this.origin.offset(
-                x,
-                75 - this.origin.getY(),
-                z
+        // 保留原版 Y=75 的生成高度
+        BlockPos position = new BlockPos(
+                this.origin.getX() + x,
+                75,
+                this.origin.getZ() + z
         );
 
-
-        boolean success = gateway.place(
-                EndGatewayConfiguration.delayedExitSearch(),
-                this.level,
-                this.level.getChunkSource().getGenerator(),
-                this.level.getRandom(),
-                position
-        );
-
+        boolean success =
+                gateway.place(
+                        EndGatewayConfiguration.delayedExitSearch(),
+                        this.level,
+                        this.level.getChunkSource().getGenerator(),
+                        this.level.getRandom(),
+                        position
+                );
 
         if (!success) {
+
             LOGGER.error(
                     "Failed to generate End Gateway at {}",
                     position
@@ -669,6 +719,7 @@ public class BTEDragonFightManager extends EndDragonFight {
             return;
         }
 
+        // 只有成功生成，才消耗折躍門索引
         this.gateways.removeLast();
 
         this.level.levelEvent(
@@ -676,7 +727,15 @@ public class BTEDragonFightManager extends EndDragonFight {
                 position,
                 0
         );
+
+        LOGGER.info(
+                "End Gateway generated: index={}, position={}, remaining={}",
+                index,
+                position,
+                this.gateways.size()
+        );
     }
+
 
     // =====================================================
     // 水晶數量
@@ -688,7 +747,7 @@ public class BTEDragonFightManager extends EndDragonFight {
         this.crystalsAlive = 0;
 
         for (SpikeFeature.EndSpike spike :
-                BTEEndSpikeLayout.getSpikes(this.level.getSeed())) {
+                BTEEndSpikeLayout.getSpikes(this.level)) {
 
             this.crystalsAlive +=
                     this.level.getEntitiesOfClass(
@@ -1088,15 +1147,86 @@ public class BTEDragonFightManager extends EndDragonFight {
 
     private void finishRespawn() {
 
-        // 清理復活使用的水晶。
+
+        /*
+         * 記錄所有祭壇水晶的爆炸位置。
+         *
+         * 必須先移除全部水晶，再執行爆炸，
+         * 避免相鄰水晶被爆炸連鎖引爆。
+         */
+        List<Vec3> explosionPositions = new ArrayList<>();
+
         for (EndCrystal crystal : this.respawnCrystals) {
 
-            if (!crystal.isRemoved()) {
-                crystal.setBeamTarget(null);
-                crystal.setInvulnerable(false);
-                crystal.discard();
+            if (crystal.isRemoved()) {
+                continue;
             }
+
+            explosionPositions.add(crystal.position());
+
+            crystal.setBeamTarget(null);
+            crystal.setInvulnerable(false);
+            crystal.discard();
         }
+
+        /*
+         * 清除黑曜石柱水晶的光束與無敵狀態。
+         * 保留你之前修正光束問題的程式碼。
+         */
+        this.resetSpikeCrystals();
+
+        /*
+         * 祭壇水晶爆炸。
+         */
+        for (Vec3 pos : explosionPositions) {
+
+            // 真正的爆炸
+            this.level.explode(
+                    null,
+                    pos.x,
+                    pos.y,
+                    pos.z,
+                    4.0F,
+                    Level.ExplosionInteraction.NONE
+            );
+
+            // 紫色龍息能量
+            this.level.sendParticles(
+                    ParticleTypes.DRAGON_BREATH,
+                    pos.x, pos.y, pos.z,
+                    65,
+                    1.5, 1.5, 1.5,
+                    0.15
+            );
+
+            // 向外擴散的終界傳送門粒子
+            this.level.sendParticles(
+                    ParticleTypes.REVERSE_PORTAL,
+                    pos.x, pos.y, pos.z,
+                    45,
+                    1.8, 1.8, 1.8,
+                    0.15
+            );
+
+            // 爆炸瞬間的白色閃光
+            this.level.sendParticles(
+                    ParticleTypes.FLASH,
+                    pos.x, pos.y, pos.z,
+                    1,
+                    0, 0, 0,
+                    0
+            );
+
+            // 額外的發光粒子
+            this.level.sendParticles(
+                    ParticleTypes.END_ROD,
+                    pos.x, pos.y, pos.z,
+                    30,
+                    1.5, 1.5, 1.5,
+                    0.12
+            );
+        }
+
         this.resetSpikeCrystals();
         this.respawnCrystals = List.of();
         this.respawnStage = null;
@@ -1120,6 +1250,40 @@ public class BTEDragonFightManager extends EndDragonFight {
         }
 
         this.bossEvent.setVisible(true);
+
+
+        /*
+         * 恢復原版「終界……再臨」進度。
+         *
+         * 只有復活成功後才觸發，
+         * 不會因為首次生成終界龍而誤觸發。
+         */
+        double centerX = this.origin.getX() + 0.5;
+        double centerY = this.origin.getY() + 128.0;
+        double centerZ = this.origin.getZ() + 0.5;
+
+        double advancementRadius = 192.0;
+
+        for (ServerPlayer player : this.level.players()) {
+
+            if (!player.isAlive() || player.isSpectator()) {
+                continue;
+            }
+
+            if (player.distanceToSqr(
+                    centerX,
+                    centerY,
+                    centerZ
+            ) > advancementRadius * advancementRadius) {
+                continue;
+            }
+
+            CriteriaTriggers.SUMMONED_ENTITY.trigger(
+                    player,
+                    dragon
+            );
+        }
+
 
         LOGGER.info("Ender Dragon respawn completed");
     }

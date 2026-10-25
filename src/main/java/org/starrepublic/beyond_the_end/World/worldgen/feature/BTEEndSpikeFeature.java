@@ -36,7 +36,7 @@ public class BTEEndSpikeFeature
          */
         List<SpikeFeature.EndSpike> spikes =
                 config.getSpikes().isEmpty()
-                        ? BTEEndSpikeLayout.getSpikes(level.getSeed())
+                        ? BTEEndSpikeLayout.getSpikes(level.getLevel())
                         : config.getSpikes();
 
         boolean generated = false;

@@ -30,6 +30,9 @@ public class BTEServerConfig {
 
     public final ModConfigSpec.IntValue SPIKE_COUNT;
     public final ModConfigSpec.IntValue SPIKE_RING_RADIUS;
+    public final ModConfigSpec.IntValue GATEWAY_COUNT;
+    public final ModConfigSpec.IntValue GATEWAY_RING_RADIUS;
+    public final ModConfigSpec.IntValue GUARDED_CRYSTAL_COUNT;
 
 
 
@@ -280,7 +283,44 @@ public class BTEServerConfig {
                         "spikeRingRadius",
                         45,
                         42,
-                        500
+                        512
+                );
+        GUARDED_CRYSTAL_COUNT = builder
+                .comment(
+                        "Number of End Crystals protected by iron bar cages.",
+                        "Default: 5.",
+                        "If this value exceeds the number of End Spikes,",
+                        "all End Crystals will be protected."
+                )
+                .defineInRange(
+                        "guardedCrystalCount",
+                        5,
+                        2,
+                        Integer.MAX_VALUE
+                );
+        GATEWAY_COUNT = builder
+                .comment(
+                        "Maximum number of End Gateways generated after",
+                        "defeating the Ender Dragon.",
+                        "0 disables new gateways."
+                )
+                .defineInRange(
+                        "gatewayCount",
+                        30,
+                        20,
+                        128
+                );
+
+        GATEWAY_RING_RADIUS = builder
+                .comment(
+                        "Horizontal radius of the End Gateway ring.",
+                        "Measured from the End Dragon fight origin."
+                )
+                .defineInRange(
+                        "gatewayRingRadius",
+                        110,
+                        96,
+                        512
                 );
 
         builder.pop();

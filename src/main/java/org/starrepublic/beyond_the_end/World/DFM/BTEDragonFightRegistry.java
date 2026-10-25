@@ -42,7 +42,8 @@ public final class BTEDragonFightRegistry {
         if (!level.dimension().equals(Level.END)) {
             return;
         }
-
+        // 初始化或讀取該終界世界的龍戰配置
+        BTEEndFightSettingsSavedData.get(level);
         EndDragonFight original = level.getDragonFight();
 
         // 不接管不存在的龍戰管理器

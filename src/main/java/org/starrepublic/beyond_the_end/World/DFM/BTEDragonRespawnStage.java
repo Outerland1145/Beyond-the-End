@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import org.starrepublic.beyond_the_end.World.worldgen.feature.BTEEndSpikeLayout;
 
@@ -87,10 +88,7 @@ public enum BTEDragonRespawnStage {
                  * 15 根 = 600 Tick
                  * 20 根 = 800 Tick
                  */
-                List<SpikeFeature.EndSpike> spikes =
-                        BTEEndSpikeLayout.getSpikes(
-                                level.getSeed()
-                        );
+                List<SpikeFeature.EndSpike> spikes = BTEEndSpikeLayout.getSpikes(level);
 
                 int index = time / 40;
                 int localTime = time % 40;
@@ -130,15 +128,64 @@ public enum BTEDragonRespawnStage {
                             2.0,
                             0.05
                     );
+                    level.sendParticles(
+                            ParticleTypes.REVERSE_PORTAL,
+                            spikeTop.getX() + 0.5,
+                            spikeTop.getY() + 1.0,
+                            spikeTop.getZ() + 0.5,
+                            12,
+                            1.5, 2.0, 1.5,
+                            0.08
+                    );
                 }
 
                 // 每根柱子的最後一個 Tick 執行重建。
                 if (localTime == 39) {
 
-                    fight.regenerateSpike(
+                    boolean rebuilt = fight.regenerateSpike(
                             spike,
                             center
                     );
+
+                    if (rebuilt) {
+
+                        double x = spikeTop.getX() + 0.5;
+                        double y = spikeTop.getY() + 0.5;
+                        double z = spikeTop.getZ() + 0.5;
+
+                        // 真正的爆炸，會產生爆炸聲、傷害和擊退。
+                        level.explode(
+                                null,
+                                x, y, z,
+                                5.0F,
+                                Level.ExplosionInteraction.NONE
+                        );
+
+                        // 額外的終界能量爆發。
+                        level.sendParticles(
+                                ParticleTypes.DRAGON_BREATH,
+                                x, y, z,
+                                80,
+                                2.5, 2.5, 2.5,
+                                0.12
+                        );
+
+                        level.sendParticles(
+                                ParticleTypes.FALLING_OBSIDIAN_TEAR,
+                                x, y + 1.0, z,
+                                60,
+                                3.0, 2.0, 3.0,
+                                0.04
+                        );
+
+                        level.sendParticles(
+                                ParticleTypes.FLASH,
+                                x, y, z,
+                                1,
+                                0, 0, 0,
+                                0
+                        );
+                    }
                 }
             }
 
