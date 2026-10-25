@@ -2,6 +2,7 @@ package org.starrepublic.beyond_the_end.Register;
 
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EndermanRenderer;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -23,6 +24,7 @@ import org.starrepublic.beyond_the_end.Beyond_the_end;
 import org.starrepublic.beyond_the_end.Entitys.client.renderer.AncientEnderDragonRenderer;
 import org.starrepublic.beyond_the_end.Entitys.client.renderer.SafeEndCrystalRenderer;
 import org.starrepublic.beyond_the_end.Entitys.client.renderer.SmallEndermanRenderer;
+import org.starrepublic.beyond_the_end.Entitys.entity.DragonBombFireball;
 import org.starrepublic.beyond_the_end.Entitys.entity.SafeEndCrystalEntity;
 import org.starrepublic.beyond_the_end.Entitys.mob.AncientEnderDragonEntity;
 import org.starrepublic.beyond_the_end.Entitys.mob.AngryEndermanEntity;
@@ -89,6 +91,24 @@ public final class EntityRegister {
                     .updateInterval(10)
                     .fireImmune()
                     .build("beyond_the_end:safe_end_crystal")
+    );
+    public static final DeferredHolder<
+            EntityType<?>,
+            EntityType<DragonBombFireball>
+            > DRAGON_BOMB_FIREBALL = ENTITIES.register(
+            "dragon_bomb_fireball",
+            () -> EntityType.Builder
+                    .<DragonBombFireball>of(
+                            DragonBombFireball::new,
+                            MobCategory.MISC
+                    )
+                    .sized(1.0F, 1.0F)
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .build(
+                            Beyond_the_end.MODID
+                                    + ":dragon_bomb_fireball"
+                    )
     );
 
     // =========================================================
@@ -205,6 +225,15 @@ public final class EntityRegister {
                     SAFE_END_CRYSTAL.get(),
                     SafeEndCrystalRenderer::new
             );
+            event.registerEntityRenderer(
+                    DRAGON_BOMB_FIREBALL.get(),
+                    context -> new ThrownItemRenderer<>(
+                            context,
+                            3.0F,
+                            true
+                    )
+            );
+
         }
 
         private static <T extends Entity> void registerRenderer(

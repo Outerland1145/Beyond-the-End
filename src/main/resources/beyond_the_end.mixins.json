@@ -16,7 +16,8 @@
       "EndCityStructureMixin",
       "LocateCommandMixin",
       "FireFurnaceMixin",
-      "FireCampfireMixin"
+      "FireCampfireMixin",
+      "EnderDragonLegacyMovementMixin"
 
   ],
   "client": [
