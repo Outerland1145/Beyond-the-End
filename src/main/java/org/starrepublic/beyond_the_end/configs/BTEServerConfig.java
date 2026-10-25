@@ -28,6 +28,7 @@ public class BTEServerConfig {
 
     public final ModConfigSpec.IntValue VoidCrystalGrowthHeight;
 
+    public final ModConfigSpec.BooleanValue CUSTOM_SPIKE_STRUCTURES;
     public final ModConfigSpec.IntValue SPIKE_COUNT;
     public final ModConfigSpec.IntValue SPIKE_RING_RADIUS;
     public final ModConfigSpec.IntValue GATEWAY_COUNT;
@@ -262,7 +263,15 @@ public class BTEServerConfig {
 
         builder.pop();
         builder.push("end_dragon_fight");
-
+        CUSTOM_SPIKE_STRUCTURES = builder
+                .comment(
+                        "Allow End Spikes to use custom top and bottom NBT structures.",
+                        "When disabled, End Spikes use their built-in appearance."
+                )
+                .define(
+                        "customSpikeStructures",
+                        false
+                );
         SPIKE_COUNT = builder
                 .comment(
                         "Number of obsidian spikes around the End portal."

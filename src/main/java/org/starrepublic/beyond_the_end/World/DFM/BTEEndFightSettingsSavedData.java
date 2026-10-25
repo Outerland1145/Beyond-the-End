@@ -23,13 +23,17 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
     private static final String GATEWAY_COUNT = "GatewayCount";
     private static final String GATEWAY_RADIUS = "GatewayRadius";
     private static final String GUARDED_CRYSTAL_COUNT = "GuardedCrystalCount";
+    private static final String CUSTOM_SPIKE_STRUCTURES =
+            "CustomSpikeStructures";
+
+
 
     private static final SavedData.Factory<BTEEndFightSettingsSavedData>
             FACTORY = new SavedData.Factory<>(
             BTEEndFightSettingsSavedData::create,
             BTEEndFightSettingsSavedData::load
     );
-
+    private final boolean customSpikeStructures;
     private final int spikeCount;
     private final int spikeRadius;
     private final int gatewayCount;
@@ -41,13 +45,15 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
             int spikeRadius,
             int gatewayCount,
             int gatewayRadius,
-            int guardedCrystalCount
+            int guardedCrystalCount,
+            boolean customSpikeStructures
     ) {
         this.spikeCount = spikeCount;
         this.spikeRadius = spikeRadius;
         this.gatewayCount = gatewayCount;
         this.gatewayRadius = gatewayRadius;
         this.guardedCrystalCount = Math.clamp(guardedCrystalCount, 2, spikeCount);
+        this.customSpikeStructures = customSpikeStructures;
     }
 
     /**
@@ -61,7 +67,9 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
                         BTEConfigs.SERVER.SPIKE_RING_RADIUS.get(),
                         BTEConfigs.SERVER.GATEWAY_COUNT.get(),
                         BTEConfigs.SERVER.GATEWAY_RING_RADIUS.get(),
-                        BTEConfigs.SERVER.GUARDED_CRYSTAL_COUNT.get()
+                        BTEConfigs.SERVER.GUARDED_CRYSTAL_COUNT.get(),
+                        BTEConfigs.SERVER.CUSTOM_SPIKE_STRUCTURES.get()
+
                 );
 
         // 新資料必須標記為需要保存
@@ -119,7 +127,8 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
         boolean hasGuardedCount =
                 tag.contains(GUARDED_CRYSTAL_COUNT, Tag.TAG_INT)
                         && tag.getInt(GUARDED_CRYSTAL_COUNT) >= minGuarded;
-
+        boolean hasCustomSpikeStructures =
+                tag.contains(CUSTOM_SPIKE_STRUCTURES, Tag.TAG_BYTE);
         BTEEndFightSettingsSavedData data =
                 new BTEEndFightSettingsSavedData(
                         hasSpikeCount
@@ -139,7 +148,10 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
                                 : BTEConfigs.SERVER.GATEWAY_RING_RADIUS.get(),
                         hasGuardedCount
                                 ? tag.getInt(GUARDED_CRYSTAL_COUNT)
-                                : BTEConfigs.SERVER.GUARDED_CRYSTAL_COUNT.get()
+                                : BTEConfigs.SERVER.GUARDED_CRYSTAL_COUNT.get(),
+                        hasCustomSpikeStructures
+                                ? tag.getBoolean(CUSTOM_SPIKE_STRUCTURES)
+                                : BTEConfigs.SERVER.CUSTOM_SPIKE_STRUCTURES.get()
                 );
 
 
@@ -151,7 +163,7 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
                 || !hasGuardedCount
                 || (hasGuardedCount
                 && tag.getInt(GUARDED_CRYSTAL_COUNT)
-                > loadedSpikeCount)) {
+                > loadedSpikeCount)|| !hasCustomSpikeStructures) {
 
             data.setDirty();
 
@@ -186,6 +198,7 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
         tag.putInt(GATEWAY_COUNT, this.gatewayCount);
         tag.putInt(GATEWAY_RADIUS, this.gatewayRadius);
         tag.putInt(GUARDED_CRYSTAL_COUNT, this.guardedCrystalCount);
+        tag.putBoolean( CUSTOM_SPIKE_STRUCTURES, this.customSpikeStructures);
 
         return tag;
     }
@@ -223,5 +236,7 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
     }
 
     public int getGuardedCrystalCount() { return this.guardedCrystalCount; }
+
+    public boolean isCustomSpikeStructuresEnabled() {return this.customSpikeStructures;}
 }
 

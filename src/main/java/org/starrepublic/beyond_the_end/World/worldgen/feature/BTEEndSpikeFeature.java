@@ -1,20 +1,33 @@
 package org.starrepublic.beyond_the_end.World.worldgen.feature;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.IronBarsBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.SpikeConfiguration;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.starrepublic.beyond_the_end.World.DFM.BTEEndFightSettingsSavedData;
 
 import java.util.List;
 
-public class BTEEndSpikeFeature
-        extends Feature<SpikeConfiguration> {
+public class BTEEndSpikeFeature extends Feature<SpikeConfiguration> {
+
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(BTEEndSpikeFeature.class);
 
     public BTEEndSpikeFeature() {
         super(SpikeConfiguration.CODEC);
@@ -27,26 +40,28 @@ public class BTEEndSpikeFeature
         WorldGenLevel level = context.level();
         SpikeConfiguration config = context.config();
 
-        /*
-         * 資料包沒有指定柱子列表：
-         * 讀取目前世界的配置化環形排列。
-         *
-         * 若明確提供列表：
-         * 使用指定列表，供龍復活時重建單根柱子。
-         */
+        // 世界存檔優先，不直接讀取 TOML
+        boolean customStructures =
+                BTEEndFightSettingsSavedData
+                        .get(level.getLevel())
+                        .isCustomSpikeStructuresEnabled();
+
         List<SpikeFeature.EndSpike> spikes =
                 config.getSpikes().isEmpty()
                         ? BTEEndSpikeLayout.getSpikes(level.getLevel())
                         : config.getSpikes();
 
+        StructureTemplateManager structureManager =
+                level.getServer().getStructureManager();
+
+        BlockPos.MutableBlockPos mutable =
+                new BlockPos.MutableBlockPos();
+
         boolean generated = false;
 
         for (SpikeFeature.EndSpike spike : spikes) {
 
-            /*
-             * 正常地物生成只在柱子中心所屬的
-             * Chunk 中執行，避免重複生成。
-             */
+            // 只在柱子中心所屬區塊執行
             if (!spike.isCenterWithinChunk(context.origin())) {
                 continue;
             }
@@ -57,60 +72,227 @@ public class BTEEndSpikeFeature
             int height = spike.getHeight();
 
             if (radius < 1
-                    || height <= level.getMinBuildHeight()
-                    || height + 5 >= level.getMaxBuildHeight()) {
+                    || height <= 65
+                    || height + 6 >= level.getMaxBuildHeight()) {
                 continue;
             }
 
+            // ==========================================
+            // 1. 取得自訂塔頂、塔底 NBT
+            // ==========================================
+
+            StructureTemplate topTemplate = null;
+            StructureTemplate bottomTemplate = null;
+
+            if (customStructures) {
+
+                /*
+                 * 受保護柱子使用 guarded 塔頂。
+                 * 籠子、水晶等內容全部由 NBT 決定。
+                 */
+                String topPath = spike.isGuarded()
+                        ? "end_spike/top_radius_"
+                        + radius + "_guarded"
+                        : "end_spike/top_radius_" + radius;
+
+                String bottomPath =
+                        "end_spike/bottom_radius_" + radius;
+
+                ResourceLocation topId =
+                        ResourceLocation.fromNamespaceAndPath(
+                                "beyond_the_end",
+                                topPath
+                        );
+
+                ResourceLocation bottomId =
+                        ResourceLocation.fromNamespaceAndPath(
+                                "beyond_the_end",
+                                bottomPath
+                        );
+
+                topTemplate =
+                        structureManager.get(topId).orElse(null);
+
+                bottomTemplate =
+                        structureManager.get(bottomId).orElse(null);
+
+                if (topTemplate == null || bottomTemplate == null) {
+
+                    LOGGER.error(
+                            "Missing End Spike NBT: top={}, bottom={}",
+                            topId, bottomId
+                    );
+
+                    continue;
+                }
+
+                int topX = topTemplate.getSize().getX();
+                int topY = topTemplate.getSize().getY();
+                int topZ = topTemplate.getSize().getZ();
+
+                int bottomX = bottomTemplate.getSize().getX();
+                int bottomY = bottomTemplate.getSize().getY();
+                int bottomZ = bottomTemplate.getSize().getZ();
+
+                // 長寬必須為奇數，才能精確對齊中心
+                if (topX <= 0 || topY <= 0 || topZ <= 0
+                        || topX % 2 == 0 || topZ % 2 == 0
+                        || bottomX <= 0 || bottomY <= 0 || bottomZ <= 0
+                        || bottomX % 2 == 0 || bottomZ % 2 == 0) {
+
+                    LOGGER.error(
+                            "Invalid End Spike NBT dimensions: " +
+                                    "top={} ({}x{}x{}), bottom={} ({}x{}x{})",
+                            topId, topX, topY, topZ,
+                            bottomId, bottomX, bottomY, bottomZ
+                    );
+
+                    continue;
+                }
+
+                // 防止塔頂超出世界高度
+                if ((long) height + topY
+                        > level.getMaxBuildHeight()) {
+
+                    LOGGER.error(
+                            "End Spike top exceeds build height: {}",
+                            topId
+                    );
+
+                    continue;
+                }
+            }
+
+            // ==========================================
+            // 2. 搜尋島嶼表面
+            // ==========================================
+
             /*
-             * 黑曜石柱主體。
+             * 不使用高度圖直接取得柱體中心最高點。
              *
-             * 與原版相近，從 Y=0 向上建立
-             * 圓形黑曜石柱體，並清理柱頂周圍空間。
+             * 龍復活時舊柱體仍存在，
+             * 否則容易把原本的柱頂當成島嶼表面。
              */
-            int minY = Math.max(
-                    0,
-                    level.getMinBuildHeight()
-            );
+            int sampleDistance = radius + 2;
 
-            int maxY = Math.min(
-                    height + 10,
-                    level.getMaxBuildHeight() - 1
-            );
+            if (bottomTemplate != null) {
 
-            BlockPos.MutableBlockPos mutable =
-                    new BlockPos.MutableBlockPos();
+                sampleDistance = Math.max(
+                        sampleDistance,
+                        Math.max(
+                                bottomTemplate.getSize().getX() / 2,
+                                bottomTemplate.getSize().getZ() / 2
+                        ) + 2
+                );
+            }
 
-            for (int x = centerX - radius - 1;
-                 x <= centerX + radius + 1; x++) {
+            int[][] offsets = {
+                    {sampleDistance, 0},
+                    {-sampleDistance, 0},
+                    {0, sampleDistance},
+                    {0, -sampleDistance}
+            };
 
-                for (int z = centerZ - radius - 1;
-                     z <= centerZ + radius + 1; z++) {
+            int surfaceY = Integer.MIN_VALUE;
 
-                    int dx = x - centerX;
-                    int dz = z - centerZ;
+            for (int[] offset : offsets) {
 
-                    boolean inside =
-                            dx * dx + dz * dz
-                                    <= radius * radius + 1;
+                for (int y = Math.min(
+                        height - 1,
+                        level.getMaxBuildHeight() - 2
+                ); y >= level.getMinBuildHeight(); y--) {
 
-                    for (int y = minY; y <= maxY; y++) {
+                    mutable.set(
+                            centerX + offset[0],
+                            y,
+                            centerZ + offset[1]
+                    );
 
-                        mutable.set(x, y, z);
+                    if (level.getBlockState(mutable)
+                            .is(Blocks.END_STONE)) {
 
-                        if (inside && y < height) {
+                        surfaceY = Math.max(surfaceY, y);
+                        break;
+                    }
+                }
+            }
 
-                            level.setBlock(
-                                    mutable,
-                                    Blocks.OBSIDIAN.defaultBlockState(),
-                                    2
+            // 周圍找不到地表，再檢查中心下方的終界石
+            if (surfaceY == Integer.MIN_VALUE) {
+
+                for (int y = height - 1;
+                     y >= level.getMinBuildHeight(); y--) {
+
+                    mutable.set(centerX, y, centerZ);
+
+                    if (level.getBlockState(mutable)
+                            .is(Blocks.END_STONE)) {
+
+                        surfaceY = y;
+                        break;
+                    }
+                }
+            }
+
+            // ==========================================
+            // 3. 沒有地表時建立終界石浮島
+            // ==========================================
+
+            if (surfaceY == Integer.MIN_VALUE) {
+
+                surfaceY = 64;
+
+                // 浮島頂部半徑比柱體多三格
+                int islandRadius = radius + 3;
+
+                RandomSource islandRandom =
+                        RandomSource.create(
+                                level.getSeed()
+                                        ^ ((long) centerX * 341873128712L)
+                                        ^ ((long) centerZ * 132897987541L)
+                        );
+
+                for (int dx = -islandRadius;
+                     dx <= islandRadius; dx++) {
+
+                    for (int dz = -islandRadius;
+                         dz <= islandRadius; dz++) {
+
+                        int distanceSquared =
+                                dx * dx + dz * dz;
+
+                        if (distanceSquared >
+                                islandRadius * islandRadius) {
+                            continue;
+                        }
+
+                        double distance =
+                                Math.sqrt(distanceSquared);
+
+                        int depth = Math.max(
+                                1,
+                                (int) Math.ceil(
+                                        (islandRadius - distance) * 1.6D
+                                ) + 1 + islandRandom.nextInt(3)
+                        );
+
+                        for (int dy = 0; dy < depth; dy++) {
+
+                            int y = surfaceY - dy;
+
+                            if (y < level.getMinBuildHeight()) {
+                                break;
+                            }
+
+                            mutable.set(
+                                    centerX + dx,
+                                    y,
+                                    centerZ + dz
                             );
 
-                        } else if (y > 65) {
-
                             level.setBlock(
                                     mutable,
-                                    Blocks.AIR.defaultBlockState(),
+                                    Blocks.END_STONE.defaultBlockState(),
                                     2
                             );
                         }
@@ -118,7 +300,230 @@ public class BTEEndSpikeFeature
                 }
             }
 
-            // 柱頂基岩
+            int baseY = surfaceY + 1;
+
+            if (baseY >= height) {
+
+                LOGGER.error(
+                        "End Spike base is above its top at X={}, Z={}",
+                        centerX, centerZ
+                );
+
+                continue;
+            }
+
+            if (customStructures
+                    && baseY + bottomTemplate.getSize().getY() > height) {
+
+                LOGGER.error(
+                        "End Spike bottom NBT overlaps top: X={}, Z={}",
+                        centerX, centerZ
+                );
+
+                continue;
+            }
+
+            // ==========================================
+            // 4. 生成黑曜石中段柱體
+            // ==========================================
+
+            /*
+             * 無論自訂 NBT 是否開啟，
+             * 柱體表面都會混入哭泣黑曜石。
+             *
+             * 使用固定種子，避免龍復活後裝飾分布改變。
+             */
+            RandomSource bodyRandom =
+                    RandomSource.create(
+                            level.getSeed()
+                                    ^ ((long) centerX * 42317861L)
+                                    ^ ((long) centerZ * 89137417L)
+                                    ^ 0x5DEECE66DL
+                    );
+
+            int radiusSquared = radius * radius + 1;
+
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+
+                    int distanceSquared =
+                            dx * dx + dz * dz;
+
+                    if (distanceSquared > radiusSquared) {
+                        continue;
+                    }
+
+                    // 判斷是否為柱體水平截面的外表面
+                    boolean exterior =
+                            (dx + 1) * (dx + 1) + dz * dz > radiusSquared
+                                    || (dx - 1) * (dx - 1) + dz * dz > radiusSquared
+                                    || dx * dx + (dz + 1) * (dz + 1) > radiusSquared
+                                    || dx * dx + (dz - 1) * (dz - 1) > radiusSquared;
+
+                    for (int y = baseY; y < height; y++) {
+
+                        mutable.set(
+                                centerX + dx,
+                                y,
+                                centerZ + dz
+                        );
+
+                        BlockState state =
+                                exterior
+                                        && bodyRandom.nextFloat() < 0.09F
+                                        ? Blocks.CRYING_OBSIDIAN.defaultBlockState()
+                                        : Blocks.OBSIDIAN.defaultBlockState();
+
+                        level.setBlock(
+                                mutable,
+                                state,
+                                2
+                        );
+                    }
+                }
+            }
+
+            // ==========================================
+            // 5. 清理柱頂生成空間
+            // ==========================================
+
+            /*
+             * 自訂模式根據 NBT 尺寸清理空間。
+             * 非自訂模式則沿用一般柱頂範圍。
+             */
+            int clearRadius = radius + 2;
+            int clearHeight = 5;
+
+            if (customStructures) {
+
+                clearRadius = Math.max(
+                        clearRadius,
+                        Math.max(
+                                topTemplate.getSize().getX() / 2,
+                                topTemplate.getSize().getZ() / 2
+                        )
+                );
+
+                clearHeight = Math.max(
+                        clearHeight,
+                        topTemplate.getSize().getY() + 1
+                );
+            }
+
+            for (int x = centerX - clearRadius;
+                 x <= centerX + clearRadius; x++) {
+
+                for (int z = centerZ - clearRadius;
+                     z <= centerZ + clearRadius; z++) {
+
+                    for (int y = height;
+                         y <= Math.min(
+                                 height + clearHeight,
+                                 level.getMaxBuildHeight() - 1
+                         ); y++) {
+
+                        mutable.set(x, y, z);
+
+                        level.setBlock(
+                                mutable,
+                                Blocks.AIR.defaultBlockState(),
+                                2
+                        );
+                    }
+                }
+            }
+
+            // ==========================================
+            // 6. 自訂 NBT 放置
+            // ==========================================
+
+            if (customStructures) {
+
+                /*
+                 * 必須允許實體生成：
+                 * NBT 裡的終界水晶就是透過此設定載入。
+                 *
+                 * 不由 Java 生成籠子、水晶、火或基岩。
+                 */
+                StructurePlaceSettings placeSettings =
+                        new StructurePlaceSettings()
+                                .setMirror(Mirror.NONE)
+                                .setRotation(Rotation.NONE)
+                                .setIgnoreEntities(false);
+
+                /*
+                 * 塔底：
+                 * XZ 中心對齊柱體。
+                 * NBT 的 Y=0 貼在地表上方。
+                 */
+                BlockPos bottomStart = new BlockPos(
+                        centerX - bottomTemplate.getSize().getX() / 2,
+                        baseY,
+                        centerZ - bottomTemplate.getSize().getZ() / 2
+                );
+
+                boolean bottomPlaced =
+                        bottomTemplate.placeInWorld(
+                                level,
+                                bottomStart,
+                                bottomStart,
+                                placeSettings,
+                                context.random(),
+                                2
+                        );
+
+                /*
+                 * 塔頂：
+                 * XZ 中心對齊柱體。
+                 * NBT 的 Y=0 貼在柱體最上方。
+                 */
+                BlockPos topStart = new BlockPos(
+                        centerX - topTemplate.getSize().getX() / 2,
+                        height,
+                        centerZ - topTemplate.getSize().getZ() / 2
+                );
+
+                boolean topPlaced =
+                        topTemplate.placeInWorld(
+                                level,
+                                topStart,
+                                topStart,
+                                placeSettings,
+                                context.random(),
+                                2
+                        );
+
+                if (!bottomPlaced || !topPlaced) {
+
+                    LOGGER.error(
+                            "Failed to place custom End Spike: X={}, Z={}, " +
+                                    "bottom={}, top={}",
+                            centerX,
+                            centerZ,
+                            bottomPlaced,
+                            topPlaced
+                    );
+                }
+
+                generated |= bottomPlaced && topPlaced;
+
+                /*
+                 * 自訂模式到此結束。
+                 *
+                 * 不建立基岩。
+                 * 不建立籠子。
+                 * 不建立火。
+                 * 不建立水晶。
+                 *
+                 * 全部交給 NBT。
+                 */
+                continue;
+            }
+
+            // ==========================================
+            // 7. 非自訂模式：原本的柱頂設計
+            // ==========================================
+
             BlockPos top = new BlockPos(
                     centerX,
                     height,
@@ -131,10 +536,7 @@ public class BTEEndSpikeFeature
                     2
             );
 
-            /*
-             * 有籠子的柱子：
-             * 建立 5x5 鐵欄杆籠子。
-             */
+            // 原本受保護柱子的鐵柵欄籠子
             if (spike.isGuarded()) {
 
                 for (int x = -2; x <= 2; x++) {
@@ -145,12 +547,10 @@ public class BTEEndSpikeFeature
                             boolean zEdge = Math.abs(z) == 2;
                             boolean roof = y == 3;
 
-                            // 只生成四周牆面及頂部
                             if (!xEdge && !zEdge && !roof) {
                                 continue;
                             }
 
-                            // 按照籠子造型直接設定鐵柵欄連接方向
                             boolean connectNS = xEdge || roof;
                             boolean connectEW = zEdge || roof;
 
@@ -173,7 +573,6 @@ public class BTEEndSpikeFeature
                                             connectEW && x != 2
                                     );
 
-                            // 修正高度：不再額外增加一格
                             level.setBlock(
                                     top.offset(x, y, z),
                                     bars,
@@ -184,7 +583,6 @@ public class BTEEndSpikeFeature
                 }
             }
 
-            // 原版柱頂的火
             level.setBlock(
                     top.above(),
                     Blocks.FIRE.defaultBlockState(),
@@ -214,4 +612,5 @@ public class BTEEndSpikeFeature
         return generated;
     }
 }
+
 

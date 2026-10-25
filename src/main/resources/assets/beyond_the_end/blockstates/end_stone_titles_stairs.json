@@ -20,23 +20,23 @@
       "model": "beyond_the_end:block/end_stone_titles_stairs"
     },
     "facing=east,half=top,shape=inner_left": {
-      "model": "beyond_the_end:block/end_stone_titles_stairs",
+      "model": "beyond_the_end:block/end_stone_titles_stairs_inner",
       "uvlock": true,
       "x": 180
     },
     "facing=east,half=top,shape=inner_right": {
-      "model": "beyond_the_end:block/end_stone_titles_stairs",
+      "model": "beyond_the_end:block/end_stone_titles_stairs_inner",
       "uvlock": true,
       "x": 180,
       "y": 90
     },
     "facing=east,half=top,shape=outer_left": {
-      "model": "beyond_the_end:block/end_stone_titles_stairs",
+      "model": "beyond_the_end:block/end_stone_titles_stairs_outer",
       "uvlock": true,
       "x": 180
     },
     "facing=east,half=top,shape=outer_right": {
-      "model": "beyond_the_end:block/end_stone_titles_stairs",
+      "model": "beyond_the_end:block/end_stone_titles_stairs_outer",
       "uvlock": true,
       "x": 180,
       "y": 90
@@ -67,7 +67,7 @@
       "y": 270
     },
     "facing=north,half=bottom,shape=straight": {
-      "model": "beyond_the_end:block/spooky_stairs",
+      "model": "beyond_the_end:block/end_stone_titles_stairs",
       "uvlock": true,
       "y": 270
     },

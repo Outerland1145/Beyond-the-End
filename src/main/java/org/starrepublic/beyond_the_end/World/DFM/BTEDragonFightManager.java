@@ -286,6 +286,37 @@ public class BTEDragonFightManager extends EndDragonFight {
                 this.updateCrystalCount();
                 this.ticksSinceCrystalScan = 0;
             }
+
+            /*
+             * 龍戰期間的哭泣黑曜石粒子雨。
+             *
+             * 每 5 Tick 生成一次。
+             * 僅在終界龍仍然存活、玩家正在參與龍戰時生效。
+             */
+            if (this.level.getGameTime() % 5L == 0L
+                    && this.dragonUUID != null
+                    && this.level.getEntity(this.dragonUUID)
+                    instanceof EnderDragon dragon
+                    && dragon.isAlive()) {
+
+                for (ServerPlayer player : this.bossEvent.getPlayers()) {
+
+                    this.level.sendParticles(
+                            player,
+                            ParticleTypes.FALLING_OBSIDIAN_TEAR,
+                            false,
+                            player.getX(),
+                            player.getY() + 11.0D,
+                            player.getZ(),
+                            22,
+                            10.0D,
+                            2.5D,
+                            10.0D,
+                            0.0D
+                    );
+                }
+            }
+
         }
     }
 
