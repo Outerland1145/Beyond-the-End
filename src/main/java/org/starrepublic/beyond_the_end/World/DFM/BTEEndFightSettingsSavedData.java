@@ -10,6 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.starrepublic.beyond_the_end.configs.BTEConfigs;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 public final class BTEEndFightSettingsSavedData extends SavedData {
 
     private static final Logger LOGGER =
@@ -23,8 +27,12 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
     private static final String GATEWAY_COUNT = "GatewayCount";
     private static final String GATEWAY_RADIUS = "GatewayRadius";
     private static final String GUARDED_CRYSTAL_COUNT = "GuardedCrystalCount";
-    private static final String CUSTOM_SPIKE_STRUCTURES =
-            "CustomSpikeStructures";
+    private static final String CUSTOM_SPIKE_STRUCTURES = "CustomSpikeStructures";
+    private boolean dragonFightSealed = false;
+    private boolean dragonFightSealing = false;
+    private int sealingNextSpike = 0;
+
+    private final List<UUID> sealingCrystalIds = new ArrayList<>();
 
 
 
@@ -182,6 +190,37 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
                 data.gatewayRadius
         );
 
+        data.dragonFightSealed =
+                tag.getBoolean("DragonFightSealed");
+
+        data.dragonFightSealing =
+                tag.getBoolean("DragonFightSealing");
+
+        data.sealingNextSpike = Math.max(
+                0,
+                tag.getInt("SealingNextSpike")
+        );
+
+        // 已封禁時，不應再執行儀式
+        if (data.dragonFightSealed) {
+            data.dragonFightSealing = false;
+        }
+
+        int crystalCount = Math.min(
+                4,
+                Math.max(0, tag.getInt("SealingCrystalCount"))
+        );
+
+        for (int i = 0; i < crystalCount; i++) {
+
+            String key = "SealingCrystal" + i;
+
+            if (tag.hasUUID(key)) {
+                data.sealingCrystalIds.add(tag.getUUID(key));
+            }
+        }
+
+
         return data;
     }
 
@@ -199,7 +238,33 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
         tag.putInt(GATEWAY_RADIUS, this.gatewayRadius);
         tag.putInt(GUARDED_CRYSTAL_COUNT, this.guardedCrystalCount);
         tag.putBoolean( CUSTOM_SPIKE_STRUCTURES, this.customSpikeStructures);
+        tag.putBoolean(
+                "DragonFightSealed",
+                this.dragonFightSealed
+        );
 
+        tag.putBoolean(
+                "DragonFightSealing",
+                this.dragonFightSealing
+        );
+
+        tag.putInt(
+                "SealingNextSpike",
+                this.sealingNextSpike
+        );
+
+        tag.putInt(
+                "SealingCrystalCount",
+                this.sealingCrystalIds.size()
+        );
+
+        for (int i = 0; i < this.sealingCrystalIds.size(); i++) {
+
+            tag.putUUID(
+                    "SealingCrystal" + i,
+                    this.sealingCrystalIds.get(i)
+            );
+        }
         return tag;
     }
 
@@ -238,5 +303,80 @@ public final class BTEEndFightSettingsSavedData extends SavedData {
     public int getGuardedCrystalCount() { return this.guardedCrystalCount; }
 
     public boolean isCustomSpikeStructuresEnabled() {return this.customSpikeStructures;}
+
+    public boolean isDragonFightSealed() {
+        return this.dragonFightSealed;
+    }
+
+    public boolean isDragonFightSealing() {
+        return this.dragonFightSealing;
+    }
+
+    public int getSealingNextSpike() {
+        return this.sealingNextSpike;
+    }
+
+    public List<UUID> getSealingCrystalIds() {
+        return List.copyOf(this.sealingCrystalIds);
+    }
+
+    /**
+     * 啟動永久封禁儀式。
+     */
+    public void startDragonFightSealing(List<UUID> crystals) {
+
+        if (this.dragonFightSealed || this.dragonFightSealing) {
+            return;
+        }
+
+        this.dragonFightSealing = true;
+        this.sealingNextSpike = 0;
+
+        this.sealingCrystalIds.clear();
+        this.sealingCrystalIds.addAll(crystals);
+
+        this.setDirty();
+    }
+
+    /**
+     * 一根柱子已經摧毀，保存下一個索引。
+     */
+    public void advanceSealing(int nextSpike) {
+
+        if (!this.dragonFightSealing) {
+            return;
+        }
+
+        this.sealingNextSpike = Math.max(0, nextSpike);
+        this.setDirty();
+    }
+
+    /**
+     * 完成儀式，永久封禁龍戰。
+     */
+    public void finishDragonFightSealing() {
+
+        this.dragonFightSealed = true;
+        this.dragonFightSealing = false;
+
+        this.sealingCrystalIds.clear();
+
+        this.setDirty();
+    }
+
+    /**
+     * 只能由管理員指令間接呼叫。
+     */
+    public void unsealDragonFight() {
+
+        this.dragonFightSealed = false;
+        this.dragonFightSealing = false;
+
+        this.sealingNextSpike = 0;
+        this.sealingCrystalIds.clear();
+
+        this.setDirty();
+    }
+
 }
 

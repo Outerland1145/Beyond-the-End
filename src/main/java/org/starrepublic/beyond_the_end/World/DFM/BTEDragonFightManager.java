@@ -2,6 +2,7 @@ package org.starrepublic.beyond_the_end.World.DFM;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.util.Unit;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -29,6 +30,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
 import net.minecraft.world.level.levelgen.feature.configurations.SpikeConfiguration;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.AABB;
 
 import net.minecraft.world.phys.Vec3;
@@ -72,7 +74,11 @@ public class BTEDragonFightManager extends EndDragonFight {
     private static final int DRAGON_SCAN_INTERVAL = 1200;
     private static final int CRYSTAL_SCAN_INTERVAL = 100;
     private static final int PLAYER_SCAN_INTERVAL = 20;
-
+    private final BTEEndFightSettingsSavedData fightSettings;
+    private int sealingAnimationTick = 0;
+    private static final int SEAL_PREPARATION_TICKS = 60;
+    private static final int SEAL_PER_SPIKE_TICKS = 40;
+    private static final int SEAL_FINISH_TICKS = 60;
     private final ServerLevel level;
     private final BlockPos origin;
     private final ServerBossEvent bossEvent;
@@ -159,10 +165,9 @@ public class BTEDragonFightManager extends EndDragonFight {
         this.bossEvent.setPlayBossMusic(true);
         this.bossEvent.setCreateWorldFog(true);
         this.bossEvent.setVisible(!this.dragonKilled);
-        BTEEndFightSettingsSavedData settings = BTEEndFightSettingsSavedData.get(level);
-        this.gatewayCount = settings.getGatewayCount();
-        this.gatewayRadius = settings.getGatewayRadius();
-
+        this.fightSettings = BTEEndFightSettingsSavedData.get(level);
+        this.gatewayCount = fightSettings.getGatewayCount();
+        this.gatewayRadius = fightSettings.getGatewayRadius();
         this.gateways = new ArrayList<>();
 
         /*
@@ -258,7 +263,20 @@ public class BTEDragonFightManager extends EndDragonFight {
         if (!this.isArenaLoaded()) {
             return;
         }
+        if (this.fightSettings.isDragonFightSealed()) {
 
+            this.bossEvent.setVisible(false);
+            this.updateArenaTicket(false);
+            this.needsStateScanning = false;
+            this.pendingRespawnRecovery = false;
+            return;
+        }
+        if (this.fightSettings.isDragonFightSealing()) {
+            this.needsStateScanning = false;
+            this.pendingRespawnRecovery = false;
+            this.tickSealing();
+            return;
+        }
         if (this.needsStateScanning) {
             this.scanInitialState();
         }
@@ -317,6 +335,15 @@ public class BTEDragonFightManager extends EndDragonFight {
                 }
             }
 
+        }
+        // 每 10 Tick 檢查一次封禁儀式
+        if (this.dragonKilled
+                && this.respawnStage == null
+                && !this.pendingRespawnRecovery
+                && this.gateways.isEmpty()
+                && this.level.getGameTime() % 10L == 0L) {
+
+            this.tryStartSealing();
         }
     }
 
@@ -835,7 +862,25 @@ public class BTEDragonFightManager extends EndDragonFight {
 
     @Override
     public void tryRespawn() {
+        // 永久封禁，或正在執行封禁儀式時，拒絕復活
+        if (this.fightSettings.isDragonFightSealed()
+                || this.fightSettings.isDragonFightSealing()) {
+            return;
+        }
 
+        /*
+         * 折躍門已全部開啟，而且世界中心最高處有龍蛋：
+         * 優先嘗試封禁儀式。
+         *
+         * 不讓第四顆水晶觸發一般龍復活程序。
+         */
+        if (this.dragonKilled
+                && this.gateways.isEmpty()
+                && this.getSealingDragonEgg() != null) {
+
+            this.tryStartSealing();
+            return;
+        }
         if (!this.dragonKilled ||
                 this.respawnStage != null ||
                 this.pendingRespawnRecovery) {
@@ -874,6 +919,648 @@ public class BTEDragonFightManager extends EndDragonFight {
         return this.getAltarStonePositions() != null
                 && !this.getAltarStonePositions().isEmpty();
     }
+
+    @Nullable
+    private BlockPos getSealingDragonEgg() {
+
+        BlockPos center = new BlockPos(
+                this.origin.getX(),
+                0,
+                this.origin.getZ()
+        );
+
+        // WORLD_SURFACE：最高非空氣方塊的上方位置
+        BlockPos highest = this.level.getHeightmapPos(
+                Heightmap.Types.WORLD_SURFACE,
+                center
+        ).below();
+
+        return this.level.getBlockState(highest)
+                .is(Blocks.DRAGON_EGG)
+                ? highest
+                : null;
+    }
+
+    private boolean tryStartSealing() {
+
+        if (!this.dragonKilled
+                || !this.gateways.isEmpty()
+                || this.respawnStage != null
+                || this.pendingRespawnRecovery
+                || this.fightSettings.isDragonFightSealed()
+                || this.fightSettings.isDragonFightSealing()) {
+
+            return false;
+        }
+
+        BlockPos eggPos = this.getSealingDragonEgg();
+
+        if (eggPos == null) {
+            return false;
+        }
+
+        double centerX = this.origin.getX() + 0.5;
+        double centerZ = this.origin.getZ() + 0.5;
+
+        // 儀式區域：中心附近 12 格
+        AABB ritualArea = new AABB(
+                centerX - 12.0,
+                eggPos.getY() - 12.0,
+                centerZ - 12.0,
+                centerX + 12.0,
+                eggPos.getY() + 13.0,
+                centerZ + 12.0
+        );
+
+        List<EndCrystal> crystals =
+                this.level.getEntitiesOfClass(
+                        EndCrystal.class,
+                        ritualArea,
+                        crystal ->
+                                !crystal.isRemoved()
+                                        && crystal.getType() == EntityType.END_CRYSTAL
+                                        && crystal.distanceToSqr(
+                                        centerX,
+                                        crystal.getY(),
+                                        centerZ
+                                ) <= 144.0D
+                );
+
+        // 必須恰好四顆原版終界水晶
+        if (crystals.size() != 4) {
+            return false;
+        }
+
+        List<UUID> crystalIds = new ArrayList<>();
+
+        for (EndCrystal crystal : crystals) {
+            crystalIds.add(crystal.getUUID());
+        }
+
+        // 先保存儀式開始狀態
+        this.fightSettings.startDragonFightSealing(crystalIds);
+
+        // 儀式啟動時消耗龍蛋
+        this.level.setBlockAndUpdate(
+                eggPos,
+                Blocks.AIR.defaultBlockState()
+        );
+
+        BlockPos beamTarget = new BlockPos(
+                this.origin.getX(),
+                128,
+                this.origin.getZ()
+        );
+
+        for (EndCrystal crystal : crystals) {
+            crystal.setInvulnerable(true);
+            crystal.setBeamTarget(beamTarget);
+        }
+
+        this.sealingAnimationTick = 0;
+        this.bossEvent.setVisible(false);
+
+        for (ServerPlayer player : this.level.players()) {
+
+            player.sendSystemMessage(
+                    Component.translatable(
+                            "message.beyond_the_end.dragon_sealing_started"
+                    )
+            );
+        }
+
+        LOGGER.info(
+                "End Dragon Fight sealing ritual started. Spikes={}",
+                BTEEndSpikeLayout.getSpikes(this.level).size()
+        );
+
+        return true;
+    }
+
+    private void tickSealing() {
+
+        List<SpikeFeature.EndSpike> spikes =
+                BTEEndSpikeLayout.getSpikes(this.level);
+
+        int index = this.fightSettings.getSealingNextSpike();
+
+        // 全部柱子清除完畢，進入最後的完成動畫
+        if (index >= spikes.size()) {
+
+            if (++this.sealingAnimationTick >= SEAL_FINISH_TICKS) {
+                this.finishSealing();
+            }
+
+            return;
+        }
+
+        SpikeFeature.EndSpike spike = spikes.get(index);
+
+        BlockPos target = new BlockPos(
+                spike.getCenterX(),
+                spike.getHeight() + 1,
+                spike.getCenterZ()
+        );
+
+        /*
+         * 第一根柱子前有額外 60 Tick 的準備時間。
+         * 其餘每根柱子固定 40 Tick。
+         */
+        int duration = index == 0
+                ? SEAL_PREPARATION_TICKS + SEAL_PER_SPIKE_TICKS
+                : SEAL_PER_SPIKE_TICKS;
+
+        if (this.sealingAnimationTick == 0) {
+
+            // 四顆祭壇水晶的光束指向下一根柱子
+            for (UUID uuid :
+                    this.fightSettings.getSealingCrystalIds()) {
+
+                if (this.level.getEntity(uuid)
+                        instanceof EndCrystal crystal
+                        && !crystal.isRemoved()) {
+
+                    crystal.setInvulnerable(true);
+                    crystal.setBeamTarget(target);
+                }
+            }
+        }
+
+        // 柱頂開始出現崩解粒子
+        if (this.sealingAnimationTick % 5 == 0) {
+
+            this.level.sendParticles(
+                    ParticleTypes.FALLING_OBSIDIAN_TEAR,
+                    target.getX() + 0.5,
+                    target.getY() + 2.0,
+                    target.getZ() + 0.5,
+                    25,
+                    3.0, 3.0, 3.0,
+                    0.02
+            );
+
+            this.level.sendParticles(
+                    ParticleTypes.REVERSE_PORTAL,
+                    target.getX() + 0.5,
+                    target.getY() + 0.5,
+                    target.getZ() + 0.5,
+                    16,
+                    2.0, 2.0, 2.0,
+                    0.08
+            );
+        }
+
+        this.sealingAnimationTick++;
+
+        if (this.sealingAnimationTick < duration) {
+            return;
+        }
+
+        // 摧毀當前黑曜石柱
+        this.destroySpike(spike);
+
+        // 保存下一根柱子的索引
+        this.fightSettings.advanceSealing(index + 1);
+
+        this.sealingAnimationTick = 0;
+    }
+
+    private void destroySpike(SpikeFeature.EndSpike spike) {
+
+        int centerX = spike.getCenterX();
+        int centerZ = spike.getCenterZ();
+        int radius = spike.getRadius();
+        int height = spike.getHeight();
+
+        int topHalfX = 2;
+        int topHalfZ = 2;
+        int topHeight = 5;
+
+        int bottomHalfX = radius;
+        int bottomHalfZ = radius;
+        int bottomHeight = 0;
+
+        // ==========================================
+        // 1. 取得自訂 NBT 的尺寸
+        // ==========================================
+
+        if (this.fightSettings.isCustomSpikeStructuresEnabled()) {
+
+            StructureTemplateManager manager =
+                    this.level.getStructureManager();
+
+            String topPath = spike.isGuarded()
+                    ? "end_spike/top_radius_" + radius + "_guarded"
+                    : "end_spike/top_radius_" + radius;
+
+            ResourceLocation topId =
+                    ResourceLocation.fromNamespaceAndPath(
+                            "beyond_the_end",
+                            topPath
+                    );
+
+            ResourceLocation bottomId =
+                    ResourceLocation.fromNamespaceAndPath(
+                            "beyond_the_end",
+                            "end_spike/bottom_radius_" + radius
+                    );
+
+            StructureTemplate top =
+                    manager.get(topId).orElse(null);
+
+            StructureTemplate bottom =
+                    manager.get(bottomId).orElse(null);
+
+            if (top != null) {
+
+                topHalfX = top.getSize().getX() / 2;
+                topHalfZ = top.getSize().getZ() / 2;
+                topHeight = top.getSize().getY();
+            }
+
+            if (bottom != null) {
+
+                bottomHalfX = bottom.getSize().getX() / 2;
+                bottomHalfZ = bottom.getSize().getZ() / 2;
+                bottomHeight = bottom.getSize().getY();
+            }
+        }
+
+        // ==========================================
+        // 2. 重新定位原本的柱體底部
+        // ==========================================
+
+        int sampleDistance = Math.max(
+                radius + 2,
+                Math.max(bottomHalfX, bottomHalfZ) + 2
+        );
+
+        int[][] offsets = {
+                {sampleDistance, 0},
+                {-sampleDistance, 0},
+                {0, sampleDistance},
+                {0, -sampleDistance}
+        };
+
+        int surfaceY = Integer.MIN_VALUE;
+
+        BlockPos.MutableBlockPos mutable =
+                new BlockPos.MutableBlockPos();
+
+        for (int[] offset : offsets) {
+
+            for (int y = height - 1;
+                 y >= this.level.getMinBuildHeight(); y--) {
+
+                mutable.set(
+                        centerX + offset[0],
+                        y,
+                        centerZ + offset[1]
+                );
+
+                if (this.level.getBlockState(mutable)
+                        .is(Blocks.END_STONE)) {
+
+                    surfaceY = Math.max(surfaceY, y);
+                    break;
+                }
+            }
+        }
+
+        if (surfaceY == Integer.MIN_VALUE) {
+
+            for (int y = height - 1;
+                 y >= this.level.getMinBuildHeight(); y--) {
+
+                mutable.set(centerX, y, centerZ);
+
+                if (this.level.getBlockState(mutable)
+                        .is(Blocks.END_STONE)) {
+
+                    surfaceY = y;
+                    break;
+                }
+            }
+        }
+
+        if (surfaceY == Integer.MIN_VALUE) {
+            surfaceY = 64;
+        }
+
+        int baseY = this.fightSettings.isCustomSpikeStructuresEnabled()
+                ? surfaceY + 1
+                : Math.max(0, this.level.getMinBuildHeight());
+
+        // ==========================================
+        // 3. 確保整根柱子所在區塊已載入
+        // ==========================================
+
+        int halfX = Math.max(
+                radius,
+                Math.max(topHalfX, bottomHalfX)
+        ) + 2;
+
+        int halfZ = Math.max(
+                radius,
+                Math.max(topHalfZ, bottomHalfZ)
+        ) + 2;
+
+        for (int chunkX = (centerX - halfX) >> 4;
+             chunkX <= (centerX + halfX) >> 4;
+             chunkX++) {
+
+            for (int chunkZ = (centerZ - halfZ) >> 4;
+                 chunkZ <= (centerZ + halfZ) >> 4;
+                 chunkZ++) {
+
+                this.level.getChunk(chunkX, chunkZ);
+            }
+        }
+
+        // ==========================================
+        // 4. 移除柱頂範圍內的終界水晶
+        // ==========================================
+
+        AABB crystalArea = new AABB(
+                centerX - topHalfX - 2,
+                height - 1,
+                centerZ - topHalfZ - 2,
+                centerX + topHalfX + 3,
+                height + Math.max(topHeight, 4) + 3,
+                centerZ + topHalfZ + 3
+        );
+
+        for (EndCrystal crystal :
+                this.level.getEntitiesOfClass(
+                        EndCrystal.class,
+                        crystalArea
+                )) {
+
+            crystal.discard();
+        }
+
+        // ==========================================
+        // 5. 真實爆炸，先播放再清除柱體
+        // ==========================================
+
+        this.level.explode(
+                null,
+                centerX + 0.5,
+                height + 1.0,
+                centerZ + 0.5,
+                5.0F,
+                Level.ExplosionInteraction.NONE
+        );
+
+        this.level.sendParticles(
+                ParticleTypes.DRAGON_BREATH,
+                centerX + 0.5,
+                height + 1.0,
+                centerZ + 0.5,
+                100,
+                radius + 2.0,
+                4.0,
+                radius + 2.0,
+                0.08
+        );
+
+        // ==========================================
+        // 6. 清除中段圓形柱體
+        // ==========================================
+
+        int radiusSquared = radius * radius + 1;
+
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+
+                if (dx * dx + dz * dz > radiusSquared) {
+                    continue;
+                }
+
+                for (int y = Math.max(
+                        baseY,
+                        this.level.getMinBuildHeight()
+                ); y < height; y++) {
+
+                    mutable.set(
+                            centerX + dx,
+                            y,
+                            centerZ + dz
+                    );
+
+                    this.level.setBlock(
+                            mutable,
+                            Blocks.AIR.defaultBlockState(),
+                            2
+                    );
+                }
+            }
+        }
+
+        // ==========================================
+        // 7. 清除塔底 NBT 區域
+        // ==========================================
+
+        for (int x = centerX - bottomHalfX;
+             x <= centerX + bottomHalfX; x++) {
+
+            for (int z = centerZ - bottomHalfZ;
+                 z <= centerZ + bottomHalfZ; z++) {
+
+                for (int y = baseY;
+                     y < baseY + bottomHeight
+                             && y < this.level.getMaxBuildHeight();
+                     y++) {
+
+                    mutable.set(x, y, z);
+
+                    this.level.setBlock(
+                            mutable,
+                            Blocks.AIR.defaultBlockState(),
+                            2
+                    );
+                }
+            }
+        }
+
+        // ==========================================
+        // 8. 清除塔頂 NBT 或預設籠子範圍
+        // ==========================================
+
+        for (int x = centerX - topHalfX;
+             x <= centerX + topHalfX; x++) {
+
+            for (int z = centerZ - topHalfZ;
+                 z <= centerZ + topHalfZ; z++) {
+
+                for (int y = height;
+                     y < height + topHeight + 2
+                             && y < this.level.getMaxBuildHeight();
+                     y++) {
+
+                    mutable.set(x, y, z);
+
+                    this.level.setBlock(
+                            mutable,
+                            Blocks.AIR.defaultBlockState(),
+                            2
+                    );
+                }
+            }
+        }
+
+        this.level.sendParticles(
+                ParticleTypes.REVERSE_PORTAL,
+                centerX + 0.5,
+                height * 0.5,
+                centerZ + 0.5,
+                120,
+                radius + 2.0,
+                Math.max(2.0, height * 0.4),
+                radius + 2.0,
+                0.12
+        );
+
+        LOGGER.info(
+                "Destroyed End Spike at X={}, Z={}",
+                centerX,
+                centerZ
+        );
+    }
+
+    private void finishSealing() {
+        BlockPos center = new BlockPos(
+                this.origin.getX(),
+                0,
+                this.origin.getZ()
+        );
+
+        // WORLD_SURFACE：最高非空氣方塊的上方位置
+        BlockPos eggPos = this.level.getHeightmapPos(
+                Heightmap.Types.WORLD_SURFACE,
+                center
+        );
+        if (!this.fightSettings.isDragonFightSealing()) {
+            return;
+        }
+
+        // ==========================================
+        // 1. 移除四顆儀式水晶
+        // ==========================================
+
+        List<Vec3> explosionPositions = new ArrayList<>();
+
+        for (UUID uuid :
+                this.fightSettings.getSealingCrystalIds()) {
+
+            if (this.level.getEntity(uuid)
+                    instanceof EndCrystal crystal
+                    && !crystal.isRemoved()) {
+
+                explosionPositions.add(crystal.position());
+
+                crystal.setBeamTarget(null);
+                crystal.setInvulnerable(false);
+                crystal.discard();
+            }
+        }
+
+        for (Vec3 pos : explosionPositions) {
+
+            this.level.explode(
+                    null,
+                    pos.x,
+                    pos.y,
+                    pos.z,
+                    4.0F,
+                    Level.ExplosionInteraction.NONE
+            );
+
+            this.level.sendParticles(
+                    ParticleTypes.REVERSE_PORTAL,
+                    pos.x, pos.y, pos.z,
+                    80,
+                    2.0, 2.0, 2.0,
+                    0.12
+            );
+        }
+
+        // ==========================================
+        // 2. 保存永久封禁狀態
+        // ==========================================
+
+        this.fightSettings.finishDragonFightSealing();
+
+        this.dragonKilled = true;
+        this.dragonUUID = null;
+        this.pendingRespawnRecovery = false;
+
+        this.bossEvent.setVisible(false);
+        this.updateArenaTicket(false);
+
+        // ==========================================
+        // 3. 通知客戶端
+        // ==========================================
+
+        Component title = Component.translatable(
+                "message.beyond_the_end.dragon_fight_sealed"
+        );
+
+        for (ServerPlayer player : this.level.players()) {
+
+            player.connection.send(
+                    new ClientboundSetTitleTextPacket(title)
+            );
+
+            player.sendSystemMessage(title);
+        }
+
+        LOGGER.info(
+                "Beyond The End: Dragon Fight permanently sealed."
+        );
+        this.level.setBlockAndUpdate(
+                eggPos,
+                Blocks.DRAGON_EGG.defaultBlockState()
+        );
+    }
+
+    public boolean unsealDragonFight() {
+
+        if (!this.fightSettings.isDragonFightSealed()
+                && !this.fightSettings.isDragonFightSealing()) {
+
+            return false;
+        }
+
+        // 若儀式尚未完成，清理水晶光束和無敵狀態
+        for (UUID uuid :
+                this.fightSettings.getSealingCrystalIds()) {
+
+            if (this.level.getEntity(uuid)
+                    instanceof EndCrystal crystal
+                    && !crystal.isRemoved()) {
+
+                crystal.setBeamTarget(null);
+                crystal.setInvulnerable(false);
+            }
+        }
+
+        this.fightSettings.unsealDragonFight();
+
+        this.sealingAnimationTick = 0;
+
+        // 解除封禁不代表直接召喚一條龍
+        this.dragonKilled = true;
+        this.bossEvent.setVisible(false);
+
+        LOGGER.info(
+                "Beyond The End: Dragon Fight sealing removed by command."
+        );
+
+        return true;
+    }
+
+
 
     /**
      * 尋找啟用祭壇結構範圍內的所有祭壇石。

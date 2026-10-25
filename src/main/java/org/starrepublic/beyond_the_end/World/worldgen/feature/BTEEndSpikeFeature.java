@@ -161,6 +161,7 @@ public class BTEEndSpikeFeature extends Feature<SpikeConfiguration> {
 
                     continue;
                 }
+
             }
 
             // ==========================================
@@ -173,134 +174,138 @@ public class BTEEndSpikeFeature extends Feature<SpikeConfiguration> {
              * 龍復活時舊柱體仍存在，
              * 否則容易把原本的柱頂當成島嶼表面。
              */
-            int sampleDistance = radius + 2;
-
-            if (bottomTemplate != null) {
-
-                sampleDistance = Math.max(
-                        sampleDistance,
-                        Math.max(
-                                bottomTemplate.getSize().getX() / 2,
-                                bottomTemplate.getSize().getZ() / 2
-                        ) + 2
-                );
-            }
-
-            int[][] offsets = {
-                    {sampleDistance, 0},
-                    {-sampleDistance, 0},
-                    {0, sampleDistance},
-                    {0, -sampleDistance}
-            };
-
             int surfaceY = Integer.MIN_VALUE;
+            if (customStructures) {
+                int sampleDistance = radius + 2;
 
-            for (int[] offset : offsets) {
+                if (bottomTemplate != null) {
 
-                for (int y = Math.min(
-                        height - 1,
-                        level.getMaxBuildHeight() - 2
-                ); y >= level.getMinBuildHeight(); y--) {
-
-                    mutable.set(
-                            centerX + offset[0],
-                            y,
-                            centerZ + offset[1]
+                    sampleDistance = Math.max(
+                            sampleDistance,
+                            Math.max(
+                                    bottomTemplate.getSize().getX() / 2,
+                                    bottomTemplate.getSize().getZ() / 2
+                            ) + 2
                     );
-
-                    if (level.getBlockState(mutable)
-                            .is(Blocks.END_STONE)) {
-
-                        surfaceY = Math.max(surfaceY, y);
-                        break;
-                    }
                 }
-            }
 
-            // 周圍找不到地表，再檢查中心下方的終界石
-            if (surfaceY == Integer.MIN_VALUE) {
+                int[][] offsets = {
+                        {sampleDistance, 0},
+                        {-sampleDistance, 0},
+                        {0, sampleDistance},
+                        {0, -sampleDistance}
+                };
 
-                for (int y = height - 1;
-                     y >= level.getMinBuildHeight(); y--) {
+                for (int[] offset : offsets) {
 
-                    mutable.set(centerX, y, centerZ);
+                    for (int y = Math.min(
+                            height - 1,
+                            level.getMaxBuildHeight() - 2
+                    ); y >= level.getMinBuildHeight(); y--) {
 
-                    if (level.getBlockState(mutable)
-                            .is(Blocks.END_STONE)) {
-
-                        surfaceY = y;
-                        break;
-                    }
-                }
-            }
-
-            // ==========================================
-            // 3. 沒有地表時建立終界石浮島
-            // ==========================================
-
-            if (surfaceY == Integer.MIN_VALUE) {
-
-                surfaceY = 64;
-
-                // 浮島頂部半徑比柱體多三格
-                int islandRadius = radius + 3;
-
-                RandomSource islandRandom =
-                        RandomSource.create(
-                                level.getSeed()
-                                        ^ ((long) centerX * 341873128712L)
-                                        ^ ((long) centerZ * 132897987541L)
+                        mutable.set(
+                                centerX + offset[0],
+                                y,
+                                centerZ + offset[1]
                         );
 
-                for (int dx = -islandRadius;
-                     dx <= islandRadius; dx++) {
+                        if (level.getBlockState(mutable)
+                                .is(Blocks.END_STONE)) {
 
-                    for (int dz = -islandRadius;
-                         dz <= islandRadius; dz++) {
-
-                        int distanceSquared =
-                                dx * dx + dz * dz;
-
-                        if (distanceSquared >
-                                islandRadius * islandRadius) {
-                            continue;
+                            surfaceY = Math.max(surfaceY, y);
+                            break;
                         }
+                    }
+                }
 
-                        double distance =
-                                Math.sqrt(distanceSquared);
+                // 周圍找不到地表，再檢查中心下方的終界石
+                if (surfaceY == Integer.MIN_VALUE) {
 
-                        int depth = Math.max(
-                                1,
-                                (int) Math.ceil(
-                                        (islandRadius - distance) * 1.6D
-                                ) + 1 + islandRandom.nextInt(3)
-                        );
+                    for (int y = height - 1;
+                         y >= level.getMinBuildHeight(); y--) {
 
-                        for (int dy = 0; dy < depth; dy++) {
+                        mutable.set(centerX, y, centerZ);
 
-                            int y = surfaceY - dy;
+                        if (level.getBlockState(mutable)
+                                .is(Blocks.END_STONE)) {
 
-                            if (y < level.getMinBuildHeight()) {
-                                break;
+                            surfaceY = y;
+                            break;
+                        }
+                    }
+                }
+
+                // ==========================================
+                // 3. 沒有地表時建立終界石浮島
+                // ==========================================
+
+                if (surfaceY == Integer.MIN_VALUE) {
+
+                    surfaceY = 64;
+
+                    // 浮島頂部半徑比柱體多三格
+                    int islandRadius = radius + 3;
+
+                    RandomSource islandRandom =
+                            RandomSource.create(
+                                    level.getSeed()
+                                            ^ ((long) centerX * 341873128712L)
+                                            ^ ((long) centerZ * 132897987541L)
+                            );
+
+                    for (int dx = -islandRadius;
+                         dx <= islandRadius; dx++) {
+
+                        for (int dz = -islandRadius;
+                             dz <= islandRadius; dz++) {
+
+                            int distanceSquared =
+                                    dx * dx + dz * dz;
+
+                            if (distanceSquared >
+                                    islandRadius * islandRadius) {
+                                continue;
                             }
 
-                            mutable.set(
-                                    centerX + dx,
-                                    y,
-                                    centerZ + dz
+                            double distance =
+                                    Math.sqrt(distanceSquared);
+
+                            int depth = Math.max(
+                                    1,
+                                    (int) Math.ceil(
+                                            (islandRadius - distance) * 1.6D
+                                    ) + 1 + islandRandom.nextInt(3)
                             );
 
-                            level.setBlock(
-                                    mutable,
-                                    Blocks.END_STONE.defaultBlockState(),
-                                    2
-                            );
+                            for (int dy = 0; dy < depth; dy++) {
+
+                                int y = surfaceY - dy;
+
+                                if (y < level.getMinBuildHeight()) {
+                                    break;
+                                }
+
+                                mutable.set(
+                                        centerX + dx,
+                                        y,
+                                        centerZ + dz
+                                );
+
+                                level.setBlock(
+                                        mutable,
+                                        Blocks.END_STONE.defaultBlockState(),
+                                        2
+                                );
+                            }
                         }
                     }
                 }
             }
 
-            int baseY = surfaceY + 1;
+
+            int baseY = customStructures
+                    ? surfaceY + 1
+                    : Math.max(0, level.getMinBuildHeight());
 
             if (baseY >= height) {
 

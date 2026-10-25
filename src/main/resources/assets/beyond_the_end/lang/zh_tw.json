@@ -167,6 +167,8 @@
   "message.beyond_the_end.smelting_powder_added": "終界粉已投入，目前熔煉速度：%s%%",
   "message.beyond_the_end.powder_time": "終界粉效果剩餘：%s 秒",
   "message.beyond_the_end.powder_rejected": "目前模式不能使用終界粉，或加速已達上限",
+  "message.beyond_the_end.dragon_sealing_started": "終界龍戰的封禁儀式已經啟動……",
+  "message.beyond_the_end.dragon_fight_sealed": "終界龍戰已被永久封禁",
   "rune.beyond_the_end.power": "力量符文",
   "rune.beyond_the_end.agility": "敏捷符文",
   "rune.beyond_the_end.vitality": "活力符文",
