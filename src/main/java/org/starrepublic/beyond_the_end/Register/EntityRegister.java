@@ -2,6 +2,7 @@ package org.starrepublic.beyond_the_end.Register;
 
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EndermanRenderer;
+import net.minecraft.client.renderer.entity.PhantomRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.EnderMan;
 
+import net.minecraft.world.entity.monster.Phantom;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
@@ -28,6 +30,7 @@ import org.starrepublic.beyond_the_end.Entitys.entity.DragonBombFireball;
 import org.starrepublic.beyond_the_end.Entitys.entity.SafeEndCrystalEntity;
 import org.starrepublic.beyond_the_end.Entitys.mob.AncientEnderDragonEntity;
 import org.starrepublic.beyond_the_end.Entitys.mob.AngryEndermanEntity;
+import org.starrepublic.beyond_the_end.Entitys.mob.EnderPhantom;
 import org.starrepublic.beyond_the_end.Entitys.mob.SmallEndermanEntity;
 import org.starrepublic.beyond_the_end.Register.helper.EntityHelper;
 
@@ -77,6 +80,11 @@ public final class EntityRegister {
             ANGRY_ENDERMAN = EntityHelper.registerMob("angry_enderman", AngryEndermanEntity.SPEC);
     public static final EntityHelper.MobEntry<AncientEnderDragonEntity>
             ANCIENT_ENDER_DRAGON = EntityHelper.registerMob("ancient_ender_dragon", AncientEnderDragonEntity.SPEC);
+    public static final EntityHelper.MobEntry<EnderPhantom>
+            ENDER_PHANTOM = EntityHelper.registerMob(
+            "ender_phantom",
+            EnderPhantom.SPEC
+    );
 
     public static final Supplier<EntityType<SafeEndCrystalEntity>>
             SAFE_END_CRYSTAL = ENTITIES.register(
@@ -202,12 +210,23 @@ public final class EntityRegister {
                         )
                 );
 
+        private static final EntityHelper.Client.RenderSpec<Phantom>
+                ENDER_PHANTOM_RENDER =
+                EntityHelper.Client.<Phantom>bind(
+                        ENDER_PHANTOM.type(),
+                        PhantomRenderer::new,
+                        EntityHelper.Client.vanillaModel(
+                                ModelLayers.PHANTOM
+                        )
+                );
+
 
 
         private static final List<EntityHelper.Client.RenderSpec<?>> RENDERS =
                 List.of(SMALL_ENDERMAN_RENDER,
                         ANGRY_ENDERMAN_RENDER,
-                        ANCIENT_ENDER_DRAGON_RENDER
+                        ANCIENT_ENDER_DRAGON_RENDER,
+                        ENDER_PHANTOM_RENDER
                         );
         //註冊部分，不要動
         private static void register(IEventBus modEventBus) {

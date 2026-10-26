@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "beyond_the_end:spooky_fence_gate"
+    "beyond_the_end:spooky_fence_gate",
+    "beyond_the_end:altar_stone"
   ]
 }

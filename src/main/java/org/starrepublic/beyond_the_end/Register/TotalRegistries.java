@@ -5,7 +5,9 @@ import org.starrepublic.beyond_the_end.CreativeTabs.Blocks;
 import org.starrepublic.beyond_the_end.Events.SpawnRules;
 import org.starrepublic.beyond_the_end.Items.charm.CharmTypes;
 import org.starrepublic.beyond_the_end.World.DFM.BTEDragonFightRegistry;
+import org.starrepublic.beyond_the_end.World.DragonSkill.DragonDiveBombardmentSkill;
 import org.starrepublic.beyond_the_end.World.DragonSkill.DragonFirebombSkill;
+import org.starrepublic.beyond_the_end.World.DragonSkill.DragonPhantomSummonSkill;
 import org.starrepublic.beyond_the_end.World.DragonSkill.DragonSkyBombardmentSkill;
 
 public final class TotalRegistries {
@@ -41,6 +43,8 @@ public final class TotalRegistries {
         eventBus.addListener(CapabilityRegister::register);
         DragonFirebombSkill.register();
         DragonSkyBombardmentSkill.register();
+        DragonPhantomSummonSkill.register();
+        DragonDiveBombardmentSkill.register();
 
     }
 }

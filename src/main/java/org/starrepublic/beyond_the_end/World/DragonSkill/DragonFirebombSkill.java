@@ -156,9 +156,18 @@ public final class DragonFirebombSkill {
 
         return dragon.getPhaseManager()
                 .getCurrentPhase()
-                .getPhase() == EnderDragonPhase.HOLDING_PATTERN;
-    }
+                .getPhase() == EnderDragonPhase.HOLDING_PATTERN
 
+                && !DragonDiveBombardmentSkill.isActive(dragon)
+
+                && !DragonSkyBombardmentSkill.isActive(dragon);
+    }
+    public static boolean isActive(EnderDragon dragon) {
+
+        AttackState state = STATES.get(dragon);
+
+        return state != null && state.remainingShots > 0;
+    }
     /**
      * 尋找最近的可攻擊玩家。
      */
